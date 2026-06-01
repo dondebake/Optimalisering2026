@@ -12,7 +12,8 @@ Verificatie:
 import pytest
 from fastapi.testclient import TestClient
 
-from floodopt_api.main import _memory_repos, app
+from floodopt_api.main import app, get_repositories
+from floodopt_api.repositories import MemoryRepositories
 
 # Referentiedata uit stap 1.4 smoke test
 from scripts.run_smoke_test import (
@@ -23,15 +24,24 @@ from scripts.run_smoke_test import (
     TRAJECTORY,
 )
 
+# Gedeelde in-memory repos voor de test-sessie (via FastAPI dependency override)
+_test_repos = MemoryRepositories()
+
+
+def _override():
+    yield _test_repos
+
+
+app.dependency_overrides[get_repositories] = _override
 client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
 def reset_store():
     """Leeg de in-memory repos voor elke test."""
-    _memory_repos.clear()
+    _test_repos.clear()
     yield
-    _memory_repos.clear()
+    _test_repos.clear()
 
 
 # ---------------------------------------------------------------------------

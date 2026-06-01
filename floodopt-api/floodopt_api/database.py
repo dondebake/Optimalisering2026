@@ -5,16 +5,26 @@ Schema:
     trajectories           — dijktrajecten
     optimization_results   — optimalisatieresultaten per job_id
 
-PostGIS-extensie wordt bij initialisatie aangemaakt (voor toekomstig gebruik van
-geometrie-kolommen, bijv. dijkvak-alignementen in stap 3.x).
+Backend:
+    SQLite (standaard, geen installatie vereist)
+        DATABASE_URL niet ingesteld → sqlite:///floodopt.db
+    PostgreSQL + PostGIS (productie)
+        DATABASE_URL=postgresql://user:pw@host/db
+
+PostGIS-extensie wordt alleen aangemaakt bij een PostgreSQL-verbinding.
 """
 
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from sqlalchemy import Float, Integer, JSON, String, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, MappedColumn, Session, mapped_column
+
+# Standaard SQLite-pad (relatief aan de projectroot)
+_DEFAULT_SQLITE = (Path(__file__).parent.parent.parent / "floodopt.db").resolve()
+DEFAULT_URL = f"sqlite:///{_DEFAULT_SQLITE}"
 
 
 class Base(DeclarativeBase):
@@ -60,21 +70,35 @@ class OptimizationResultORM(Base):
     objective_value: MappedColumn[float] = mapped_column(Float, nullable=False)
 
 
+def _is_postgres(url: str) -> bool:
+    return url.startswith("postgresql")
+
+
 def create_engine_from_url(url: str):  # type: ignore[no-untyped-def]
-    return create_engine(url, pool_pre_ping=True)
+    kwargs: dict = {"pool_pre_ping": True}
+    if not _is_postgres(url):
+        # SQLite vereist connect_args voor gebruik buiten de aanmaak-thread
+        kwargs["connect_args"] = {"check_same_thread": False}
+    return create_engine(url, **kwargs)
 
 
 def init_schema(url: str) -> None:
-    """Maak het schema aan (inclusief PostGIS-extensie)."""
+    """Maak het schema aan.
+
+    Bij PostgreSQL: PostGIS-extensie aanmaken (voor geometrie stap 3.x).
+    Bij SQLite: alleen tabellen aanmaken, geen extensies.
+    """
     engine = create_engine_from_url(url)
-    with engine.connect() as conn:
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
-        conn.commit()
+    if _is_postgres(url):
+        with engine.connect() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+            conn.commit()
     Base.metadata.create_all(engine)
 
 
-def get_default_url() -> str | None:
-    return os.getenv("DATABASE_URL")
+def get_effective_url() -> str:
+    """Geeft DATABASE_URL terug als ingesteld, anders de SQLite-standaard."""
+    return os.getenv("DATABASE_URL", DEFAULT_URL)
 
 
 def make_session(url: str) -> Session:

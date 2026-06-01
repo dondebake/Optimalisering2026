@@ -7,7 +7,7 @@ Endpoints:
     GET  /results/{job_id}    resultaat ophalen
 
 DATABASE_URL env-variabele bepaalt de backend:
-    niet ingesteld  →  in-memory (development/tests)
+    niet ingesteld  →  SQLite (floodopt.db naast de projectroot, geen install)
     ingesteld       →  PostgreSQL + PostGIS (productie)
 
 Business logic zit volledig in floodopt-core.
@@ -17,22 +17,27 @@ Async queue (Celery) volgt in stap 2.3.
 from __future__ import annotations
 
 import uuid
+from contextlib import asynccontextmanager
 from typing import Annotated, Generator
 
 from fastapi import Depends, FastAPI, HTTPException
 
-from floodopt_api.database import get_default_url, make_session
+from floodopt_api.database import get_effective_url, init_schema, make_session
 from floodopt_api.models import OptimizeRequest, OptimizeResponse
-from floodopt_api.repositories import (
-    MemoryRepositories,
-    PostgresRepositories,
-    Repositories,
-)
+from floodopt_api.repositories import PostgresRepositories, Repositories
 from floodopt_core.io.models import Scenario, Trajectory
 from floodopt_core.optimization.brute_force import BruteForceOptimizer
 from floodopt_core.optimization.pyomo_optimizer import PyomoOptimizer
 from floodopt_core.physics.simple_dike_overflow import SimpleDikeOverflow
 from floodopt_core.risk.simple_risk_calculator import SimpleRiskCalculator
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # type: ignore[type-arg]
+    """Schema aanmaken bij opstart (idempotent)."""
+    init_schema(get_effective_url())
+    yield
+
 
 app = FastAPI(
     title="FloodOpt API",
@@ -40,9 +45,10 @@ app = FastAPI(
         "Optimalisatie van dijkversterkingsstrategieën. "
         "Physics en Risk Layer zitten in floodopt-core; "
         "deze API is een dunne HTTP-schil. "
-        "Stel DATABASE_URL in voor persistente PostgreSQL-opslag."
+        "Standaard: SQLite. Stel DATABASE_URL in voor PostgreSQL."
     ),
     version="0.2.0",
+    lifespan=lifespan,
 )
 
 # Optimizer-instanties — stateless, gedeeld over requests
@@ -53,9 +59,6 @@ _optimizers = {
     "pyomo": PyomoOptimizer(risk=_risk),
 }
 
-# Module-level in-memory singleton (fallback als DATABASE_URL niet ingesteld)
-_memory_repos = MemoryRepositories()
-
 
 # ---------------------------------------------------------------------------
 # Dependency: repositories
@@ -63,20 +66,14 @@ _memory_repos = MemoryRepositories()
 
 
 def get_repositories() -> Generator[Repositories, None, None]:
-    """Geeft de juiste repository-implementatie terug.
-
-    Als DATABASE_URL is ingesteld wordt een SQLAlchemy-sessie aangemaakt
-    en na het request automatisch gesloten.
+    """Opent een sessie naar de geconfigureerde database (SQLite of PostgreSQL)
+    en sluit deze na het request.
     """
-    url = get_default_url()
-    if url:
-        session = make_session(url)
-        try:
-            yield PostgresRepositories(session)
-        finally:
-            session.close()
-    else:
-        yield _memory_repos  # type: ignore[misc]
+    session = make_session(get_effective_url())
+    try:
+        yield PostgresRepositories(session)  # werkt ook met SQLite
+    finally:
+        session.close()
 
 
 Repos = Annotated[Repositories, Depends(get_repositories)]

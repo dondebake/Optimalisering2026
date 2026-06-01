@@ -87,7 +87,7 @@ Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
 |---|---|---|
 | 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, CI-tooling |
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
-| 2 — Backend & API | 🔄 2.2 klaar | FastAPI ✅, PostgreSQL ✅, Celery ⏳ |
+| 2 — Backend & API | 🔄 2.2 klaar | FastAPI ✅, SQLite/PostgreSQL ✅, Celery ⏳ |
 | 3 — Uitbreidingen | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
 | 4 — Frontend | ⏳ Gepland | React + Vite, kaartviewer |
 
