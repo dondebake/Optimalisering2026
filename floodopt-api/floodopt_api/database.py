@@ -52,16 +52,17 @@ class OptimizationResultORM(Base):
     job_id: MappedColumn[str] = mapped_column(String, primary_key=True)
     trajectory_id: MappedColumn[str] = mapped_column(String, nullable=False)
     scenario_id: MappedColumn[str] = mapped_column(String, nullable=False)
-    status: MappedColumn[str] = mapped_column(
-        String, nullable=False, default="completed"
-    )
+    status: MappedColumn[str] = mapped_column(String, nullable=False, default="pending")
     objective: MappedColumn[str] = mapped_column(String, nullable=False)
     solver: MappedColumn[str] = mapped_column(String, nullable=False)
-    selected_measure_ids: MappedColumn[list[str]] = mapped_column(JSON, nullable=False)
-    total_ncw: MappedColumn[float] = mapped_column(Float, nullable=False)
-    risk_ncw: MappedColumn[float] = mapped_column(Float, nullable=False)
-    investment_npv: MappedColumn[float] = mapped_column(Float, nullable=False)
-    objective_value: MappedColumn[float] = mapped_column(Float, nullable=False)
+    # Nullable: None totdat de worker klaar is (status "done")
+    selected_measure_ids: MappedColumn[list[str] | None] = mapped_column(
+        JSON, nullable=True
+    )
+    total_ncw: MappedColumn[float | None] = mapped_column(Float, nullable=True)
+    risk_ncw: MappedColumn[float | None] = mapped_column(Float, nullable=True)
+    investment_npv: MappedColumn[float | None] = mapped_column(Float, nullable=True)
+    objective_value: MappedColumn[float | None] = mapped_column(Float, nullable=True)
 
 
 def create_engine_from_url(url: str):  # type: ignore[no-untyped-def]

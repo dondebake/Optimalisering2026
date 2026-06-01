@@ -134,7 +134,8 @@ def test_scenario_upsert(repos):
 
 
 def test_api_with_sqlite_backend():
-    """POST /optimize via de API slaat resultaat op in SQLite (StaticPool)."""
+    """POST /optimize via de API slaat pending job op in SQLite (StaticPool)."""
+    from unittest.mock import patch
     from sqlalchemy.pool import StaticPool
 
     from fastapi.testclient import TestClient
@@ -178,15 +179,17 @@ def test_api_with_sqlite_backend():
             "objective": "min_cost",
             "solver": "brute_force",
         }
-        resp = client.post("/optimize", json=payload)
-        assert resp.status_code == 201
+        with patch("floodopt_api.main.celery_app.send_task"):
+            resp = client.post("/optimize", json=payload)
+        assert resp.status_code == 202
         data = resp.json()
-        assert set(data["selected_measure_ids"]) == {"M02", "M04"}
+        assert data["status"] == "pending"
 
         job_id = data["job_id"]
         resp2 = client.get(f"/results/{job_id}")
         assert resp2.status_code == 200
         assert resp2.json()["job_id"] == job_id
+        assert resp2.json()["status"] == "pending"
     finally:
         app.dependency_overrides.update(original)
         Base.metadata.drop_all(eng)

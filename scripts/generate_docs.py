@@ -116,9 +116,26 @@ def make_architecture() -> None:
 
     col_labels = ["Laag", "Technologie / Module", "Status"]
     rows = [
-        ["Frontend", "React + Vite + Leaflet", "Stap 4 (gepland)"],
-        ["FastAPI", "Dunne HTTP-schil (geen business logic)", "Stap 2.x (klaar)"],
-        ["Database", "SQLite (dev) -- PostgreSQL optioneel", "Stap 2.2 (klaar)"],
+        [
+            "Frontend",
+            "React + Vite + Tailwind + Leaflet  (stap 4.1 in uitvoering)",
+            "Stap 4 (in uitvoering)",
+        ],
+        [
+            "FastAPI",
+            "POST /optimize -> 202 + job_id  |  GET /results/{id}",
+            "Stap 2.1 (klaar)",
+        ],
+        [
+            "Async Queue",
+            "Redis (broker) + Celery (worker)  pending->running->done",
+            "Stap 2.3 (klaar)",
+        ],
+        [
+            "Database",
+            "SQLite (dev) -- PostgreSQL optioneel (multi-worker)",
+            "Stap 2.2 (klaar)",
+        ],
         ["GeoPandas", "WKT -> GeoJSON voor Leaflet", "Stap 4.2 (gepland)"],
         ["Optimization Layer", "BruteForce + Pyomo/HiGHS", "Stap 1.3 (klaar)"],
         ["Risk Layer", "NCW = Sum P(s)*V0*e^((gamma-delta)*s)", "Stap 1.2 (klaar)"],
@@ -141,6 +158,7 @@ def make_architecture() -> None:
     row_colors = [
         BLUE,  # Frontend
         ORANGE,  # FastAPI
+        RED,  # Async Queue
         GREY,  # Database
         GREY,  # GeoPandas
         BLUE,  # Optimization
@@ -169,7 +187,7 @@ def make_architecture() -> None:
     ax_txt.text(
         0.5,
         0.15,
-        "Lagen 1.1 -- 2.2 volledig geimplementeerd en getest.  Stap 3 (CLI) en Stap 4 (Frontend) gepland.",
+        "Fase 1+2 volledig geimplementeerd en getest (90/90).  start.bat: Redis + FastAPI + Celery worker.  Stap 4 (Frontend) in uitvoering.",
         ha="center",
         va="center",
         fontsize=9,
@@ -1008,9 +1026,15 @@ def make_database() -> None:
     ax_bar = fig.add_subplot(gs[0:2, 1])
     ax_bar.set_facecolor(WHITE)
 
-    categories = ["Unit tests", "CLI integration", "API integration", "DB round-trip"]
-    counts = [46, 12, 20, 6]
-    colors = [BLUE, ORANGE, GREEN, PURPLE]
+    categories = [
+        "Unit tests",
+        "CLI integration",
+        "API integration",
+        "DB round-trip",
+        "Worker integration",
+    ]
+    counts = [46, 12, 19, 6, 7]
+    colors = [BLUE, ORANGE, GREEN, PURPLE, RED]
 
     y_pos = np.arange(len(categories))
     bars = ax_bar.barh(y_pos, counts, color=colors, height=0.55, alpha=0.9)
@@ -1044,7 +1068,7 @@ def make_database() -> None:
     ax_foot.text(
         0.5,
         0.5,
-        "84/84 tests geslaagd  |  SQLite standaard  |  PostgreSQL via DATABASE_URL",
+        "90/90 tests geslaagd  |  SQLite standaard  |  PostgreSQL via DATABASE_URL",
         ha="center",
         va="center",
         fontsize=10,
@@ -1059,7 +1083,108 @@ def make_database() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 9. Geo stack
+# 9. Worker (stap 2.3)
+# ---------------------------------------------------------------------------
+
+
+def make_worker() -> None:
+    """Celery + Redis async queue: status-flow + componenten-tabel."""
+    fig = plt.figure(figsize=(13, 7), facecolor=BG)
+
+    fig.suptitle(
+        "Stap 2.3 -- Async Queue  (Redis + Celery)  90/90 tests",
+        fontsize=14,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+
+    gs = gridspec.GridSpec(
+        2,
+        2,
+        figure=fig,
+        width_ratios=[1, 1],
+        height_ratios=[12, 1],
+        hspace=0.15,
+        wspace=0.35,
+    )
+
+    # --- Left: status flow table ---
+    ax_l = fig.add_subplot(gs[0, 0])
+    ax_l.axis("off")
+    ax_l.set_facecolor(BG)
+    ax_l.set_title("Status-flow", fontsize=11, fontweight="bold", color=DARK, pad=8)
+
+    flow_rows = [
+        ["1", "Client", "POST /optimize  (traject + scenario + maatregelen)"],
+        ["2", "FastAPI", "Sla pending-record op in SQLite"],
+        ["3", "FastAPI", "celery_app.send_task()  ->  202 + job_id"],
+        ["4", "Redis", "Taak in wachtrij  (broker)"],
+        ["5", "Celery worker", "update_status('running')"],
+        ["6", "Celery worker", "optimizer.solve()  ->  save_result()"],
+        ["7", "Celery worker", "update_status('done')  of  'failed'"],
+        ["8", "Client", "GET /results/{job_id}  ->  status + resultaat"],
+    ]
+
+    tbl_l = ax_l.table(
+        cellText=flow_rows,
+        colLabels=["Stap", "Component", "Actie"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_l, n_cols=3)
+
+    # --- Right: component table ---
+    ax_r = fig.add_subplot(gs[0, 1])
+    ax_r.axis("off")
+    ax_r.set_facecolor(BG)
+    ax_r.set_title("Componenten", fontsize=11, fontweight="bold", color=DARK, pad=8)
+
+    comp_rows = [
+        ["celery_app.py", "floodopt-api", "Celery-instantie + REDIS_URL configuratie"],
+        [
+            "tasks.py",
+            "floodopt-worker",
+            "run_optimization: pending->running->done/failed",
+        ],
+        ["docker-compose.yml", "project root", "Redis 7-alpine op poort 6379"],
+        ["start.bat", "project root", "Redis + API + Worker in 3 terminals"],
+        ["DATABASE_URL", "env-var", "SQLite (1 worker) of PostgreSQL (multi)"],
+        ["REDIS_URL", "env-var", "redis://localhost:6379/0 (standaard)"],
+    ]
+
+    tbl_r = ax_r.table(
+        cellText=comp_rows,
+        colLabels=["Bestand", "Package", "Inhoud"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_r, n_cols=3)
+
+    # --- Footer ---
+    ax_foot = fig.add_subplot(gs[1, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
+        0.5,
+        0.5,
+        "Tests draaien zonder Redis (task_always_eager)  |  "
+        "SQLite bij 1 worker  |  PostgreSQL bij meerdere workers",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=GREY,
+        transform=ax_foot.transAxes,
+    )
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap2.3_worker.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print("  stap2.3_worker.png")
+
+
+# ---------------------------------------------------------------------------
+# 10. Geo stack
 # ---------------------------------------------------------------------------
 
 
@@ -1173,5 +1298,6 @@ if __name__ == "__main__":
     make_smoke_test()
     make_api()
     make_database()
+    make_worker()
     make_geo_stack()
     print(f"\nKlaar -- alle PNG's opgeslagen in {OUT}/")

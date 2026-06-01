@@ -201,9 +201,165 @@ Nieuwe ontwerpregels:
 
 ---
 
-## Volgende stap
+---
 
-**Stap 2.3** — Async queue (Redis + Celery)
+## 2026-06-01 — Stap 2.3: Ontwerpbeslissing — Async queue (Celery + Redis)
 
-`POST /optimize` geeft direct `job_id` terug. Status: `pending → running → done`.
-Let op: SQLite → PostgreSQL switch verplicht bij meerdere Celery-workers (concurrent writes).
+### Aanleiding
+
+Het synchrone `POST /optimize` blokkeert de HTTP-verbinding totdat de optimizer klaar is. Voor N=5 maatregelen duurt dat 21–248 ms — geen probleem. Maar bij dijkring- of systeemniveau (10–50 maatregelen per traject, meerdere klimaatscenario's) kan Pyomo/HiGHS minuten draaien. Dan zijn er drie breekpunten:
+
+| Probleem | Gevolg |
+|---|---|
+| HTTP-verbinding time-out (30–60 sec) | Client krijgt fout; resultaat gaat verloren |
+| FastAPI-thread geblokkeerd | Andere requests wachten achter de berekening |
+| Geen herstelbaarheid bij crash | Hele job verloren |
+
+### Oplossing: Celery + Redis
+
+```
+POST /optimize  →  job_id opslaan (status: pending)  →  task.delay()  →  202 Accepted
+                                                              ↓
+                                                   Redis wachtrij
+                                                              ↓
+                                                   Celery worker
+                                                   status: running
+                                                   optimizer.solve()
+                                                   status: done + resultaten
+```
+
+### Architectuurkeuzes
+
+| Keuze | Motivatie |
+|---|---|
+| Redis als broker | Standaard voor Celery; in-memory, snel |
+| SQLite bij één worker | Concurrent schrijven niet nodig; nul installatie |
+| PostgreSQL bij meerdere workers | SQLite ondersteunt geen concurrent schrijven vanuit meerdere processen |
+| `task_always_eager=True` in tests | Tests draaien zonder Redis; Celery voert taken synchroon uit |
+| Bestaande `status`-kolom in ORM | `OptimizationResultORM.status` was er al — geen schemamigrate nodig |
+
+### Wat verandert in de API
+
+| | Voor 2.3 | Na 2.3 |
+|---|---|---|
+| `POST /optimize` status | 201 + `status: completed` | 202 + `status: pending` |
+| Berekening | In de API-request handler | In Celery worker |
+| `GET /results/{job_id}` | Altijd `completed` | `pending` / `running` / `done` |
+
+### Implementatievolgorde
+
+1. `floodopt-worker/` — Celery app + `run_optimization` task
+2. `floodopt-api/` — `POST /optimize` geeft 202 terug, dispatch naar worker
+3. ORM + repository — `update_result_status()` voor worker
+4. Tests — API-tests mocken task dispatch; worker-tests gebruiken `always_eager`
+5. `docker-compose.yml` — Redis service
+
+---
+
+## 2026-06-01 — Stap 2.3: Async queue (Redis + Celery) ✓
+
+### Wat is gebouwd
+
+| Component | Bestand | Inhoud |
+|---|---|---|
+| Celery-app | `floodopt_api/celery_app.py` | Broker + backend via `REDIS_URL` |
+| Worker-taak | `floodopt_worker/tasks.py` | `run_optimization`: pending→running→done/failed |
+| Worker-package | `floodopt-worker/` | `pyproject.toml`, eigen editable install |
+| Broker | `docker-compose.yml` | Redis 7-alpine op poort 6379 |
+
+### API-wijzigingen
+
+| | Voor 2.3 | Na 2.3 |
+|---|---|---|
+| `POST /optimize` status code | 201 | 202 |
+| Directe response status | `"completed"` + resultaten | `"pending"` + lege resultaatvelden |
+| Berekening | In API-request handler | In Celery worker |
+| `GET /results/{job_id}` | Altijd `completed` | `pending` / `running` / `done` / `failed` |
+
+### Status-flow
+
+```
+POST /optimize  →  save(status=pending)  →  send_task()  →  202 + job_id
+                                                 ↓
+                                          Redis wachtrij
+                                                 ↓
+                                          Celery worker
+                                          update_status(running)
+                                          optimizer.solve()
+                                          save_result(status=done)
+```
+
+### Opstarten (lokaal)
+
+```bash
+# 1. Redis starten
+docker compose up -d redis
+
+# 2. API starten
+uvicorn floodopt_api.main:app --reload
+
+# 3. Worker starten (apart terminal)
+celery -A floodopt_worker.tasks worker --loglevel=info
+
+# 4. Optimalisatie uitvoeren
+curl -X POST http://localhost:8000/optimize -H "Content-Type: application/json" -d '{...}'
+# → {"job_id": "...", "status": "pending", ...}
+
+curl http://localhost:8000/results/{job_id}
+# → {"status": "done", "selected_measure_ids": [...], ...}
+```
+
+### Verificatie
+
+- **90/90 tests geslaagd** (geen Redis vereist voor pytest) ✓
+- 19 API-tests: 202, pending, Celery send_task mock ✓
+- 7 worker-tests: pending→done, MIN_COST/MAX_RR/MIN_NCW vs stap 1.4, BF==Pyomo, failed-status ✓
+- 6 DB round-trip tests: pending opslaan + ophalen ✓
+
+Zie: `docs/stap2.3_worker.png` *(toe te voegen)*
+
+---
+
+---
+
+## 2026-06-01 — Stap 2.3: Lokaal opstarten via start.bat ✓
+
+Docker geïnstalleerd. `start.bat` opent drie terminals automatisch:
+
+| Terminal | Proces | Poort |
+|---|---|---|
+| 1 | Redis 7-alpine (Docker) | 6379 |
+| 2 | FastAPI + uvicorn | 8000 |
+| 3 | Celery worker (`--pool=solo`) | — |
+
+90/90 tests groen. Volledige async pipeline operationeel.
+
+---
+
+## 2026-06-01 — Stap 4.1: Frontend setup gestart 🚧
+
+Beslissing: **Fase 4 (frontend) vóór Fase 3** (rekenkernel uitbreidingen).
+
+Reden: FORM/Monte Carlo, lengte-effecten en rivierverruiming zitten **niet** in het oorspronkelijke OptimaliseRing 2.3.2 model — het is origineel onderzoekswerk. Frontend maakt het systeem eerst bruikbaar.
+
+### Tech stack keuzes
+
+| Component | Keuze | Reden |
+|---|---|---|
+| Build tool | Vite + React + TypeScript | Standaard, snel, goede DX |
+| Styling | Tailwind CSS (v4, Vite-plugin) | Utility-first, geen losse CSS-bestanden |
+| API state | TanStack Query | Polling, caching, loading-states ingebouwd |
+| Kaarten | Leaflet + react-leaflet | Leest GeoJSON direct van API (stap 4.2) |
+| Dev proxy | Vite proxy `/api → localhost:8000` | Geen CORS-issue in development |
+
+### Implementatievolgorde
+
+1. Documentatie + README bijwerken ✓
+2. CORS middleware in FastAPI (voor productie)
+3. Vite scaffold + Tailwind + dependencies
+4. Typed API client + TypeScript interfaces
+5. OptimizeForm pagina (traject + scenario + maatregelen)
+6. Results pagina met polling (pending → running → done)
+7. Dashboard (overzicht recente jobs)
+
+Zie: `docs/stap2.3_worker.png` *(toe te voegen)* en `docs/architecture.png` (bijgewerkt)

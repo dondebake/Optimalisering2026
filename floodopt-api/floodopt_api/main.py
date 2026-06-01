@@ -1,17 +1,20 @@
-"""FloodOpt API — stap 2.1 / 2.2.
+"""FloodOpt API — stap 2.1 / 2.2 / 2.3.
 
 Endpoints:
     POST /scenarios           scenario opslaan
     POST /trajectories        traject opslaan
-    POST /optimize            optimalisatie uitvoeren
-    GET  /results/{job_id}    resultaat ophalen
+    POST /optimize            optimalisatie inplannen (202 + job_id)
+    GET  /results/{job_id}    status + resultaat opvragen
 
 DATABASE_URL env-variabele bepaalt de backend:
     niet ingesteld  →  SQLite (floodopt.db naast de projectroot, geen install)
-    ingesteld       →  PostgreSQL + PostGIS (productie)
+    ingesteld       →  PostgreSQL (productie, meerdere workers)
+
+REDIS_URL env-variabele bepaalt de Celery-broker:
+    niet ingesteld  →  redis://localhost:6379/0
 
 Business logic zit volledig in floodopt-core.
-Async queue (Celery) volgt in stap 2.3.
+De worker (floodopt_worker.tasks.run_optimization) voert de berekening uit.
 """
 
 from __future__ import annotations
@@ -21,15 +24,13 @@ from contextlib import asynccontextmanager
 from typing import Annotated, Generator
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
+from floodopt_api.celery_app import celery_app
 from floodopt_api.database import get_effective_url, init_schema, make_session
 from floodopt_api.models import OptimizeRequest, OptimizeResponse
 from floodopt_api.repositories import OrmRepositories, Repositories
 from floodopt_core.io.models import Scenario, Trajectory
-from floodopt_core.optimization.brute_force import BruteForceOptimizer
-from floodopt_core.optimization.pyomo_optimizer import PyomoOptimizer
-from floodopt_core.physics.simple_dike_overflow import SimpleDikeOverflow
-from floodopt_core.risk.simple_risk_calculator import SimpleRiskCalculator
 
 
 @asynccontextmanager
@@ -45,19 +46,19 @@ app = FastAPI(
         "Optimalisatie van dijkversterkingsstrategieën. "
         "Physics en Risk Layer zitten in floodopt-core; "
         "deze API is een dunne HTTP-schil. "
-        "Standaard: SQLite. Stel DATABASE_URL in voor PostgreSQL."
+        "POST /optimize geeft direct een job_id terug; "
+        "de Celery worker voert de berekening asynchroon uit."
     ),
-    version="0.2.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 
-# Optimizer-instanties — stateless, gedeeld over requests
-_physics = SimpleDikeOverflow()
-_risk = SimpleRiskCalculator(physics=_physics)
-_optimizers = {
-    "brute_force": BruteForceOptimizer(risk=_risk),
-    "pyomo": PyomoOptimizer(risk=_risk),
-}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ---------------------------------------------------------------------------
@@ -124,50 +125,49 @@ def get_trajectory(trajectory_id: str, repos: Repos) -> Trajectory:
 # ---------------------------------------------------------------------------
 
 
-@app.post("/optimize", status_code=201, response_model=OptimizeResponse)
+@app.post("/optimize", status_code=202, response_model=OptimizeResponse)
 def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
-    """Voer een optimalisatie uit en sla het resultaat op.
+    """Plan een optimalisatie in en retourneer direct een job_id (202 Accepted).
 
-    MVP: synchroon (geen Celery). Status is altijd 'completed'.
-    Stap 2.3 voegt async job-queue toe.
+    Status-flow: pending → running → done
+    Prik de status op via GET /results/{job_id}.
     """
     trajectory = repos.get_trajectory(request.trajectory_id)
     if trajectory is None:
         raise HTTPException(
             404, detail=f"Traject '{request.trajectory_id}' niet gevonden"
         )
-
     scenario = repos.get_scenario(request.scenario_id)
     if scenario is None:
         raise HTTPException(
             404, detail=f"Scenario '{request.scenario_id}' niet gevonden"
         )
 
-    optimizer = _optimizers[request.solver]
-    result = optimizer.solve(
-        trajectory,
-        scenario,
-        request.candidates,
-        request.risk_params,
-        request.objective,
-        request.budget,
-    )
-
     job_id = str(uuid.uuid4())
-    response = OptimizeResponse(
+    pending = OptimizeResponse(
         job_id=job_id,
+        status="pending",
         trajectory_id=request.trajectory_id,
         scenario_id=request.scenario_id,
         objective=request.objective,
         solver=request.solver,
-        selected_measure_ids=sorted(result.selected_ids),
-        total_ncw=result.total_ncw,
-        risk_ncw=result.risk_ncw,
-        investment_npv=result.investment_npv,
-        objective_value=result.objective_value,
     )
-    repos.save_result(response)
-    return response
+    repos.save_result(pending)
+
+    payload = {
+        "trajectory": trajectory.model_dump(),
+        "scenario": scenario.model_dump(),
+        "candidates": [m.model_dump() for m in request.candidates],
+        "risk_params": request.risk_params.model_dump(),
+        "objective": request.objective.value,
+        "budget": request.budget,
+        "solver": request.solver,
+    }
+    celery_app.send_task(
+        "floodopt_worker.tasks.run_optimization", args=[job_id, payload]
+    )
+
+    return pending
 
 
 # ---------------------------------------------------------------------------

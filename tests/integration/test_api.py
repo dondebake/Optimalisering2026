@@ -1,13 +1,17 @@
 """
-API-integratietests — stap 2.1.
+API-integratietests — stap 2.1 / 2.2 / 2.3.
 
 Verificatie:
   1. Swagger UI beschikbaar op /docs
   2. POST /scenarios, POST /trajectories, POST /optimize, GET /results/{id} werken
-  3. POST /optimize geeft zelfde resultaat als stap 1.4 smoke test
+  3. POST /optimize retourneert 202 + status 'pending' (async queue)
   4. Geen business logic in de API-laag (gecontroleerd structureel)
   5. 404-afhandeling voor ontbrekende resources
+
+Correctheid van de optimalisatieresultaten wordt getest in test_worker.py.
 """
+
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -98,7 +102,6 @@ def test_openapi_json_available():
     assert resp.status_code == 200
     schema = resp.json()
     assert "FloodOpt" in schema["info"]["title"]
-    # Alle 4 endpoints aanwezig
     paths = schema["paths"]
     assert "/scenarios" in paths
     assert "/trajectories" in paths
@@ -157,13 +160,12 @@ def test_get_trajectory_not_found():
 
 
 # ---------------------------------------------------------------------------
-# 4. POST /optimize — correctheid vs. stap 1.4
+# 4. POST /optimize — async gedrag (stap 2.3)
 # ---------------------------------------------------------------------------
 
 
 def test_optimize_requires_existing_trajectory():
     _post_scenario()
-    # Geen trajectory → 404
     resp = _post_optimize()
     assert resp.status_code == 404
     assert "Traject" in resp.json()["detail"]
@@ -171,74 +173,69 @@ def test_optimize_requires_existing_trajectory():
 
 def test_optimize_requires_existing_scenario():
     _post_trajectory()
-    # Geen scenario → 404
     resp = _post_optimize()
     assert resp.status_code == 404
     assert "Scenario" in resp.json()["detail"]
 
 
-def test_optimize_min_cost_returns_201():
+def test_optimize_returns_202():
+    """POST /optimize retourneert 202 Accepted (taak ingepland, niet klaar)."""
     _post_scenario()
     _post_trajectory()
-    resp = _post_optimize("min_cost")
-    assert resp.status_code == 201
+    with patch("floodopt_api.main.celery_app.send_task"):
+        resp = _post_optimize("min_cost")
+    assert resp.status_code == 202
 
 
-def test_optimize_min_cost_matches_stap14():
-    """POST /optimize MIN_COST moet zelfde resultaat geven als stap 1.4 smoke test."""
+def test_optimize_response_status_pending():
+    """Directe response bevat status 'pending' — berekening loopt nog."""
     _post_scenario()
     _post_trajectory()
-    resp = _post_optimize("min_cost")
-    assert resp.status_code == 201
-    data = resp.json()
-    # Stap 1.4: optimum is {M02, M04}
-    assert set(data["selected_measure_ids"]) == {"M02", "M04"}
-    assert data["investment_npv"] == pytest.approx(1_089_224, rel=0.01)
-
-
-def test_optimize_max_risk_reduction_matches_stap14():
-    """POST /optimize MAX_RISK_REDUCTION met budget=2M moet {M02, M03, M04} geven."""
-    _post_scenario()
-    _post_trajectory()
-    resp = _post_optimize("max_risk_reduction", budget=BUDGET_MAX_RR)
-    assert resp.status_code == 201
-    data = resp.json()
-    assert set(data["selected_measure_ids"]) == {"M02", "M03", "M04"}
-
-
-def test_optimize_min_ncw_selects_all():
-    """POST /optimize MIN_NCW selecteert alle 5 maatregelen (allen winstgevend)."""
-    _post_scenario()
-    _post_trajectory()
-    resp = _post_optimize("min_ncw")
-    assert resp.status_code == 201
-    data = resp.json()
-    assert set(data["selected_measure_ids"]) == {"M01", "M02", "M03", "M04", "M05"}
-
-
-def test_optimize_pyomo_solver():
-    """Pyomo-solver geeft zelfde resultaat als BruteForce voor MIN_COST."""
-    _post_scenario()
-    _post_trajectory()
-    bf_data = _post_optimize("min_cost", solver="brute_force").json()
-    py_data = _post_optimize("min_cost", solver="pyomo").json()
-    assert set(bf_data["selected_measure_ids"]) == set(py_data["selected_measure_ids"])
+    with patch("floodopt_api.main.celery_app.send_task"):
+        data = _post_optimize("min_cost").json()
+    assert data["status"] == "pending"
 
 
 def test_optimize_response_contains_job_id():
     _post_scenario()
     _post_trajectory()
-    resp = _post_optimize("min_cost")
-    data = resp.json()
+    with patch("floodopt_api.main.celery_app.send_task"):
+        data = _post_optimize("min_cost").json()
     assert "job_id" in data
     assert len(data["job_id"]) == 36  # UUID-formaat
 
 
-def test_optimize_response_status_completed():
+def test_optimize_response_result_fields_none_while_pending():
+    """Resultaatvelden zijn None zolang de worker nog niet klaar is."""
     _post_scenario()
     _post_trajectory()
-    data = _post_optimize("min_cost").json()
-    assert data["status"] == "completed"
+    with patch("floodopt_api.main.celery_app.send_task"):
+        data = _post_optimize("min_cost").json()
+    assert data["total_ncw"] is None
+    assert data["selected_measure_ids"] == []
+
+
+def test_optimize_dispatches_celery_task():
+    """POST /optimize moet de Celery-taak versturen met job_id en payload."""
+    _post_scenario()
+    _post_trajectory()
+    with patch("floodopt_api.main.celery_app.send_task") as mock_send:
+        resp = _post_optimize("min_cost")
+    mock_send.assert_called_once()
+    task_name = mock_send.call_args[0][0]
+    assert task_name == "floodopt_worker.tasks.run_optimization"
+    assert resp.json()["job_id"] in str(mock_send.call_args)
+
+
+def test_optimize_multiple_objectives_all_return_202():
+    """MIN_COST, MAX_RISK_REDUCTION en MIN_NCW geven allemaal 202."""
+    _post_scenario()
+    _post_trajectory()
+    with patch("floodopt_api.main.celery_app.send_task"):
+        for obj in ("min_cost", "max_risk_reduction", "min_ncw"):
+            budget = BUDGET_MAX_RR if obj == "max_risk_reduction" else None
+            resp = _post_optimize(obj, budget=budget)
+            assert resp.status_code == 202, f"{obj} gaf {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -246,16 +243,19 @@ def test_optimize_response_status_completed():
 # ---------------------------------------------------------------------------
 
 
-def test_get_results_returns_same_as_optimize():
+def test_get_results_returns_pending_immediately():
+    """GET /results na POST geeft dezelfde pending job terug."""
     _post_scenario()
     _post_trajectory()
-    opt_data = _post_optimize("min_cost").json()
+    with patch("floodopt_api.main.celery_app.send_task"):
+        opt_data = _post_optimize("min_cost").json()
     job_id = opt_data["job_id"]
 
     result_data = client.get(f"/results/{job_id}").json()
     assert result_data["job_id"] == job_id
-    assert result_data["selected_measure_ids"] == opt_data["selected_measure_ids"]
-    assert result_data["total_ncw"] == opt_data["total_ncw"]
+    assert result_data["status"] == "pending"
+    assert result_data["trajectory_id"] == TRAJECTORY.id
+    assert result_data["scenario_id"] == SCENARIO.id
 
 
 def test_get_results_not_found():
@@ -271,6 +271,7 @@ def test_get_results_not_found():
 def test_no_physics_formulas_in_api():
     """De API-laag (main.py, models.py) importeert geen faalkansformules."""
     import inspect
+
     from floodopt_api import main, models
 
     for module in (main, models):

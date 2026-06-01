@@ -36,6 +36,7 @@ class Repositories(Protocol):
 
     def save_result(self, r: OptimizeResponse) -> None: ...
     def get_result(self, job_id: str) -> OptimizeResponse | None: ...
+    def update_status(self, job_id: str, status: str) -> None: ...
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +71,12 @@ class MemoryRepositories:
 
     def get_result(self, job_id: str) -> OptimizeResponse | None:
         return self._results.get(job_id)
+
+    def update_status(self, job_id: str, status: str) -> None:
+        if job_id in self._results:
+            self._results[job_id] = self._results[job_id].model_copy(
+                update={"status": status}
+            )
 
     def clear(self) -> None:
         self._scenarios.clear()
@@ -144,7 +151,7 @@ class OrmRepositories:
             status=r.status,
             objective=r.objective.value,
             solver=r.solver,
-            selected_measure_ids=r.selected_measure_ids,
+            selected_measure_ids=r.selected_measure_ids or None,
             total_ncw=r.total_ncw,
             risk_ncw=r.risk_ncw,
             investment_npv=r.investment_npv,
@@ -164,9 +171,15 @@ class OrmRepositories:
             status=row.status,  # type: ignore[arg-type]
             objective=row.objective,  # type: ignore[arg-type]
             solver=row.solver,
-            selected_measure_ids=row.selected_measure_ids,
+            selected_measure_ids=row.selected_measure_ids or [],
             total_ncw=row.total_ncw,
             risk_ncw=row.risk_ncw,
             investment_npv=row.investment_npv,
             objective_value=row.objective_value,
         )
+
+    def update_status(self, job_id: str, status: str) -> None:
+        row = self._s.get(OptimizationResultORM, job_id)
+        if row is not None:
+            row.status = status
+            self._s.commit()

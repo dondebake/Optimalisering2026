@@ -33,18 +33,25 @@ class OptimizeRequest(BaseModel):
 
 
 class OptimizeResponse(BaseModel):
-    """Resultaat van een optimalisatierun."""
+    """Resultaat van een optimalisatierun.
+
+    Velden total_ncw t/m objective_value zijn None zolang status != 'done'.
+    """
 
     job_id: str
-    status: Literal["completed"] = "completed"
+    status: Literal["pending", "running", "done", "failed"] = "pending"
     trajectory_id: str
     scenario_id: str
     objective: ObjectiveType
     solver: str
-    selected_measure_ids: list[str]
-    total_ncw: float = Field(description="NCW_risico + NCW_investering [€]")
-    risk_ncw: float = Field(description="NCW verwachte schade [€]")
-    investment_npv: float = Field(description="Gedisconteerde investeringskosten [€]")
-    objective_value: float = Field(
-        description="Waarde van de geoptimaliseerde doelfunctie"
+    selected_measure_ids: list[str] = []
+    total_ncw: float | None = Field(
+        default=None, description="NCW_risico + NCW_investering [€]"
+    )
+    risk_ncw: float | None = Field(default=None, description="NCW verwachte schade [€]")
+    investment_npv: float | None = Field(
+        default=None, description="Gedisconteerde investeringskosten [€]"
+    )
+    objective_value: float | None = Field(
+        default=None, description="Waarde van de geoptimaliseerde doelfunctie"
     )

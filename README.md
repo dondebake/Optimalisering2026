@@ -18,17 +18,23 @@ Toekomstige toepassingen: HWBP-analyses, MKBA, asset management, klimaatstresste
                      │ HTTP / GeoJSON
 ┌────────────────────▼─────────────────────────────────┐
 │  FastAPI  (dunne HTTP-schil, geen business logic)    │
-│  POST /optimize  →  floodopt-core                    │
+│  POST /optimize → 202 + job_id  (async)              │
+│  GET  /results/{job_id}  →  status polling           │
 │  GET  /trajectories/{id}/geojson  →  GeoPandas       │
-└──────┬─────────────────────────────────┬─────────────┘
-       │ SQLAlchemy                      │ GeoPandas
-┌──────▼──────────┐          ┌───────────▼────────────┐
-│  SQLite (dev)   │          │  Geometrie             │
-│  PostgreSQL     │          │  WKT / GeoJSON         │
-│  (prod, opt.)   │          │  shapefiles            │
-└─────────────────┘          └────────────────────────┘
-                     │
-┌────────────────────▼─────────────────────────────────┐
+└──────┬───────────────────────┬────────────────────────┘
+       │ SQLAlchemy             │ task.delay()
+┌──────▼──────────┐   ┌────────▼───────────────────────┐
+│  SQLite (dev)   │   │  Redis  (message broker)        │
+│  PostgreSQL     │   │  taakwachtrij + job-status      │
+│  (prod, opt.)   │   └────────┬───────────────────────┘
+└─────────────────┘            │ Celery worker
+                      ┌────────▼───────────────────────┐
+                      │  floodopt-worker                │
+                      │  run_optimization task          │
+                      │  pending → running → done       │
+                      └────────┬───────────────────────┘
+                               │ GeoPandas
+┌──────────────────────────────▼───────────────────────┐
 │  floodopt-core  (strikte laagscheiding)              │
 │                                                      │
 │  Optimization Layer  min Σcᵢxᵢ  s.t. Σhᵢxᵢ ≥ h_min │
@@ -51,7 +57,7 @@ Zie `docs/architecture.png` voor het volledige architectuurdiagram.
 | Database | **SQLite** (dev) → PostgreSQL optioneel (prod) | Nul installatie voor development |
 | Geo-verwerking | **GeoPandas** + GeoJSON | Server-side geometrie zonder PostGIS |
 | Kaarten (frontend) | **Leaflet** + React + Vite | Leest GeoJSON direct van API |
-| Queue | Redis + Celery *(stap 2.3)* | Async optimalisaties |
+| Queue | Redis + Celery *(stap 2.3)* | Async optimalisaties — POST /optimize retourneert direct job_id |
 | Documentatie | matplotlib (LaTeX-formules) | Reproduceerbaar via `generate_docs.py` |
 
 ### Geo-stack: waarom GeoPandas + Leaflet in plaats van PostGIS
@@ -65,6 +71,30 @@ Zie `docs/architecture.png` voor het volledige architectuurdiagram.
 | Prod upgrade pad | `DATABASE_URL` → PostgreSQL + PostGIS | direct |
 
 PostGIS is beschikbaar zodra de query-complexiteit het rechtvaardigt — de `docker-compose.yml` en `init_schema()` staan al klaar.
+
+### Async queue: waarom Celery + Redis in plaats van synchroon
+
+Het synchrone MVP (`POST /optimize` blokkeert tot resultaat) breekt op drie plekken zodra problemen groeien:
+
+| Probleem | Gevolg |
+|---|---|
+| HTTP-verbinding time-out (30–60 sec) | Client krijgt fout; resultaat gaat verloren |
+| FastAPI-thread geblokkeerd tijdens berekening | Andere requests wachten |
+| Geen herstelbaarheid bij crash | Hele job verloren |
+
+Met de async queue:
+
+| | Synchroon (MVP) | Async (Celery + Redis) |
+|---|---|---|
+| `POST /optimize` retourneert | Resultaat (na berekening) | `job_id` + `status: pending` (<5 ms) |
+| Berekening tijdsduur | Blokkeert HTTP-verbinding | Ontkoppeld van API |
+| Schaling workers | ✗ (één API-thread) | ✓ meerdere Celery-workers |
+| Crash-herstel | ✗ | ✓ Celery retry-mechanisme |
+| Tests zonder Redis | ✓ | ✓ `task_always_eager=True` |
+
+**Wanneer is Redis verplicht?** Alleen om de worker te draaien. Tests en `pytest` werken zonder Redis via `task_always_eager`.
+
+**SQLite → PostgreSQL bij meerdere workers:** SQLite ondersteunt geen concurrent schrijven vanuit meerdere processen. Bij één worker (dev) werkt SQLite prima; schakel over naar PostgreSQL zodra je meerdere Celery-workers draait.
 
 ## Projectstructuur
 
@@ -122,9 +152,9 @@ Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
 |---|---|---|
 | 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, pre-commit |
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
-| 2 — Backend & API | 🔄 2.2 klaar | FastAPI ✅, SQLite ✅, Celery ⏳ |
+| 2 — Backend & API | ✅ Klaar | FastAPI ✅, SQLite ✅, Celery + Redis ✅ |
 | 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | ⏳ Gepland | React + Vite + Leaflet, GeoPandas GeoJSON |
+| 4 — Frontend | 🚧 In uitvoering | React + Vite + Tailwind + Leaflet, GeoPandas GeoJSON |
 
 ## Validatiestrategie
 
@@ -134,9 +164,11 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 |---|---|---|
 | Unit | pytest per functie | ✅ 46/46 |
 | Integratie CLI | smoke test end-to-end | ✅ 12/12 |
-| Integratie API | TestClient alle endpoints | ✅ 20/20 |
+| Integratie API | TestClient alle endpoints | ✅ 19/19 |
 | Integratie DB | SQLite round-trip | ✅ 6/6 |
+| Integratie Worker | Celery taken direct aangeroepen | ✅ 7/7 |
 | Kritiek | BruteForce == Pyomo | ✅ 6/6 testcases |
+| Totaal | | ✅ 90/90 |
 | Regressie | CI bij elke commit | ⏳ Gepland |
 
 ---
@@ -216,10 +248,24 @@ DATABASE_URL=postgresql://floodopt:floodopt@localhost:5432/floodopt \
 Schema: `scenarios`, `trajectories`, `optimization_results`.
 PostGIS-extensie aangemaakt bij PostgreSQL (voor geometrie stap 4.2).
 
-#### Stap 2.3 ⏳ — Async queue (Redis + Celery)
+#### Stap 2.3 ✅ — Async queue (Redis + Celery)
 
-`POST /optimize` geeft direct `job_id` terug. Status: `pending → running → done`.
-SQLite → PostgreSQL switch verplicht bij meerdere Celery-workers (concurrent writes).
+`POST /optimize` geeft direct `job_id` terug (202). Status: `pending → running → done`.
+
+**Lokaal opstarten (één commando):**
+```bat
+start.bat
+```
+Start automatisch Redis (Docker), FastAPI en Celery worker in drie aparte terminals.
+
+```bash
+# Handmatig:
+docker compose up -d redis
+uvicorn floodopt_api.main:app --reload
+celery -A floodopt_worker.tasks worker --pool=solo --loglevel=info
+```
+
+SQLite werkt bij één worker. PostgreSQL vereist bij meerdere workers (concurrent schrijven).
 
 ---
 
@@ -235,14 +281,15 @@ Nieuwe implementaties achter bestaande Protocols — optimizer hoeft niet aangep
 
 ---
 
-### Fase 4 — Frontend ⏳
+### Fase 4 — Frontend 🚧
 
-**React + Vite + Leaflet**
+**React + Vite + Tailwind CSS + Leaflet**
 
-#### Stap 4.1 — Frontend setup
-React + Vite, Leaflet voor interactieve kaarten, TanStack Query voor API-calls.
+#### Stap 4.1 🚧 — Frontend setup
+React + Vite + TypeScript + Tailwind CSS. TanStack Query voor API-calls en polling.
+Optimalisatieformulier (traject, scenario, maatregelen) → `POST /optimize` → resultatenweergave.
 
-#### Stap 4.2 — Kaartviewer (GeoPandas + Leaflet)
+#### Stap 4.2 ⏳ — Kaartviewer (GeoPandas + Leaflet)
 
 Dijkvak-geometrie (WKT in SQLite) → GeoPandas → GeoJSON → Leaflet:
 
