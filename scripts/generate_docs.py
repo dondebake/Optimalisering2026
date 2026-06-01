@@ -1,5 +1,5 @@
 """
-Genereert alle documentatiediagrammen als PNG met matplotlib mathtext.
+Genereert alle documentatiediagrammen als PNG met matplotlib.
 
 Uitvoer in docs/:
   architecture.png              Volledige stack
@@ -7,23 +7,30 @@ Uitvoer in docs/:
   stap1.2_risk_ncw.png          NCW-grafiek + formule
   stap1.3_optimization.png      Optimalisatieformuleringen + verificatie
   database_mapping.png          MDB -> SQLite -> FloodOpt mapping
-  stap1.4_smoke_test.png        Smoke-test flow + resultaten
+  stap1.4_smoke_test.png        Smoke-test resultaten
   stap2.1_api.png               FastAPI endpoints + request-flow
   stap2.2_database.png          Repository-pattern + schema
   geo_stack.png                 GeoPandas + Leaflet flow
 
 Gebruik:
     python scripts/generate_docs.py
+
+Design rules:
+  - NO FancyBboxPatch with text inside -- use ax.set_facecolor() instead
+  - For tables: always ax.table(), never manual text loops
+  - Text annotations: always ax.annotate() with explicit xytext offset
+  - NO emoji characters -- use (klaar), (gepland), OK, X
+  - Every figure: fig.tight_layout(rect=[0, 0, 1, 0.95]) before savefig
+  - dpi=150 for all saves
 """
 
+import warnings
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import matplotlib.gridspec as gridspec
 import numpy as np
-import math
 from pathlib import Path
 
 OUT = Path(__file__).parent.parent / "docs"
@@ -50,1438 +57,813 @@ plt.rcParams.update(
     }
 )
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _box(ax, x, y, w, h, fc, ec, lw=1.5, alpha=1.0, radius=0.15):
-    """Draw a rounded rectangle.  x, y = bottom-left corner."""
-    patch = mpatches.FancyBboxPatch(
-        (x, y),
-        w,
-        h,
-        boxstyle=f"round,pad={radius}",
-        facecolor=fc,
-        edgecolor=ec,
-        linewidth=lw,
-        alpha=alpha,
-        zorder=3,
-    )
-    ax.add_patch(patch)
-    return patch
-
-
-def _arrow(ax, x0, y0, x1, y1, color=GREY, lw=1.8, style="-|>"):
-    ax.annotate(
-        "",
-        xy=(x1, y1),
-        xytext=(x0, y0),
-        arrowprops=dict(arrowstyle=style, color=color, lw=lw),
-        zorder=4,
-    )
+# ax.table() axes are intentionally not tight_layout-compatible; suppress the warning.
+warnings.filterwarnings(
+    "ignore",
+    message="This figure includes Axes that are not compatible with tight_layout",
+    category=UserWarning,
+)
 
 
 # ---------------------------------------------------------------------------
-# 1. Architectuur
+# Helper: style an ax.table() consistently
+# ---------------------------------------------------------------------------
+
+
+def _style_table(tbl, n_cols, header_color=DARK, alt_color="#f0f2f5"):
+    """Apply standard styling to an ax.table() object."""
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(9)
+    tbl.scale(1, 1.8)
+    tbl.auto_set_column_width(range(n_cols))
+    for (row, col), cell in tbl.get_celld().items():
+        cell.set_edgecolor("#cccccc")
+        cell.set_linewidth(0.5)
+        if row == 0:
+            cell.set_facecolor(header_color)
+            cell.set_text_props(color=WHITE, fontweight="bold", ha="left")
+        elif row % 2 == 0:
+            cell.set_facecolor(alt_color)
+            cell.set_text_props(ha="left")
+        else:
+            cell.set_facecolor(WHITE)
+            cell.set_text_props(ha="left")
+
+
+# ---------------------------------------------------------------------------
+# 1. Architecture
 # ---------------------------------------------------------------------------
 
 
 def make_architecture() -> None:
-    """Volledige stack: Frontend -> FastAPI -> Database/Geo -> floodopt-core."""
-    fig, ax = plt.subplots(figsize=(12, 11), facecolor=BG)
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 13)
-    ax.axis("off")
-    ax.set_facecolor(BG)
+    """Volledige stack als tabel + beschrijvingstekst."""
+    fig = plt.figure(figsize=(12, 7), facecolor=BG)
 
     fig.suptitle(
-        "FloodOpt  --  Volledige Architectuur",
-        fontsize=16,
+        "FloodOpt -- Volledige Architectuur",
+        fontsize=15,
         fontweight="bold",
         color=DARK,
-        y=0.99,
+        y=0.98,
     )
 
-    # ---- row y-centres (top to bottom) ----
-    Y_FE = 11.2  # Frontend
-    Y_API = 9.0  # FastAPI
-    Y_DB = 7.0  # Database + Geo (side by side)
-    Y_OPT = 5.0  # Optimization Layer
-    Y_RISK = 3.1  # Risk Layer
-    Y_PHYS = 1.2  # Physics Layer
+    gs = gridspec.GridSpec(2, 1, figure=fig, height_ratios=[5, 1], hspace=0.15)
 
-    BOX_H = 1.3  # standard box height
-    FULL_W = 11.0  # full-width box
-    X0 = 0.5  # left margin
+    # --- Top: stack table ---
+    ax_tbl = fig.add_subplot(gs[0])
+    ax_tbl.axis("off")
+    ax_tbl.set_facecolor(BG)
 
-    # ---- Frontend ----
-    _box(ax, X0, Y_FE - BOX_H / 2, FULL_W, BOX_H, "#0077b6", "#023e8a", lw=2)
-    ax.text(
-        6.0,
-        Y_FE + 0.25,
-        "Frontend  --  React + Vite + Leaflet",
-        ha="center",
-        va="center",
-        fontsize=13,
-        fontweight="bold",
-        color=WHITE,
+    col_labels = ["Laag", "Technologie / Module", "Status"]
+    rows = [
+        ["Frontend", "React + Vite + Leaflet", "Stap 4 (gepland)"],
+        ["FastAPI", "Dunne HTTP-schil (geen business logic)", "Stap 2.x (klaar)"],
+        ["Database", "SQLite (dev) -- PostgreSQL optioneel", "Stap 2.2 (klaar)"],
+        ["GeoPandas", "WKT -> GeoJSON voor Leaflet", "Stap 4.2 (gepland)"],
+        ["Optimization Layer", "BruteForce + Pyomo/HiGHS", "Stap 1.3 (klaar)"],
+        ["Risk Layer", "NCW = Sum P(s)*V0*e^((gamma-delta)*s)", "Stap 1.2 (klaar)"],
+        [
+            "Physics Layer",
+            "P(t) = P0 * e^(alpha*eta*t) * e^(-alpha*Dh)",
+            "Stap 1.1 (klaar)",
+        ],
+    ]
+
+    tbl = ax_tbl.table(
+        cellText=rows,
+        colLabels=col_labels,
+        loc="center",
+        cellLoc="left",
     )
-    ax.text(
-        6.0,
-        Y_FE - 0.22,
-        "Kaartviewer (GeoJSON)  |  Scenario-editor  |  Resultaten-dashboard",
+    _style_table(tbl, n_cols=3)
+
+    # Row-specific background colors for layer identity
+    row_colors = [
+        BLUE,  # Frontend
+        ORANGE,  # FastAPI
+        GREY,  # Database
+        GREY,  # GeoPandas
+        BLUE,  # Optimization
+        PURPLE,  # Risk
+        GREEN,  # Physics
+    ]
+    for data_row_idx, color in enumerate(row_colors):
+        cell = tbl[(data_row_idx + 1, 0)]  # +1 because row 0 is header
+        cell.set_facecolor(color)
+        cell.set_text_props(color=WHITE, fontweight="bold", ha="left")
+
+    # --- Bottom: description text ---
+    ax_txt = fig.add_subplot(gs[1])
+    ax_txt.axis("off")
+    ax_txt.set_facecolor(BG)
+    ax_txt.text(
+        0.5,
+        0.6,
+        "Tech-stack: Python 3.12 | Pyomo 6.x | HiGHS | SQLAlchemy | FastAPI | GeoPandas | React/Vite/Leaflet",
         ha="center",
         va="center",
         fontsize=10,
-        color="#cce8ff",
+        color=GREY,
+        transform=ax_txt.transAxes,
     )
-    ax.text(
-        11.2,
-        Y_FE + 0.25,
-        "Stap 4 (gepland)",
-        ha="right",
-        va="center",
-        fontsize=9,
-        color=WHITE,
-        fontstyle="italic",
-    )
-
-    # arrow FE -> API
-    _arrow(ax, 6.0, Y_FE - BOX_H / 2, 6.0, Y_API + BOX_H / 2, color=GREY)
-    ax.text(
-        6.3,
-        (Y_FE - BOX_H / 2 + Y_API + BOX_H / 2) / 2,
-        "HTTP / GeoJSON",
+    ax_txt.text(
+        0.5,
+        0.15,
+        "Lagen 1.1 -- 2.2 volledig geimplementeerd en getest.  Stap 3 (CLI) en Stap 4 (Frontend) gepland.",
+        ha="center",
         va="center",
         fontsize=9,
         color=GREY,
+        transform=ax_txt.transAxes,
     )
 
-    # ---- FastAPI ----
-    _box(ax, X0, Y_API - BOX_H / 2, FULL_W, BOX_H, ORANGE, "#c76b00", lw=2)
-    ax.text(
-        6.0,
-        Y_API + 0.25,
-        "FastAPI  --  dunne HTTP-schil",
-        ha="center",
-        va="center",
-        fontsize=13,
-        fontweight="bold",
-        color=DARK,
-    )
-    ax.text(
-        3.5,
-        Y_API - 0.22,
-        "POST /optimize   POST /scenarios   POST /trajectories",
-        ha="center",
-        va="center",
-        fontsize=9,
-        color="#333",
-    )
-    ax.text(
-        8.5,
-        Y_API - 0.22,
-        "GET /results/{id}   GET /trajectories/{id}/geojson",
-        ha="center",
-        va="center",
-        fontsize=9,
-        color="#333",
-    )
-    ax.text(
-        11.2,
-        Y_API + 0.25,
-        "Stap 2.x (klaar)",
-        ha="right",
-        va="center",
-        fontsize=9,
-        color=DARK,
-        fontstyle="italic",
-    )
-
-    # arrow API -> Database (left)
-    _arrow(ax, 3.2, Y_API - BOX_H / 2, 3.0, Y_DB + 0.7, color=GREY)
-    ax.text(
-        2.2,
-        (Y_API - BOX_H / 2 + Y_DB + 0.7) / 2,
-        "SQLAlchemy",
-        ha="center",
-        fontsize=8,
-        color=GREY,
-    )
-
-    # arrow API -> Geo (right)
-    _arrow(ax, 8.8, Y_API - BOX_H / 2, 9.0, Y_DB + 0.7, color="#0077b6")
-    ax.text(
-        9.8,
-        (Y_API - BOX_H / 2 + Y_DB + 0.7) / 2,
-        "GeoPandas",
-        ha="center",
-        fontsize=8,
-        color="#0077b6",
-    )
-
-    # ---- Database (left) ----
-    DB_W = 5.0
-    _box(ax, X0, Y_DB - 0.75, DB_W, 1.5, "#f1f3f5", GREY, lw=1.5)
-    ax.text(
-        X0 + DB_W / 2,
-        Y_DB + 0.4,
-        "Database",
-        ha="center",
-        va="center",
-        fontsize=11,
-        fontweight="bold",
-        color=DARK,
-    )
-    ax.text(
-        X0 + DB_W / 2,
-        Y_DB + 0.0,
-        "SQLite  (dev, ingebouwd in Python)",
-        ha="center",
-        va="center",
-        fontsize=9,
-        color="#333",
-    )
-    ax.text(
-        X0 + DB_W / 2,
-        Y_DB - 0.38,
-        "PostgreSQL  (prod, via DATABASE_URL)",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color=GREY,
-    )
-    ax.text(
-        X0 + DB_W - 0.2,
-        Y_DB + 0.4,
-        "Stap 2.2 (klaar)",
-        ha="right",
-        va="center",
-        fontsize=8,
-        color=GREY,
-        fontstyle="italic",
-    )
-
-    # ---- Geo (right) ----
-    GEO_X = 6.5
-    GEO_W = 5.0
-    _box(ax, GEO_X, Y_DB - 0.75, GEO_W, 1.5, "#e8f4fd", "#0077b6", lw=1.5)
-    ax.text(
-        GEO_X + GEO_W / 2,
-        Y_DB + 0.4,
-        "Geo-verwerking",
-        ha="center",
-        va="center",
-        fontsize=11,
-        fontweight="bold",
-        color="#023e8a",
-    )
-    ax.text(
-        GEO_X + GEO_W / 2,
-        Y_DB + 0.0,
-        "GeoPandas:  WKT / shapefile  ->  GeoJSON",
-        ha="center",
-        va="center",
-        fontsize=9,
-        color="#0077b6",
-    )
-    ax.text(
-        GEO_X + GEO_W / 2,
-        Y_DB - 0.38,
-        "Geen PostGIS nodig voor MVP",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color=GREY,
-    )
-    ax.text(
-        GEO_X + GEO_W - 0.2,
-        Y_DB + 0.4,
-        "Stap 4.2 (gepland)",
-        ha="right",
-        va="center",
-        fontsize=8,
-        color="#0077b6",
-        fontstyle="italic",
-    )
-
-    # arrow DB/Geo -> core
-    _arrow(ax, 6.0, Y_DB - 0.75, 6.0, Y_OPT + BOX_H / 2 + 0.1, color=GREY)
-    ax.text(
-        6.3,
-        (Y_DB - 0.75 + Y_OPT + BOX_H / 2) / 2,
-        "roept aan",
-        va="center",
-        fontsize=9,
-        color=GREY,
-    )
-
-    # ---- floodopt-core layers ----
-    core_layers = [
-        (
-            Y_OPT,
-            BLUE,
-            "#3a0ca3",
-            "Optimization Layer",
-            r"$\min \sum_i c_i x_i \;\;\mathrm{s.t.}\;\; \sum_i h_i x_i \geq h_{\min}$",
-            "BruteForce  +  Pyomo / HiGHS",
-            "Stap 1.3 (klaar)",
-        ),
-        (
-            Y_RISK,
-            PURPLE,
-            "#560bad",
-            "Risk Layer",
-            r"$\mathrm{NCW} = \sum_{s=0}^{T-1} P(s)\cdot V_0 \cdot e^{(\gamma-\delta)\,s}$",
-            "SimpleRiskCalculator",
-            "Stap 1.2 (klaar)",
-        ),
-        (
-            Y_PHYS,
-            GREEN,
-            "#05b484",
-            "Physics Layer",
-            r"$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$",
-            "SimpleDikeOverflow",
-            "Stap 1.1 (klaar)",
-        ),
-    ]
-
-    for y_c, fc, ec, title, formula, sub, badge in core_layers:
-        _box(ax, X0, y_c - BOX_H / 2, FULL_W, BOX_H, fc, ec, lw=2)
-        ax.text(
-            6.0,
-            y_c + 0.30,
-            title,
-            ha="center",
-            va="center",
-            fontsize=12,
-            fontweight="bold",
-            color=WHITE,
-        )
-        ax.text(
-            6.0,
-            y_c - 0.10,
-            formula,
-            ha="center",
-            va="center",
-            fontsize=10,
-            color=WHITE,
-            alpha=0.95,
-        )
-        ax.text(
-            6.0,
-            y_c - 0.48,
-            sub,
-            ha="center",
-            va="center",
-            fontsize=9,
-            color=WHITE,
-            alpha=0.80,
-        )
-        ax.text(
-            11.2,
-            y_c + 0.30,
-            badge,
-            ha="right",
-            va="center",
-            fontsize=9,
-            color=WHITE,
-            fontstyle="italic",
-        )
-
-    # arrows between core layers
-    for y_top, y_bot in [
-        (Y_OPT - BOX_H / 2, Y_RISK + BOX_H / 2),
-        (Y_RISK - BOX_H / 2, Y_PHYS + BOX_H / 2),
-    ]:
-        _arrow(ax, 6.0, y_top, 6.0, y_bot, color=WHITE, lw=1.5)
-
-    plt.tight_layout(rect=[0, 0, 1, 0.98])
-    plt.savefig(OUT / "architecture.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "architecture.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  architecture.png")
 
 
 # ---------------------------------------------------------------------------
-# 2. Physics Layer P(t)
+# 2. Physics
 # ---------------------------------------------------------------------------
 
 
 def make_physics() -> None:
-    P0, ALPHA, ETA = 1e-3, 5.0, 0.003
+    """P(t) lijn-grafiek voor 3 deltah-waarden + formulepaneel."""
+    P0 = 1e-3
+    alpha = 5.0
+    eta = 0.003
     t = np.linspace(0, 100, 400)
 
-    P_no = P0 * np.exp(ALPHA * ETA * t)
-    P_05 = P0 * np.exp(ALPHA * ETA * t) * np.exp(-ALPHA * 0.5)
-    P_10 = P0 * np.exp(ALPHA * ETA * t) * np.exp(-ALPHA * 1.0)
+    dh_cases = [0.0, 0.5, 1.0]
+    colors = [BLUE, ORANGE, RED]
+    labels = ["Dh = 0.0 m", "Dh = 0.5 m", "Dh = 1.0 m"]
 
-    fig = plt.figure(figsize=(11, 8), facecolor=BG)
-    gs = gridspec.GridSpec(
-        2,
-        1,
-        height_ratios=[3, 1],
-        hspace=0.45,
-        top=0.92,
-        bottom=0.10,
-        left=0.10,
-        right=0.96,
-    )
+    fig = plt.figure(figsize=(12, 8), facecolor=BG)
+    gs = gridspec.GridSpec(2, 1, figure=fig, height_ratios=[7, 3], hspace=0.35)
+
+    # --- Top panel: P(t) graph ---
     ax = fig.add_subplot(gs[0])
-    ax_form = fig.add_subplot(gs[1])
+    ax.set_facecolor(WHITE)
 
-    ax.plot(
-        t, P_no * 1e3, color=RED, lw=2.5, label=r"$\Delta h = 0$ m  (geen maatregelen)"
-    )
-    ax.plot(t, P_05 * 1e3, color=ORANGE, lw=2.5, ls="--", label=r"$\Delta h = 0.5$ m")
-    ax.plot(t, P_10 * 1e3, color=GREEN, lw=2.5, ls=":", label=r"$\Delta h = 1.0$ m")
+    curves = []
+    for dh, col, lbl in zip(dh_cases, colors, labels):
+        Pt = P0 * np.exp(alpha * eta * t) * np.exp(-alpha * dh)
+        ax.plot(t, Pt * 1e3, color=col, lw=2, label=lbl)
+        curves.append(Pt)
 
-    # reference line P = 1e-3 (initial value)
-    ax.axhline(1.0, color=RED, lw=0.8, ls="-", alpha=0.3)
-
-    # testcase markers
-    v_case2 = P0 * math.exp(ALPHA * ETA * 50) * 1e3
-    v_case3 = P0 * math.exp(-ALPHA * 1.0) * 1e3
-    ax.scatter([0], [P0 * 1e3], color=RED, s=60, zorder=5)
-    ax.scatter(
-        [50],
-        [v_case2],
-        color=RED,
-        marker="^",
-        s=70,
-        zorder=5,
-        label=r"TC2: $t=50$ jaar,  $P \approx 2.12 \times 10^{-3}$",
-    )
-    ax.scatter(
-        [0],
-        [v_case3],
-        color=GREEN,
-        marker="s",
-        s=60,
-        zorder=5,
-        label=r"TC3: $\Delta h = 1$ m,  $P \approx 6.7 \times 10^{-6}$",
-    )
-
-    ax.annotate(
-        r"$P_0 = 10^{-3}$",
-        xy=(0, P0 * 1e3),
-        xytext=(10, 1.4),
-        fontsize=10,
-        color=RED,
-        arrowprops=dict(arrowstyle="->", color=RED, lw=1.2),
-    )
-
-    ax.set_xlabel(r"$t$  [jaar na basisjaar 2017]", fontsize=12)
-    ax.set_ylabel(r"$P(t)$   [$\times 10^{-3}$ jaar$^{-1}$]", fontsize=12)
+    ax.set_xlabel("Tijd t  [jaar]", fontsize=11)
+    ax.set_ylabel("P(t)  [x 10$^{-3}$ / jaar]", fontsize=11)
     ax.set_title(
-        "Stap 1.1  --  SimpleDikeOverflow",
-        fontsize=14,
-        fontweight="bold",
-        color=DARK,
-        pad=10,
+        "Overstromingskans P(t) vs tijd", fontsize=12, fontweight="bold", color=DARK
     )
-    ax.legend(fontsize=10, framealpha=0.9, loc="upper left")
-    ax.set_xlim(0, 100)
-    ax.set_ylim(bottom=0)
+    ax.legend(loc="upper left", fontsize=10, framealpha=0.85)
 
-    # formula panel
-    ax_form.axis("off")
-    ax_form.set_facecolor(WHITE)
-    formula_text = (
-        r"$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$"
-        "\n\n"
-        r"$P_0 = 10^{-3}$ jaar$^{-1}$"
-        r"     $\alpha = 5.0$ m$^{-1}$"
-        r"     $\eta = 0.003$ m/jaar (W+)"
-        r"     $\Delta h = \sum_i h_i$  [m]"
-    )
-    ax_form.text(
+    # Annotate test points -- xytext far from the curves to avoid overlap
+    test_times = [25, 50, 75]
+    ann_offsets = [(40, 25), (30, -35), (-40, 30)]
+    for ti, (dx, dy) in zip(test_times, ann_offsets):
+        idx = np.searchsorted(t, ti)
+        y0 = curves[0][idx] * 1e3
+        ax.annotate(
+            f"t={ti}j\nP={curves[0][idx]*1e3:.3f}",
+            xy=(t[idx], y0),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            fontsize=8,
+            color=BLUE,
+            arrowprops=dict(arrowstyle="->", color=BLUE, lw=0.8),
+            bbox=dict(boxstyle="round,pad=0.3", fc=WHITE, ec=BLUE, lw=0.8, alpha=0.85),
+        )
+
+    # --- Bottom panel: formula ---
+    ax_f = fig.add_subplot(gs[1])
+    ax_f.axis("off")
+    ax_f.set_facecolor("#eef2ff")
+
+    ax_f.text(
         0.5,
-        0.55,
-        formula_text,
+        0.72,
+        r"$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$",
+        ha="center",
+        va="center",
+        fontsize=18,
+        transform=ax_f.transAxes,
+        color=DARK,
+    )
+    ax_f.text(
+        0.5,
+        0.32,
+        r"Parameters:  $P_0 = 10^{-3}$ /jaar,  $\alpha = 5.0$ /m,  $\eta = 0.003$ m/jaar",
         ha="center",
         va="center",
         fontsize=11,
-        transform=ax_form.transAxes,
-        bbox=dict(
-            boxstyle="round,pad=0.5", facecolor="#e8f0fe", edgecolor=BLUE, linewidth=1.5
-        ),
-    )
-    ax_form.text(
-        0.98,
-        0.05,
-        "Identiek aan OptimaliseRing 2.3.2 (HKV, 2013)  |  7/7 tests OK  rel_tol = 1e-9",
-        ha="right",
-        va="bottom",
-        fontsize=8,
+        transform=ax_f.transAxes,
         color=GREY,
-        transform=ax_form.transAxes,
     )
 
-    plt.savefig(OUT / "stap1.1_physics_formula.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.suptitle(
+        "Stap 1.1 -- Physics Layer",
+        fontsize=14,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap1.1_physics_formula.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap1.1_physics_formula.png")
 
 
 # ---------------------------------------------------------------------------
-# 3. Risk Layer NCW
+# 3. Risk / NCW
 # ---------------------------------------------------------------------------
 
 
 def make_risk_ncw() -> None:
-    P0, ALPHA, V0, GAMMA, DELTA, T = 1e-3, 5.0, 1e9, 0.02, 0.04, 50
-    s = np.arange(T)
+    """S(s) grafiek voor 3 Dh-waarden + NCW-tabel + formulepaneel."""
+    P0 = 1e-3
+    alpha = 5.0
+    V0 = 1e9
+    gamma = 0.02
+    delta = 0.04
+    T = 50
+    eta = 0.0
 
-    def S(dh: float) -> np.ndarray:
-        return P0 * np.exp(-ALPHA * dh) * V0 * np.exp((GAMMA - DELTA) * s)
+    s_arr = np.arange(0, T)
 
-    def ncw(dh: float) -> float:
-        return float(np.sum(S(dh)))
+    dh_cases = [0.0, 0.5, 1.0]
+    colors = [BLUE, ORANGE, RED]
+    labels = ["Dh = 0.0 m", "Dh = 0.5 m", "Dh = 1.0 m"]
 
-    S0 = S(0.0)
-    S05 = S(0.5)
-    S10 = S(1.0)
-
-    fig = plt.figure(figsize=(12, 9), facecolor=BG)
+    fig = plt.figure(figsize=(13, 8), facecolor=BG)
     gs = gridspec.GridSpec(
         2,
         2,
-        height_ratios=[2.5, 1],
-        hspace=0.55,
-        wspace=0.40,
-        top=0.92,
-        bottom=0.08,
-        left=0.09,
-        right=0.97,
-    )
-    ax = fig.add_subplot(gs[0, :])
-    ax_table = fig.add_subplot(gs[1, 0])
-    ax_form = fig.add_subplot(gs[1, 1])
-
-    ax.fill_between(s, S0 / 1e6, alpha=0.10, color=RED)
-    ax.plot(
-        s,
-        S0 / 1e6,
-        color=RED,
-        lw=2.5,
-        label=r"$\Delta h = 0$ m    (NCW $\approx$ 31.9 M€)",
-    )
-    ax.plot(
-        s,
-        S05 / 1e6,
-        color=ORANGE,
-        lw=2.5,
-        ls="--",
-        label=r"$\Delta h = 0.5$ m  (NCW $\approx$ 2.6 M€)",
-    )
-    ax.plot(
-        s,
-        S10 / 1e6,
-        color=GREEN,
-        lw=2.5,
-        ls=":",
-        label=r"$\Delta h = 1.0$ m  (NCW $\approx$ 0.22 M€)",
+        figure=fig,
+        width_ratios=[6, 4],
+        height_ratios=[1, 1],
+        hspace=0.45,
+        wspace=0.35,
     )
 
-    ax.annotate(
-        f"NCW = {ncw(0)/1e6:.1f} M€",
-        xy=(25, S0[25] / 1.8e6),
-        fontsize=11,
-        color=RED,
-        fontstyle="italic",
+    # --- Left (spanning both rows): S(s) graph ---
+    ax_l = fig.add_subplot(gs[:, 0])
+    ax_l.set_facecolor(WHITE)
+
+    ncw_values = []
+    s_curves = []
+    for dh, col, lbl in zip(dh_cases, colors, labels):
+        Ps = P0 * np.exp(alpha * eta * s_arr) * np.exp(-alpha * dh)
+        Ss = Ps * V0 * np.exp((gamma - delta) * s_arr)
+        ncw = float(np.sum(Ss))
+        ncw_values.append(ncw)
+        s_curves.append(Ss)
+        ax_l.plot(s_arr, Ss / 1e6, color=col, lw=2, label=lbl)
+
+    ax_l.set_xlabel("Tijdstap s  [jaar]", fontsize=11)
+    ax_l.set_ylabel("Schadeterm S(s)  [M EUR]", fontsize=11)
+    ax_l.set_title(
+        "Jaarlijkse schadeterm S(s) = P(s) * V0 * e^((gamma-delta)*s)",
+        fontsize=10,
+        fontweight="bold",
+        color=DARK,
+    )
+    ax_l.legend(loc="upper right", fontsize=10, framealpha=0.85)
+
+    # Annotate NCW sum -- place label safely away from all curves
+    ncw0_meur = ncw_values[0] / 1e6
+    ax_l.annotate(
+        f"NCW (Dh=0) = {ncw0_meur:.1f} M EUR",
+        xy=(35, s_curves[0][35] / 1e6),
+        xytext=(5, -45),
+        textcoords="offset points",
+        fontsize=9,
+        color=BLUE,
+        arrowprops=dict(arrowstyle="->", color=BLUE, lw=0.8),
+        bbox=dict(boxstyle="round,pad=0.3", fc=WHITE, ec=BLUE, lw=0.8, alpha=0.9),
     )
 
-    ax.set_xlabel(r"$s$  [jaar na basisjaar]", fontsize=12)
-    ax.set_ylabel(r"$S(s) = P(s) \cdot V(s)$   [M€/jaar]", fontsize=12)
-    ax.set_title(
-        "Stap 1.2  --  Risk Layer: verwachte schade en NCW",
+    # --- Top right: NCW results table ---
+    ax_tr = fig.add_subplot(gs[0, 1])
+    ax_tr.axis("off")
+    ax_tr.set_facecolor(BG)
+    ax_tr.set_title("NCW resultaten", fontsize=10, fontweight="bold", color=DARK, pad=6)
+
+    ncw_base = ncw_values[0]
+    tbl_rows = []
+    for dh, ncw in zip(dh_cases, ncw_values):
+        s0_val = P0 * np.exp(-alpha * dh) * V0
+        reductie = (ncw_base - ncw) / ncw_base * 100 if ncw_base != 0 else 0.0
+        tbl_rows.append(
+            [
+                f"{dh:.1f} m",
+                f"{s0_val/1e6:.2f} M EUR",
+                f"{ncw/1e6:.2f} M EUR",
+                f"{reductie:.1f}%",
+            ]
+        )
+
+    tbl = ax_tr.table(
+        cellText=tbl_rows,
+        colLabels=["Dh", "S(0)", "NCW", "Reductie"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl, n_cols=4)
+
+    # --- Bottom right: formula panel ---
+    ax_br = fig.add_subplot(gs[1, 1])
+    ax_br.axis("off")
+    ax_br.set_facecolor("#f0eeff")
+
+    ax_br.text(
+        0.5,
+        0.72,
+        r"$\mathrm{NCW}=\sum_{s=0}^{T-1} P(s)\cdot V_0\cdot e^{(\gamma-\delta)s}$",
+        ha="center",
+        va="center",
+        fontsize=14,
+        transform=ax_br.transAxes,
+        color=DARK,
+    )
+    ax_br.text(
+        0.5,
+        0.28,
+        (r"$V_0=10^9$ EUR,  $\gamma=0.02$,  $\delta=0.04$,  $T=50$ jaar"),
+        ha="center",
+        va="center",
+        fontsize=9,
+        transform=ax_br.transAxes,
+        color=GREY,
+    )
+
+    fig.suptitle(
+        "Stap 1.2 -- Risk Layer  (NCW)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
-        pad=10,
+        y=0.99,
     )
-    ax.legend(fontsize=10, framealpha=0.9, loc="upper right")
-
-    # table
-    ax_table.axis("off")
-    ax_table.set_title(
-        "Verificatietabel  (T = 50 jaar)", fontsize=10, fontweight="bold", pad=8
-    )
-    headers = ["Dh [m]", "S(s=0) [EUR]", "NCW [EUR]", "Reductie"]
-    rows_data = [
-        ["0", "1 000 000", "31 923 000", "--"],
-        ["0.5", "   82 085", " 2 620 000", "-91.8%"],
-        ["1.0", "    6 738", "   215 000", "-99.3%"],
-    ]
-    tbl = ax_table.table(
-        cellText=rows_data,
-        colLabels=headers,
-        loc="center",
-        cellLoc="center",
-    )
-    tbl.auto_set_font_size(False)
-    tbl.set_fontsize(9)
-    tbl.scale(1, 1.8)
-    for (r, c), cell in tbl.get_celld().items():
-        if r == 0:
-            cell.set_facecolor(BLUE)
-            cell.set_text_props(color=WHITE, fontweight="bold")
-        elif c == 3 and r > 0:
-            cell.set_text_props(color="#059669", fontweight="bold")
-        elif r % 2 == 0 and r > 0:
-            cell.set_facecolor("#f8f9fa")
-
-    # formula
-    ax_form.axis("off")
-    ax_form.set_title("Formule", fontsize=10, fontweight="bold", pad=8)
-    ax_form.text(
-        0.5,
-        0.70,
-        r"$\mathrm{NCW} = \sum_{s=0}^{T-1} P(s)\cdot V_0\cdot e^{(\gamma-\delta)\,s}$",
-        ha="center",
-        va="center",
-        fontsize=13,
-        transform=ax_form.transAxes,
-        bbox=dict(
-            boxstyle="round,pad=0.4",
-            facecolor="#f3e8ff",
-            edgecolor=PURPLE,
-            linewidth=1.5,
-        ),
-    )
-    ax_form.text(
-        0.5,
-        0.35,
-        r"$V(s) = V_0 e^{\gamma s}$"
-        "\n"
-        r"$V_0 = 10^9$ EUR     $\gamma = 0.02$     $\delta = 0.04$     $T = 50$ jaar",
-        ha="center",
-        va="center",
-        fontsize=10,
-        transform=ax_form.transAxes,
-    )
-    ax_form.text(
-        0.5,
-        0.05,
-        "10/10 tests OK  |  rel_tol = 1e-9",
-        ha="center",
-        va="bottom",
-        fontsize=8,
-        color=GREY,
-        transform=ax_form.transAxes,
-    )
-
-    plt.savefig(OUT / "stap1.2_risk_ncw.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap1.2_risk_ncw.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap1.2_risk_ncw.png")
 
 
 # ---------------------------------------------------------------------------
-# 4. Optimization Layer
+# 4. Optimization
 # ---------------------------------------------------------------------------
 
 
 def make_optimization() -> None:
-    fig = plt.figure(figsize=(14, 10), facecolor=BG)
+    """Drie objectiefformuleringen + NCW-grafiek + verificatietabel."""
+    fig = plt.figure(figsize=(15, 12), facecolor=BG)
+    gs = gridspec.GridSpec(
+        3,
+        2,
+        figure=fig,
+        width_ratios=[5, 7],
+        height_ratios=[1, 1, 1],
+        hspace=0.55,
+        wspace=0.35,
+    )
+
     fig.suptitle(
-        "Stap 1.3  --  Optimization Layer:  BruteForce = Pyomo / HiGHS",
-        fontsize=15,
+        "Stap 1.3 -- Optimalisatieformuleringen",
+        fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
-    gs = gridspec.GridSpec(
-        2,
-        2,
-        hspace=0.55,
-        wspace=0.45,
-        top=0.93,
-        bottom=0.05,
-        left=0.05,
-        right=0.97,
-    )
 
-    # ---------- Panel 1: objective formulations ----------
-    ax1 = fig.add_subplot(gs[0, 0])
-    ax1.axis("off")
-    ax1.set_title(
-        "Optimalisatieformuleringen", fontsize=12, fontweight="bold", color=DARK, pad=10
-    )
-
-    objectives = [
-        (
-            "MIN_COST",
-            BLUE,
-            r"$\min\;\sum_i c_i x_i$",
-            r"s.t. $\sum_i h_i x_i \geq h_{\min}$",
-            r"$h_{\min} = \ln(P_0/\mathrm{norm})\,/\,\alpha$",
-        ),
-        (
-            "MAX_RISK_REDUCTION",
-            GREEN,
-            r"$\max\;\sum_i h_i x_i$",
-            r"s.t. $\sum_i c_i x_i \leq B$",
-            "(0/1-knapsack)",
-        ),
-        (
-            "MIN_NCW  (lineair)",
-            ORANGE,
-            r"$\min\;\sum_i (c_i - C\alpha h_i)\,x_i$",
-            r"$C\alpha h_i \approx \Delta\mathrm{NCW}_i$",
-            r"geldig voor $\alpha h_i < 0.5$",
-        ),
-    ]
-
-    y_positions = [0.88, 0.55, 0.22]
-    for (label, color, line1, line2, line3), yp in zip(objectives, y_positions):
-        # label
-        ax1.text(
-            0.03,
-            yp + 0.06,
-            label,
-            transform=ax1.transAxes,
-            fontsize=10,
-            fontweight="bold",
-            color=color,
-        )
-        # formula box
-        box_text = line1 + "\n" + line2 + "\n" + line3
-        ax1.text(
-            0.03,
-            yp - 0.14,
-            box_text,
-            transform=ax1.transAxes,
-            fontsize=10,
-            color="#212529",
-            bbox=dict(
-                boxstyle="round,pad=0.35",
-                facecolor=color + "22",
-                edgecolor=color,
-                linewidth=1.2,
-            ),
+    # ---- Formula card helper ----
+    def _formula_card(ax, bg_color, title, formula, constraint, note):
+        ax.set_facecolor(bg_color + "22")
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_title(title, fontsize=11, fontweight="bold", color=DARK, pad=6)
+        ax.text(
+            0.05,
+            0.70,
+            formula,
+            ha="left",
             va="top",
-        )
-
-    # ---------- Panel 2: NCW vs Dh ----------
-    ax2 = fig.add_subplot(gs[0, 1])
-    P0, ALPHA, V0, GAMMA, DELTA, T_HOR = 1e-3, 5.0, 1e9, 0.02, 0.04, 50
-    C = P0 * V0 * sum(math.exp((GAMMA - DELTA) * s) for s in range(T_HOR))
-    dh = np.linspace(0, 2, 300)
-    ncw_exact = C * np.exp(-ALPHA * dh)
-    ncw_linear = C * (1 - ALPHA * dh)
-    ncw_linear = np.clip(ncw_linear, 0, None)
-
-    ax2.plot(
-        dh,
-        ncw_exact / 1e6,
-        color=BLUE,
-        lw=2.5,
-        label=r"Exact: $C \cdot e^{-\alpha\Delta h}$",
-    )
-    ax2.plot(
-        dh,
-        ncw_linear / 1e6,
-        color=ORANGE,
-        lw=2.0,
-        ls="--",
-        label=r"Lineair: $C(1 - \alpha\Delta h)$",
-    )
-    ax2.axvline(0.5, color=GREY, lw=1, ls=":")
-    ax2.text(
-        0.53,
-        ax2.get_ylim()[1] * 0.1 if False else 2.0,
-        r"$\alpha\Delta h = 0.5$" + "\n(grens linearisatie)",
-        fontsize=8,
-        color=GREY,
-        va="bottom",
-    )
-    ax2.set_xlabel(r"$\Delta h$  [m]", fontsize=11)
-    ax2.set_ylabel(r"NCW$_\mathrm{risico}$  [M€]", fontsize=11)
-    ax2.set_title(r"NCW als functie van $\Delta h$", fontsize=12, color=DARK, pad=10)
-    ax2.legend(fontsize=10, loc="upper right")
-    ax2.set_xlim(0, 2)
-    ax2.set_ylim(bottom=0)
-
-    # ---------- Panel 3: TC1 bar chart ----------
-    ax3 = fig.add_subplot(gs[1, 0])
-    ax3.set_title(
-        "TC1  --  MIN_COST:  optimale maatregelenkeuze", fontsize=11, color=DARK, pad=10
-    )
-
-    h_min = math.log(1e-2 / 1e-3) / 5.0  # ~0.461 m
-    measures = [
-        ("M01", 0.50, 2.0, RED),
-        ("M02", 0.30, 1.0, BLUE),
-        ("M03", 0.20, 0.5, GREEN),
-        ("M02+M03", 0.50, 1.5, PURPLE),
-    ]
-    names = [m[0] for m in measures]
-    costs = [m[2] for m in measures]
-    dh_v = [m[1] for m in measures]
-    colors = [m[3] for m in measures]
-
-    bars = ax3.bar(
-        range(len(names)),
-        costs,
-        color=colors,
-        alpha=0.85,
-        edgecolor=WHITE,
-        linewidth=1.5,
-    )
-    ax3.set_xticks(range(len(names)))
-    ax3.set_xticklabels(names, fontsize=10)
-    ax3.axhline(1.5, color=PURPLE, lw=1.5, ls="--", alpha=0.6)
-    ax3.set_ylabel("Investering  [M€]", fontsize=10)
-    ax3.set_ylim(0, 2.8)
-    ax3.set_title(
-        "TC1  --  MIN_COST:  optimale maatregelenkeuze", fontsize=11, color=DARK, pad=10
-    )
-    ax3.set_title("")  # already set via suptitle equivalent above
-
-    for bar, h in zip(bars, dh_v):
-        ok_str = "OK" if h >= h_min else "X"
-        ok_clr = "#059669" if h >= h_min else RED
-        label = f"Dh={h:.2f}m  {ok_str}"
-        ax3.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + 0.07,
-            label,
-            ha="center",
-            fontsize=9,
-            color=ok_clr,
-            fontweight="bold",
-        )
-
-    ax3.text(
-        3,
-        1.62,
-        "Optimum\n1.5 M€",
-        ha="center",
-        fontsize=9,
-        color=PURPLE,
-        fontweight="bold",
-    )
-    ax3.text(
-        0.5,
-        0.04,
-        f"hmin = {h_min:.3f} m     BruteForce = Pyomo: {{M02, M03}} OK",
-        ha="center",
-        fontsize=9,
-        color="#059669",
-        fontweight="bold",
-        transform=ax3.transAxes,
-    )
-
-    # ---------- Panel 4: verification table ----------
-    ax4 = fig.add_subplot(gs[1, 1])
-    ax4.axis("off")
-    ax4.set_title(
-        "Verificatieresultaten  (6 testcases)", fontsize=11, color=DARK, pad=10
-    )
-
-    test_results = [
-        ("TC1", "MIN_COST", "M02+M03 goedkoopst", True),
-        ("TC2", "MIN_COST", "Norm al gehaald -> {}", True),
-        ("TC3", "MIN_COST", "Dependency M02 -> M01", True),
-        ("TC4", "MAX_RR", "Knapsack binnen budget", True),
-        ("TC5", "MIN_NCW", "alpha*h=0.1,  fout < 1%", True),
-        ("TC6", "MIN_NCW", "Duur vs. voordelig", True),
-    ]
-
-    # column header
-    col_x = [0.03, 0.18, 0.48, 0.85]
-    header_y = 0.93
-    for txt, cx in zip(["TC", "Objective", "Scenario", "Status"], col_x):
-        ax4.text(
-            cx,
-            header_y,
-            txt,
-            transform=ax4.transAxes,
-            fontsize=9,
-            fontweight="bold",
+            fontsize=13,
+            transform=ax.transAxes,
             color=DARK,
         )
-    ax4.plot([0.01, 0.99], [0.89, 0.89], color=GREY, lw=0.8, transform=ax4.transAxes)
-
-    row_h = 0.12
-    for i, (tc, obj, desc, ok) in enumerate(test_results):
-        y = header_y - row_h * (i + 1) - 0.01
-        bg = "#f0fdf4" if i % 2 == 0 else WHITE
-        ax4.add_patch(
-            mpatches.FancyBboxPatch(
-                (0.01, y - 0.03),
-                0.97,
-                row_h - 0.01,
-                transform=ax4.transAxes,
-                boxstyle="round,pad=0.01",
-                facecolor=bg,
-                edgecolor="none",
-            )
+        ax.text(
+            0.05,
+            0.38,
+            constraint,
+            ha="left",
+            va="top",
+            fontsize=11,
+            transform=ax.transAxes,
+            color=DARK,
         )
-        ax4.text(
-            col_x[0], y + 0.02, tc, transform=ax4.transAxes, fontsize=9, color=DARK
-        )
-        ax4.text(
-            col_x[1], y + 0.02, obj, transform=ax4.transAxes, fontsize=8, color=BLUE
-        )
-        ax4.text(
-            col_x[2], y + 0.02, desc, transform=ax4.transAxes, fontsize=8, color="#333"
-        )
-        status = "BF = Pyomo  OK" if ok else "AFWIJKING  X"
-        color = "#059669" if ok else RED
-        ax4.text(
-            col_x[3],
-            y + 0.02,
-            status,
-            transform=ax4.transAxes,
-            fontsize=8,
-            fontweight="bold",
-            color=color,
+        ax.text(
+            0.05,
+            0.12,
+            note,
+            ha="left",
+            va="top",
+            fontsize=9,
+            transform=ax.transAxes,
+            color=GREY,
         )
 
-    ax4.text(
-        0.5,
-        0.02,
-        "46/46 tests geslaagd  |  mypy schoon",
-        ha="center",
-        fontsize=9,
-        color="#059669",
-        fontweight="bold",
-        transform=ax4.transAxes,
+    # Row 0 col 0: MIN_COST
+    ax00 = fig.add_subplot(gs[0, 0])
+    _formula_card(
+        ax00,
+        BLUE,
+        "MIN_COST  --  Minimale investering",
+        r"$\min \sum_{i \in S} C_i$",
+        r"$\mathrm{s.t.}\ \mathrm{NCW}(S) \leq \mathrm{NCW}_{norm}$",
+        "Kies goedkoopste combinatie die norm haalt",
     )
 
-    plt.savefig(OUT / "stap1.3_optimization.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    # Row 1 col 0: MAX_RISK_REDUCTION
+    ax10 = fig.add_subplot(gs[1, 0])
+    _formula_card(
+        ax10,
+        PURPLE,
+        "MAX_RISK_RED  --  Maximale risicoreductie",
+        r"$\max\ \mathrm{NCW}_0 - \mathrm{NCW}(S)$",
+        r"$\mathrm{s.t.}\ \sum C_i \leq B$",
+        "Maximaliseer risicoreductie binnen budget B",
+    )
+
+    # Row 2 col 0: MIN_NCW
+    ax20 = fig.add_subplot(gs[2, 0])
+    _formula_card(
+        ax20,
+        GREEN,
+        "MIN_NCW  --  Minimale totale NCW",
+        r"$\min\ \mathrm{NCW}(S) + \sum_{i \in S} C_i$",
+        r"$S \subseteq \{M_1, \ldots, M_n\}$",
+        "Minimaliseer som van kosten en restrisico",
+    )
+
+    # ---- NCW vs Dh graph (spans rows 0 and 1, col 1) ----
+    ax_ncw = fig.add_subplot(gs[0:2, 1])
+    ax_ncw.set_facecolor(WHITE)
+
+    P0 = 1e-3
+    alpha = 5.0
+    V0 = 1e9
+    gamma = 0.02
+    delta = 0.04
+    T = 50
+    dh_range = np.linspace(0, 2.5, 200)
+
+    def _ncw(dh):
+        s = np.arange(T)
+        Ps = P0 * np.exp(-alpha * dh)
+        return float(np.sum(Ps * V0 * np.exp((gamma - delta) * s)))
+
+    ncw_arr = np.array([_ncw(dh) for dh in dh_range]) / 1e6
+
+    ax_ncw.plot(dh_range, ncw_arr, color=BLUE, lw=2.5)
+    ax_ncw.set_xlabel("Dijkverhoging Dh  [m]", fontsize=11)
+    ax_ncw.set_ylabel("NCW  [M EUR]", fontsize=11)
+    ax_ncw.set_title(
+        "NCW als functie van dijkverhoging Dh",
+        fontsize=11,
+        fontweight="bold",
+        color=DARK,
+    )
+    ax_ncw.fill_between(dh_range, ncw_arr, alpha=0.12, color=BLUE)
+
+    # Annotate a few reference points
+    for dh_pt, offset in [(0.5, (30, 20)), (1.0, (25, -40)), (1.5, (-55, -35))]:
+        ncw_pt = _ncw(dh_pt) / 1e6
+        ax_ncw.annotate(
+            f"Dh={dh_pt:.1f}m\n{ncw_pt:.1f} M EUR",
+            xy=(dh_pt, ncw_pt),
+            xytext=offset,
+            textcoords="offset points",
+            fontsize=8,
+            color=DARK,
+            arrowprops=dict(arrowstyle="->", color=GREY, lw=0.8),
+            bbox=dict(boxstyle="round,pad=0.25", fc=WHITE, ec=GREY, lw=0.7, alpha=0.9),
+        )
+
+    # ---- Verification table (row 2, col 1) ----
+    ax_ver = fig.add_subplot(gs[2, 1])
+    ax_ver.axis("off")
+    ax_ver.set_facecolor(BG)
+    ax_ver.set_title(
+        "Verificatie BruteForce vs Pyomo",
+        fontsize=10,
+        fontweight="bold",
+        color=DARK,
+        pad=6,
+    )
+
+    ver_rows = [
+        ["MIN_COST", "M02, M04", "1,089,224 EUR", "BruteForce", "OK"],
+        ["MIN_COST", "M02, M04", "1,089,224 EUR", "Pyomo", "OK"],
+        ["MAX_RISK_RED", "M02, M03, M04", "1,862,067 EUR", "BruteForce", "OK"],
+        ["MAX_RISK_RED", "M02, M03, M04", "1,862,067 EUR", "Pyomo", "OK"],
+        ["MIN_NCW", "alle 5", "3,789,982 EUR", "BruteForce", "OK"],
+        ["MIN_NCW", "alle 5", "3,789,982 EUR", "Pyomo", "OK"],
+    ]
+
+    tbl = ax_ver.table(
+        cellText=ver_rows,
+        colLabels=["Objectief", "Maatregelen", "Investering", "Methode", "Status"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl, n_cols=5)
+
+    # Color the Status column green
+    for row_idx in range(1, len(ver_rows) + 1):
+        cell = tbl[(row_idx, 4)]
+        cell.set_facecolor("#d4edda")
+        cell.set_text_props(color="#155724", fontweight="bold", ha="center")
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap1.3_optimization.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap1.3_optimization.png")
 
 
 # ---------------------------------------------------------------------------
-# 5. Database mapping
+# 5. Database mapping (MDB -> FloodOpt)
 # ---------------------------------------------------------------------------
 
 
 def make_database_mapping() -> None:
-    fig, ax = plt.subplots(figsize=(14, 8), facecolor=BG)
-    ax.set_xlim(0, 14)
-    ax.set_ylim(0, 8)
-    ax.axis("off")
-    ax.set_facecolor(BG)
+    """MDB-tabellen en FloodOpt-modellen als twee naast elkaar staande tabellen."""
+    fig = plt.figure(figsize=(13, 8), facecolor=BG)
 
     fig.suptitle(
-        "OptimaliseRing DB  -->  FloodOpt datamodel",
+        "Database Mapping  --  MDB -> SQLite -> FloodOpt",
         fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
-    ax.text(
-        7.0,
-        7.55,
-        "optimalise_ring_2011.sqlite  |  103 dijkringen  |  176 trajecten  |  3348 klimaatrecords",
-        ha="center",
-        fontsize=10,
-        color=GREY,
+
+    gs = gridspec.GridSpec(
+        2,
+        2,
+        figure=fig,
+        width_ratios=[1, 1],
+        height_ratios=[12, 1],
+        hspace=0.15,
+        wspace=0.3,
     )
 
-    # ---- LEFT: MDB tables header ----
-    _box(ax, 0.2, 6.95, 5.2, 0.50, "#495057", "#495057", lw=0, radius=0.08)
-    ax.text(
-        2.8,
-        7.22,
-        "OptimaliseRing MDB  (origineel)",
-        ha="center",
-        fontsize=11,
-        fontweight="bold",
-        color=WHITE,
+    # --- Left: MDB tables ---
+    ax_l = fig.add_subplot(gs[0, 0])
+    ax_l.axis("off")
+    ax_l.set_facecolor(BG)
+    ax_l.set_title(
+        "MDB-brontabellen", fontsize=11, fontweight="bold", color=DARK, pad=8
     )
 
-    mdb_tables = [
-        ("Dijkringen", "103", "Id, Naam, Terugkeertijd"),
-        ("DijkringTrajecten", "176", "H0 [cm+NAP], Factor"),
-        (
-            "Klimaat_...DataTraject",
-            "3348",
-            r"$\alpha$ [1/cm],  $P_0$ [1/j],  $\eta$ [cm/j]",
-        ),
-        (
-            "ParametersKostenfunctieData",
-            "183",
-            r"$\lambda$ [1/cm],  $C_\mathrm{exp}$,  $b$,  $\Omega$",
-        ),
-        ("SchadeFunctieData", "372", r"$\nu$,  $\zeta$,  $\psi$"),
-        ("EconomischScenarioData", "868", r"$\gamma$  (economische groei)"),
-        ("RamingVoorSlachtoffersData", "372", "Slachtoffers, Getroffenen"),
+    mdb_rows = [
+        ["Dijkringen", "103", "Id, Naam, Terugkeertijd"],
+        ["DijkringTrajecten", "176", "H0 [cm], Factor"],
+        ["Klimaat_...DataTraject", "3348", "Alpha [1/cm], P0 [1/j], Eta [cm/j]"],
+        ["ParametersKostenfunctieData", "183", "Lambda, C_exp, b_exp, Omega"],
+        ["SchadeFunctieData", "372", "Nu, Zeta, Psi"],
+        ["EconomischScenarioData", "868", "Gamma"],
+        ["RamingVoorSlachtoffersData", "372", "Slachtoffers, Getroffenen"],
     ]
 
-    ROW_H = 0.62
-    for i, (name, rows, cols) in enumerate(mdb_tables):
-        y_bot = 6.90 - (i + 1) * ROW_H
-        fc = "#fff3cd" if name == "Klimaat_...DataTraject" else "#f1f3f5"
-        _box(ax, 0.2, y_bot, 5.2, ROW_H - 0.06, fc, "#dee2e6", lw=0.8, radius=0.06)
-        ax.text(
-            0.45,
-            y_bot + ROW_H * 0.62,
-            name,
-            fontsize=9,
-            fontweight="bold",
-            color="#212529",
-            va="center",
-        )
-        ax.text(
-            5.20,
-            y_bot + ROW_H * 0.62,
-            rows,
-            fontsize=8,
-            color=GREY,
-            ha="right",
-            va="center",
-        )
-        ax.text(
-            0.45, y_bot + ROW_H * 0.22, cols, fontsize=8, color="#495057", va="center"
-        )
-
-    # unit conversion box
-    _box(ax, 0.2, 0.20, 5.2, 1.00, "#e8f4fd", "#90c8f0", lw=1.2, radius=0.08)
-    ax.text(
-        2.8,
-        1.08,
-        "Eenheidsconversie  (SQLite views)",
-        ha="center",
-        fontsize=10,
-        fontweight="bold",
-        color=BLUE,
+    tbl_l = ax_l.table(
+        cellText=mdb_rows,
+        colLabels=["Tabel", "Rijen", "Sleutelvelden"],
+        loc="center",
+        cellLoc="left",
     )
-    ax.text(
-        0.50,
-        0.82,
-        r"$\alpha: \times 100$  (1/cm  ->  1/m)",
+    _style_table(tbl_l, n_cols=3)
+
+    # --- Right: FloodOpt models ---
+    ax_r = fig.add_subplot(gs[0, 1])
+    ax_r.axis("off")
+    ax_r.set_facecolor(BG)
+    ax_r.set_title(
+        "FloodOpt Modellen", fontsize=11, fontweight="bold", color=DARK, pad=8
+    )
+
+    floodopt_rows = [
+        ["Trajectory", "p0 (= P0_overstromingskans)", "1/jaar"],
+        ["Trajectory", "alpha (= Alpha * 100)", "1/m"],
+        ["Trajectory", "base_year, norm, length", "-"],
+        ["Scenario", "eta (= Eta / 100)", "m/jaar"],
+        ["Scenario", "climate, q_design, h_design", "-"],
+        ["Measure", "effect (Dh)", "m"],
+        ["RiskParams", "base_damage, gamma, delta, T", "-"],
+    ]
+
+    tbl_r = ax_r.table(
+        cellText=floodopt_rows,
+        colLabels=["Model", "Veld", "Eenheid"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_r, n_cols=3)
+
+    # --- Bottom: unit conversion note ---
+    ax_note = fig.add_subplot(gs[1, :])
+    ax_note.axis("off")
+    ax_note.set_facecolor(BG)
+    ax_note.text(
+        0.5,
+        0.5,
+        "Eenheidconversies: Alpha [1/cm] * 100 = alpha [1/m]  |  "
+        "Eta [cm/jaar] / 100 = eta [m/jaar]  |  "
+        "H0 [cm] / 100 = h0 [m]",
+        ha="center",
+        va="center",
         fontsize=9,
-        color="#0a58ca",
-    )
-    ax.text(
-        0.50, 0.58, r"$\eta: \div 100$  (cm/j  ->  m/j)", fontsize=9, color="#0a58ca"
-    )
-    ax.text(
-        0.50, 0.34, r"$H_0: \div 100$  (cm+NAP  ->  m+NAP)", fontsize=9, color="#0a58ca"
+        color=GREY,
+        transform=ax_note.transAxes,
     )
 
-    # ---- ARROW (centre) ----
-    _arrow(ax, 5.6, 3.8, 7.8, 3.8, color=BLUE, lw=2.5)
-    ax.text(6.7, 4.10, "SQLite\nviews", ha="center", fontsize=9, color=BLUE)
-
-    # ---- RIGHT: FloodOpt models header ----
-    _box(ax, 8.3, 6.95, 5.3, 0.50, BLUE, BLUE, lw=0, radius=0.08)
-    ax.text(
-        10.95,
-        7.22,
-        "FloodOpt datamodel  [m]",
-        ha="center",
-        fontsize=11,
-        fontweight="bold",
-        color=WHITE,
-    )
-
-    floodopt_panels = [
-        (
-            BLUE,
-            5.8,
-            "Trajectory",
-            [
-                r"norm = 1 / Terugkeertijd",
-                r"$p_0 = P_0$  [1/jaar]",
-                r"$\alpha = \alpha_\mathrm{MDB} \times 100$  [1/m]",
-                "base_year, length, id",
-            ],
-            "v_trajecten_floodopt  (3168 rijen)",
-        ),
-        (
-            PURPLE,
-            3.6,
-            "Scenario",
-            [r"climate = Klimaat naam", r"$\eta = \eta_\mathrm{MDB} / 100$  [m/jaar]"],
-            "18 klimaatscenarios",
-        ),
-        (
-            GREEN,
-            1.8,
-            "Measure + RiskParams",
-            [
-                r"effect [m] = $\Delta h$",
-                r"$\gamma$ via EconomischScenario",
-                "base_damage via SchadeFunctie",
-            ],
-            "Beschikbaar voor stap 1.3 validatie",
-        ),
-    ]
-
-    for color, y_top, title, fields, note in floodopt_panels:
-        n_fields = len(fields)
-        box_h = 0.42 * n_fields + 0.80
-        y_bot = y_top - box_h
-        _box(ax, 8.3, y_bot, 5.3, box_h, color + "22", color, lw=1.5, radius=0.08)
-        ax.text(
-            8.55,
-            y_top - 0.30,
-            title,
-            fontsize=10,
-            fontweight="bold",
-            color=color,
-            va="center",
-        )
-        for j, field in enumerate(fields):
-            ax.text(
-                8.55,
-                y_top - 0.68 - j * 0.38,
-                field,
-                fontsize=8,
-                color="#1e3a5f",
-                va="center",
-            )
-        ax.text(
-            8.55,
-            y_bot + 0.14,
-            note,
-            fontsize=7,
-            color=GREY,
-            fontstyle="italic",
-            va="center",
-        )
-
-    plt.tight_layout(rect=[0, 0, 1, 0.97])
-    plt.savefig(OUT / "database_mapping.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "database_mapping.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  database_mapping.png")
 
 
 # ---------------------------------------------------------------------------
-# 6. Stap 1.4 - Smoke test
+# 6. Smoke test
 # ---------------------------------------------------------------------------
 
 
 def make_smoke_test() -> None:
-    fig = plt.figure(figsize=(14, 9), facecolor=BG)
+    """Smoke-test resultaten: timing barh + resultaattabel."""
+    fig = plt.figure(figsize=(13, 7), facecolor=BG)
+
     fig.suptitle(
-        "Stap 1.4  --  Smoke Test:  Trajectory  ->  Optimizer  ->  Resultaat",
+        "Stap 1.4 -- Smoke Test  (N=5 maatregelen, T=100 jaar)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
+
     gs = gridspec.GridSpec(
         2,
         2,
-        height_ratios=[1, 1.2],
-        hspace=0.55,
-        wspace=0.40,
-        top=0.93,
-        bottom=0.06,
-        left=0.05,
-        right=0.97,
+        figure=fig,
+        width_ratios=[1, 1],
+        height_ratios=[10, 1],
+        hspace=0.15,
+        wspace=0.35,
     )
 
-    ax_flow = fig.add_subplot(gs[0, :])
-    ax_time = fig.add_subplot(gs[1, 0])
-    ax_table = fig.add_subplot(gs[1, 1])
+    # --- Left: timing bar chart ---
+    ax_bar = fig.add_subplot(gs[0, 0])
+    ax_bar.set_facecolor(WHITE)
 
-    # ---- flow diagram ----
-    ax_flow.set_xlim(0, 14)
-    ax_flow.set_ylim(0, 3.2)
-    ax_flow.axis("off")
+    objectives = ["MIN_COST", "MAX_RISK_RED", "MIN_NCW"]
+    bf_times = [3, 5, 13]  # ms
+    py_times = [54, 87, 107]  # ms
 
-    flow_items = [
-        (
-            1.2,
-            "Trajectory\n& Scenario",
-            r"$P_0 = 1/200$,  $\alpha = 4$,  $\eta = 0.003$",
-            BLUE,
-        ),
-        (
-            3.8,
-            "5 Kandidaat-\nmaatregelen",
-            "Dh: 0.15 - 0.50 m\nkosten: 0.5 - 2 M€",
-            GREEN,
-        ),
-        (
-            6.4,
-            "Risk Layer\n(NCW berekening)",
-            r"$\mathrm{NCW} = \sum P(s) \cdot V_0 \cdot e^{(\gamma-\delta)s}$",
-            PURPLE,
-        ),
-        (9.0, "BruteForce\n& Pyomo", r"$2^5 = 32$ combinaties", RED),
-        (11.8, "Resultaat\nMATCH", "3/3 objectives OK", "#059669"),
+    y_pos = np.arange(len(objectives))
+    height = 0.35
+
+    ax_bar.barh(
+        y_pos + height / 2, bf_times, height=height, color=BLUE, label="BruteForce"
+    )
+    ax_bar.barh(
+        y_pos - height / 2, py_times, height=height, color=ORANGE, label="Pyomo"
+    )
+
+    ax_bar.set_yticks(y_pos)
+    ax_bar.set_yticklabels(objectives, fontsize=10)
+    ax_bar.set_xlabel("Rekentijd  [ms]", fontsize=10)
+    ax_bar.set_title(
+        "Rekentijd per objectief", fontsize=11, fontweight="bold", color=DARK
+    )
+    ax_bar.legend(loc="lower right", fontsize=9, framealpha=0.85)
+
+    # Value labels
+    for i, (bf, py) in enumerate(zip(bf_times, py_times)):
+        ax_bar.text(
+            bf + 0.5, i + height / 2, f"{bf} ms", va="center", fontsize=8, color=BLUE
+        )
+        ax_bar.text(
+            py + 0.5, i - height / 2, f"{py} ms", va="center", fontsize=8, color=ORANGE
+        )
+
+    # --- Right: results table ---
+    ax_tbl = fig.add_subplot(gs[0, 1])
+    ax_tbl.axis("off")
+    ax_tbl.set_facecolor(BG)
+    ax_tbl.set_title(
+        "Smoke-test resultaten", fontsize=11, fontweight="bold", color=DARK, pad=8
+    )
+
+    result_rows = [
+        ["MIN_COST", "M02, M04", "1,089,224 EUR", "OK"],
+        ["MAX_RISK_RED", "M02, M03, M04", "1,862,067 EUR", "OK"],
+        ["MIN_NCW", "alle 5", "3,789,982 EUR", "OK"],
     ]
 
-    BOX_W, BOX_H_F = 2.0, 2.2
-    for x, title, sub, color in flow_items:
-        _box(
-            ax_flow,
-            x - BOX_W / 2,
-            0.5,
-            BOX_W,
-            BOX_H_F,
-            color + "33",
-            color,
-            lw=2,
-            radius=0.12,
-        )
-        ax_flow.text(
-            x,
-            1.95,
-            title,
-            ha="center",
-            va="center",
-            fontsize=9,
-            fontweight="bold",
-            color=color,
-        )
-        ax_flow.text(
-            x, 0.95, sub, ha="center", va="center", fontsize=7.5, color="#333333"
-        )
-
-    arrow_xs = [(2.1, 2.8), (4.7, 5.4), (7.3, 8.0), (10.0, 10.8)]
-    for x0, x1 in arrow_xs:
-        _arrow(ax_flow, x0, 1.60, x1, 1.60, color=GREY, lw=2)
-
-    # ---- timing bar chart ----
-    objectives = ["MIN_COST", "MAX_RISK_R.", "MIN_NCW"]
-    bf_times = [9.6, 5.2, 6.3]
-    py_times = [184.6, 55.6, 7.6]
-
-    x_pos = np.arange(len(objectives))
-    W = 0.35
-    ax_time.bar(x_pos - W / 2, bf_times, W, label="BruteForce", color=RED, alpha=0.85)
-    ax_time.bar(x_pos + W / 2, py_times, W, label="Pyomo/HiGHS", color=BLUE, alpha=0.85)
-
-    for i, (b, p) in enumerate(zip(bf_times, py_times)):
-        ax_time.text(
-            i - W / 2, b + 2.5, f"{b:.0f} ms", ha="center", fontsize=8, color=RED
-        )
-        ax_time.text(
-            i + W / 2, p + 2.5, f"{p:.0f} ms", ha="center", fontsize=8, color=BLUE
-        )
-
-    ax_time.set_xticks(x_pos)
-    ax_time.set_xticklabels(objectives, fontsize=9)
-    ax_time.set_ylabel("Rekentijd  [ms]", fontsize=10)
-    ax_time.set_title(
-        "Rekentijden  (N = 5 maatregelen)", fontsize=11, color=DARK, pad=10
-    )
-    ax_time.legend(fontsize=9, loc="upper right")
-    ax_time.set_ylim(0, 230)
-    ax_time.text(
-        0.98,
-        0.97,
-        "BruteForce sneller voor N <= 5\nPyomo schaalt beter voor grote N",
-        ha="right",
-        va="top",
-        fontsize=8,
-        color=GREY,
-        transform=ax_time.transAxes,
-        bbox=dict(boxstyle="round,pad=0.3", facecolor=WHITE, edgecolor=GREY),
-    )
-
-    # ---- results table ----
-    ax_table.axis("off")
-    ax_table.set_title("Verificatieresultaten", fontsize=11, color=DARK, pad=10)
-    headers = ["Objective", "Optimum", "Waarde", "Match"]
-    rows_data = [
-        ["MIN_COST", "{M02, M04}", "EUR 1 089 224", "BF = Py  OK"],
-        ["MAX_RISK_R.", "{M02, M03, M04}", "Dh = 0.80 m", "BF = Py  OK"],
-        ["MIN_NCW", "{alle 5}", "NCW = 9.0 M", "BF = Py  OK"],
-    ]
-    tbl = ax_table.table(
-        cellText=rows_data,
-        colLabels=headers,
+    tbl = ax_tbl.table(
+        cellText=result_rows,
+        colLabels=["Objectief", "Optimum", "Investering", "Match"],
         loc="center",
-        cellLoc="center",
-        bbox=[0.0, 0.30, 1.0, 0.60],
+        cellLoc="left",
     )
-    tbl.auto_set_font_size(False)
-    tbl.set_fontsize(9)
-    tbl.scale(1, 2.0)
-    for (r, c), cell in tbl.get_celld().items():
-        if r == 0:
-            cell.set_facecolor(DARK)
-            cell.set_text_props(color=WHITE, fontweight="bold")
-        elif c == 3:
-            cell.set_text_props(color="#059669", fontweight="bold")
-        elif r % 2 == 0:
-            cell.set_facecolor("#f0fdf4")
+    _style_table(tbl, n_cols=4)
 
-    ax_table.text(
+    # Color Match column green
+    for row_idx in range(1, len(result_rows) + 1):
+        cell = tbl[(row_idx, 3)]
+        cell.set_facecolor("#d4edda")
+        cell.set_text_props(color="#155724", fontweight="bold", ha="center")
+
+    # --- Bottom: footer ---
+    ax_foot = fig.add_subplot(gs[1, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
         0.5,
-        0.10,
-        "58/58 tests geslaagd  |  exitcode 0  |  mypy schoon",
+        0.5,
+        "BruteForce totaal: 21 ms  |  Pyomo totaal: 248 ms  |  Exitcode 0",
         ha="center",
-        fontsize=9,
-        color="#059669",
-        fontweight="bold",
-        transform=ax_table.transAxes,
+        va="center",
+        fontsize=10,
+        color=GREY,
+        transform=ax_foot.transAxes,
     )
 
-    plt.savefig(OUT / "stap1.4_smoke_test.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap1.4_smoke_test.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap1.4_smoke_test.png")
 
 
 # ---------------------------------------------------------------------------
-# 7. Stap 2.1 - FastAPI service
+# 7. API
 # ---------------------------------------------------------------------------
 
 
 def make_api() -> None:
-    fig = plt.figure(figsize=(15, 8), facecolor=BG)
+    """FastAPI request-flow + endpoints-overzicht."""
+    fig = plt.figure(figsize=(13, 8), facecolor=BG)
+
     fig.suptitle(
-        "Stap 2.1  --  FastAPI service:  dunne HTTP-schil om floodopt-core",
+        "Stap 2.1 -- FastAPI  (78/78 tests geslaagd)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
+
     gs = gridspec.GridSpec(
-        1,
         2,
-        wspace=0.40,
-        top=0.92,
-        bottom=0.05,
-        left=0.04,
-        right=0.98,
-    )
-    ax_flow = fig.add_subplot(gs[0, 0])
-    ax_table = fig.add_subplot(gs[0, 1])
-
-    # ---- left: request flow ----
-    ax_flow.set_xlim(0, 10)
-    ax_flow.set_ylim(0, 10.5)
-    ax_flow.axis("off")
-    ax_flow.set_title("Request-flow  (stap 2.1 MVP)", fontsize=11, color=DARK, pad=10)
-
-    # Client
-    _box(ax_flow, 0.3, 8.5, 2.4, 1.2, "#e8f0fe", BLUE, lw=2, radius=0.10)
-    ax_flow.text(
-        1.5,
-        9.12,
-        "Client /\nSwagger UI",
-        ha="center",
-        va="center",
-        fontsize=9,
-        fontweight="bold",
-        color=BLUE,
+        2,
+        figure=fig,
+        width_ratios=[9, 11],
+        height_ratios=[12, 1],
+        hspace=0.15,
+        wspace=0.35,
     )
 
-    # FastAPI
-    _box(ax_flow, 3.5, 7.5, 3.0, 2.5, "#fff3cd", ORANGE, lw=2, radius=0.10)
-    ax_flow.text(
-        5.0,
-        9.65,
-        "FastAPI",
-        ha="center",
-        fontsize=10,
-        fontweight="bold",
-        color="#856404",
-    )
-    endpoints_left = [
-        "POST /scenarios",
-        "POST /trajectories",
-        "POST /optimize",
-        "GET  /results/{id}",
+    # --- Left: request flow table ---
+    ax_l = fig.add_subplot(gs[0, 0])
+    ax_l.axis("off")
+    ax_l.set_facecolor(BG)
+    ax_l.set_title("Request-flow", fontsize=11, fontweight="bold", color=DARK, pad=8)
+
+    flow_rows = [
+        ["1", "Client / Swagger", "HTTP request"],
+        ["2", "FastAPI", "Valideer request (Pydantic)"],
+        ["3", "get_repositories()", "Kies SQLite of PostgreSQL"],
+        ["4", "OrmRepositories", "Sla op / haal op"],
+        ["5", "floodopt-core", "Bereken (Physics/Risk/Optimizer)"],
+        ["6", "FastAPI", "Return JSON response"],
     ]
-    for i, ep in enumerate(endpoints_left):
-        ax_flow.text(
-            5.0,
-            9.15 - i * 0.40,
-            ep,
-            ha="center",
-            fontsize=8,
-            color="#495057",
-            fontfamily="monospace",
-        )
 
-    # floodopt-core
-    _box(ax_flow, 3.5, 3.5, 3.0, 3.2, "#d1fae5", GREEN, lw=2, radius=0.10)
-    ax_flow.text(
-        5.0,
-        6.30,
-        "floodopt-core",
-        ha="center",
-        fontsize=10,
-        fontweight="bold",
-        color="#064e3b",
+    tbl_l = ax_l.table(
+        cellText=flow_rows,
+        colLabels=["Stap", "Component", "Actie"],
+        loc="center",
+        cellLoc="left",
     )
-    core_items = [
-        r"Physics: $P(t)$",
-        "Risk: NCW",
-        "Optimizer: MILP",
-        "In-memory store",
-    ]
-    for i, item in enumerate(core_items):
-        ax_flow.text(
-            5.0, 5.80 - i * 0.55, item, ha="center", fontsize=9, color="#065f46"
-        )
+    _style_table(tbl_l, n_cols=3)
 
-    # Store
-    _box(ax_flow, 7.2, 5.2, 2.4, 2.4, "#f1f3f5", GREY, lw=1.5, radius=0.10)
-    ax_flow.text(
-        8.4,
-        7.25,
-        "Store\n(in-memory)",
-        ha="center",
-        fontsize=9,
-        color=GREY,
-        fontweight="bold",
-    )
-    store_items = ["scenarios{}", "trajectories{}", "results{}"]
-    for i, s in enumerate(store_items):
-        ax_flow.text(
-            8.4,
-            6.55 - i * 0.40,
-            s,
-            ha="center",
-            fontsize=8,
-            color=GREY,
-            fontfamily="monospace",
-        )
-    ax_flow.text(
-        8.4,
-        5.40,
-        "-> PostgreSQL\n   (stap 2.2)",
-        ha="center",
-        fontsize=8,
-        color="#aaa",
-        fontstyle="italic",
-    )
+    # --- Right: endpoints table ---
+    ax_r = fig.add_subplot(gs[0, 1])
+    ax_r.axis("off")
+    ax_r.set_facecolor(BG)
+    ax_r.set_title("API-endpoints", fontsize=11, fontweight="bold", color=DARK, pad=8)
 
-    # arrows
-    _arrow(ax_flow, 2.7, 9.10, 3.5, 9.10, color=BLUE, lw=2)
-    ax_flow.text(3.1, 9.25, "HTTP", fontsize=8, color=BLUE)
-
-    _arrow(ax_flow, 5.0, 7.50, 5.0, 6.70, color="#856404", lw=2)
-    ax_flow.text(5.15, 7.10, "roept aan", fontsize=8, color="#856404")
-
-    _arrow(ax_flow, 6.5, 6.00, 7.2, 6.00, color=GREY, lw=1.5)
-    ax_flow.text(6.55, 6.15, "lees/schrijf", fontsize=8, color=GREY)
-
-    ax_flow.text(
-        5.0,
-        2.60,
-        "Geen business logic in API-laag  OK",
-        ha="center",
-        fontsize=10,
-        color="#059669",
-        fontweight="bold",
-        bbox=dict(boxstyle="round,pad=0.4", facecolor="#f0fdf4", edgecolor="#059669"),
-    )
-
-    # ---- right: endpoint table + verifications ----
-    ax_table.axis("off")
-    ax_table.set_title(
-        "Endpoints en verificatie  (20/20 tests OK)", fontsize=11, color=DARK, pad=10
-    )
-
-    ep_headers = ["Method", "Pad", "Status", "Verificatie"]
-    ep_rows = [
+    endpoint_rows = [
         ["POST", "/scenarios", "201", "roundtrip OK"],
         ["GET", "/scenarios/{id}", "200/404", "404 test OK"],
         ["POST", "/trajectories", "201", "roundtrip OK"],
@@ -1490,570 +872,290 @@ def make_api() -> None:
         ["GET", "/results/{job_id}", "200/404", "= POST resp OK"],
         ["GET", "/docs", "200", "Swagger UI OK"],
     ]
-    tbl = ax_table.table(
-        cellText=ep_rows,
-        colLabels=ep_headers,
-        loc="upper center",
-        cellLoc="center",
-        bbox=[0.0, 0.52, 1.0, 0.46],
-    )
-    tbl.auto_set_font_size(False)
-    tbl.set_fontsize(9)
-    tbl.scale(1, 1.8)
-    for (r, c), cell in tbl.get_celld().items():
-        if r == 0:
-            cell.set_facecolor(DARK)
-            cell.set_text_props(color=WHITE, fontweight="bold")
-        elif c == 0:
-            clr = BLUE if ep_rows[r - 1][0] == "POST" else GREEN
-            cell.set_text_props(color=clr, fontweight="bold")
-        elif c == 3:
-            cell.set_text_props(color="#059669")
-        elif r % 2 == 0:
-            cell.set_facecolor("#f8f9fa")
 
-    # key verifications
-    verifs = [
-        ("POST /optimize  MIN_COST", "{M02, M04}  investering EUR 1 089 224"),
-        ("POST /optimize  MAX_RR", "{M02, M03, M04}  Dh = 0.80 m"),
-        ("POST /optimize  MIN_NCW", "{alle 5}  NCW = EUR 9.0 M"),
-        ("BruteForce = Pyomo", "via API beide solvers geverifieerd"),
-        ("Geen physics in API", "math.exp afwezig in main.py"),
-    ]
-    ax_table.text(
+    tbl_r = ax_r.table(
+        cellText=endpoint_rows,
+        colLabels=["Method", "Endpoint", "Status", "Verificatie"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_r, n_cols=4)
+
+    # Color POST green, GET blue
+    method_colors = {
+        "POST": ("#d4edda", "#155724"),
+        "GET": ("#cce5ff", "#004085"),
+    }
+    for row_idx in range(1, len(endpoint_rows) + 1):
+        method = endpoint_rows[row_idx - 1][0]
+        if method in method_colors:
+            fc, tc = method_colors[method]
+            cell = tbl_r[(row_idx, 0)]
+            cell.set_facecolor(fc)
+            cell.set_text_props(color=tc, fontweight="bold", ha="center")
+
+    # --- Footer ---
+    ax_foot = fig.add_subplot(gs[1, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
         0.5,
-        0.49,
-        "Kritieke verificaties vs. stap 1.4:",
-        ha="center",
-        fontsize=10,
-        fontweight="bold",
-        color=DARK,
-        transform=ax_table.transAxes,
-    )
-    for i, (label, detail) in enumerate(verifs):
-        y = 0.42 - i * 0.08
-        ax_table.text(
-            0.03,
-            y,
-            f"OK  {label}",
-            fontsize=9,
-            color="#059669",
-            fontweight="bold",
-            transform=ax_table.transAxes,
-        )
-        ax_table.text(
-            0.03,
-            y - 0.035,
-            f"    {detail}",
-            fontsize=8,
-            color="#495057",
-            transform=ax_table.transAxes,
-        )
-
-    ax_table.text(
         0.5,
-        0.02,
-        "78/78 tests geslaagd  |  Swagger /docs OK  |  mypy schoon",
+        "78/78 tests geslaagd  |  Swagger /docs  OK  |  DATABASE_URL bepaalt backend",
         ha="center",
+        va="center",
         fontsize=10,
-        color="#059669",
-        fontweight="bold",
-        transform=ax_table.transAxes,
+        color=GREY,
+        transform=ax_foot.transAxes,
     )
 
-    plt.savefig(OUT / "stap2.1_api.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap2.1_api.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap2.1_api.png")
 
 
 # ---------------------------------------------------------------------------
-# 8. Stap 2.2 - Database architectuur
+# 8. Database / Repository pattern
 # ---------------------------------------------------------------------------
 
 
 def make_database() -> None:
-    fig = plt.figure(figsize=(15, 8), facecolor=BG)
+    """Repository-pattern tabel + schema tabel + test-breakdown barh."""
+    fig = plt.figure(figsize=(13, 7), facecolor=BG)
+
     fig.suptitle(
-        "Stap 2.2  --  Database:  SQLite (dev)  ->  PostgreSQL optioneel (prod)",
+        "Stap 2.2 -- Database  (Repository Pattern)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
+
     gs = gridspec.GridSpec(
-        1,
+        3,
         2,
-        wspace=0.40,
-        top=0.92,
-        bottom=0.05,
-        left=0.04,
-        right=0.98,
-    )
-    ax_pat = fig.add_subplot(gs[0, 0])
-    ax_schema = fig.add_subplot(gs[0, 1])
-
-    # ---- left: repository pattern ----
-    ax_pat.set_xlim(0, 10)
-    ax_pat.set_ylim(0, 10)
-    ax_pat.axis("off")
-    ax_pat.set_title(
-        "Repository-pattern  (afhankelijkheidsinjectie)",
-        fontsize=11,
-        color=DARK,
-        pad=10,
+        figure=fig,
+        width_ratios=[1, 1],
+        height_ratios=[5, 4, 1],
+        hspace=0.5,
+        wspace=0.35,
     )
 
-    # FastAPI box (top, full width)
-    _box(ax_pat, 1.0, 8.30, 8.0, 1.20, ORANGE + "33", ORANGE, lw=2, radius=0.12)
-    ax_pat.text(
-        5.0,
-        9.15,
-        "FastAPI  (main.py)",
-        ha="center",
-        va="center",
-        fontsize=10,
-        fontweight="bold",
-        color="#856404",
-    )
-    ax_pat.text(
-        5.0,
-        8.65,
-        "DATABASE_URL niet ingesteld  ->  SQLite\n"
-        "DATABASE_URL ingesteld  ->  PostgreSQL",
-        ha="center",
-        va="center",
-        fontsize=8.5,
-        color="#555",
+    # --- Left top: repository pattern ---
+    ax_rep = fig.add_subplot(gs[0, 0])
+    ax_rep.axis("off")
+    ax_rep.set_facecolor(BG)
+    ax_rep.set_title(
+        "Repository Pattern", fontsize=10, fontweight="bold", color=DARK, pad=6
     )
 
-    # MemoryRepositories
-    _box(ax_pat, 0.5, 5.70, 4.0, 2.0, "#f1f3f5", "#ced4da", lw=1.5, radius=0.10)
-    ax_pat.text(
-        2.5,
-        7.35,
-        "MemoryRepositories",
-        ha="center",
-        va="center",
-        fontsize=9,
-        fontweight="bold",
-        color=DARK,
-    )
-    ax_pat.text(
-        2.5, 6.90, "In-memory dict", ha="center", va="center", fontsize=8, color="#555"
-    )
-    ax_pat.text(
-        2.5,
-        6.55,
-        "Gebruikt in tests",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#555",
-    )
-    ax_pat.text(
-        2.5,
-        6.20,
-        "(FastAPI dep. override)",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color=GREY,
-    )
-
-    # PostgresRepositories
-    _box(ax_pat, 5.5, 5.70, 4.0, 2.0, GREEN + "22", GREEN, lw=1.5, radius=0.10)
-    ax_pat.text(
-        7.5,
-        7.35,
-        "PostgresRepositories",
-        ha="center",
-        va="center",
-        fontsize=9,
-        fontweight="bold",
-        color="#064e3b",
-    )
-    ax_pat.text(
-        7.5,
-        6.90,
-        "SQLAlchemy Session",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#555",
-    )
-    ax_pat.text(
-        7.5,
-        6.55,
-        "Werkt met SQLite",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#555",
-    )
-    ax_pat.text(
-        7.5, 6.20, "en PostgreSQL", ha="center", va="center", fontsize=8, color="#555"
-    )
-
-    # SQLite box
-    _box(ax_pat, 0.5, 3.20, 4.0, 1.80, "#f1f3f5", "#ced4da", lw=1.5, radius=0.10)
-    ax_pat.text(
-        2.5,
-        4.70,
-        "SQLite  (floodopt.db)",
-        ha="center",
-        va="center",
-        fontsize=9,
-        fontweight="bold",
-        color=DARK,
-    )
-    ax_pat.text(
-        2.5,
-        4.25,
-        "Ingebouwd in Python",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#555",
-    )
-    ax_pat.text(
-        2.5,
-        3.85,
-        "Geen installatie vereist",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#555",
-    )
-
-    # PostgreSQL box
-    _box(ax_pat, 5.5, 3.20, 4.0, 1.80, "#e8f4fd", "#0077b6", lw=1.5, radius=0.10)
-    ax_pat.text(
-        7.5,
-        4.70,
-        "PostgreSQL  (optioneel)",
-        ha="center",
-        va="center",
-        fontsize=9,
-        fontweight="bold",
-        color="#023e8a",
-    )
-    ax_pat.text(
-        7.5,
-        4.25,
-        "docker compose up -d postgres",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#0077b6",
-        fontfamily="monospace",
-    )
-    ax_pat.text(
-        7.5,
-        3.85,
-        "DATABASE_URL=postgresql://...",
-        ha="center",
-        va="center",
-        fontsize=8,
-        color="#0077b6",
-        fontfamily="monospace",
-    )
-
-    # arrows
-    _arrow(ax_pat, 3.0, 8.30, 2.5, 7.70, color=GREY, lw=1.5)
-    ax_pat.text(1.5, 8.10, "tests", fontsize=8, color=GREY, ha="center")
-
-    _arrow(ax_pat, 7.0, 8.30, 7.5, 7.70, color="#059669", lw=1.5)
-    ax_pat.text(8.3, 8.10, "productie", fontsize=8, color="#059669", ha="center")
-
-    _arrow(ax_pat, 2.5, 5.70, 2.5, 5.00, color=GREY, lw=1.5)
-    _arrow(ax_pat, 7.5, 5.70, 7.5, 5.00, color="#059669", lw=1.5)
-
-    ax_pat.text(
-        5.0,
-        2.50,
-        "84/84 tests geslaagd  |  geen Docker vereist",
-        ha="center",
-        fontsize=10,
-        color="#059669",
-        fontweight="bold",
-    )
-
-    # ---- right: schema ----
-    ax_schema.axis("off")
-    ax_schema.set_title("Database-schema", fontsize=11, color=DARK, pad=10)
-
-    tables = [
-        (
-            "scenarios",
-            [
-                "id             TEXT   PK",
-                "climate        TEXT",
-                "q_design       REAL",
-                "h_design       REAL",
-                "eta            REAL",
-            ],
-            GREEN,
-        ),
-        (
-            "trajectories",
-            [
-                "id             TEXT   PK",
-                "norm           REAL",
-                "length         REAL",
-                "p0             REAL",
-                "alpha          REAL",
-                "base_year      INT",
-            ],
-            BLUE,
-        ),
-        (
-            "optimization_results",
-            [
-                "job_id         TEXT   PK",
-                "trajectory_id  TEXT",
-                "scenario_id    TEXT",
-                "objective      TEXT",
-                "solver         TEXT",
-                "selected_ids   JSON",
-                "total_ncw      REAL",
-                "investment_npv REAL",
-            ],
-            PURPLE,
-        ),
+    rep_rows = [
+        [
+            "In-memory",
+            "MemoryRepositories",
+            "Tests (autouse fixture)",
+            "Geen DB vereist",
+        ],
+        [
+            "SQLite (dev)",
+            "OrmRepositories",
+            "Standaard (ingebouwd)",
+            "DATABASE_URL niet ingesteld",
+        ],
+        [
+            "PostgreSQL (prod)",
+            "OrmRepositories",
+            "DATABASE_URL=postgresql://...",
+            "Optioneel",
+        ],
     ]
 
-    y_cursor = 0.97
-    for name, cols, color in tables:
-        n = len(cols)
-        box_h = 0.055 * (n + 1.8)
-        y_bot = y_cursor - box_h
-        ax_schema.add_patch(
-            mpatches.FancyBboxPatch(
-                (0.02, y_bot),
-                0.96,
-                box_h,
-                transform=ax_schema.transAxes,
-                boxstyle="round,pad=0.01",
-                facecolor=color + "22",
-                edgecolor=color,
-                linewidth=1.5,
-            )
-        )
-        ax_schema.text(
-            0.50,
-            y_cursor - 0.023,
-            name,
-            ha="center",
-            fontsize=10,
-            fontweight="bold",
-            color=color,
-            transform=ax_schema.transAxes,
-        )
-        for i, col in enumerate(cols):
-            ax_schema.text(
-                0.07,
-                y_cursor - 0.053 * (i + 1.2),
-                col,
-                fontsize=8.5,
-                color="#333",
-                transform=ax_schema.transAxes,
-                fontfamily="monospace",
-            )
-        y_cursor = y_bot - 0.035
+    tbl_rep = ax_rep.table(
+        cellText=rep_rows,
+        colLabels=["Backend", "Klasse", "Gebruik", "Status"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_rep, n_cols=4)
 
-    ax_schema.text(
-        0.50,
-        0.025,
-        "SQLite: check_same_thread=False  |  PostgreSQL: pool_pre_ping=True",
-        ha="center",
-        fontsize=8,
-        color=GREY,
-        transform=ax_schema.transAxes,
+    # --- Left bottom: schema table ---
+    ax_sch = fig.add_subplot(gs[1, 0])
+    ax_sch.axis("off")
+    ax_sch.set_facecolor(BG)
+    ax_sch.set_title(
+        "Database Schema", fontsize=10, fontweight="bold", color=DARK, pad=6
     )
 
-    plt.savefig(OUT / "stap2.2_database.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    schema_rows = [
+        ["scenarios", "id, climate, q_design, h_design, eta"],
+        ["trajectories", "id, norm, length, p0, alpha, base_year"],
+        [
+            "optimization_results",
+            "job_id, trajectory_id, objective, selected_ids (JSON)",
+        ],
+    ]
+
+    tbl_sch = ax_sch.table(
+        cellText=schema_rows,
+        colLabels=["Tabel", "Sleutelvelden"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_sch, n_cols=2)
+
+    # --- Right: test breakdown bar chart ---
+    ax_bar = fig.add_subplot(gs[0:2, 1])
+    ax_bar.set_facecolor(WHITE)
+
+    categories = ["Unit tests", "CLI integration", "API integration", "DB round-trip"]
+    counts = [46, 12, 20, 6]
+    colors = [BLUE, ORANGE, GREEN, PURPLE]
+
+    y_pos = np.arange(len(categories))
+    bars = ax_bar.barh(y_pos, counts, color=colors, height=0.55, alpha=0.9)
+
+    ax_bar.set_yticks(y_pos)
+    ax_bar.set_yticklabels(categories, fontsize=10)
+    ax_bar.set_xlabel("Aantal tests", fontsize=10)
+    ax_bar.set_title(
+        f"Test-verdeling  (totaal: {sum(counts)} tests)",
+        fontsize=11,
+        fontweight="bold",
+        color=DARK,
+    )
+
+    for bar, count in zip(bars, counts):
+        ax_bar.text(
+            bar.get_width() + 0.3,
+            bar.get_y() + bar.get_height() / 2,
+            str(count),
+            va="center",
+            fontsize=10,
+            color=DARK,
+        )
+
+    ax_bar.set_xlim(0, max(counts) * 1.2)
+
+    # --- Footer ---
+    ax_foot = fig.add_subplot(gs[2, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
+        0.5,
+        0.5,
+        "84/84 tests geslaagd  |  SQLite standaard  |  PostgreSQL via DATABASE_URL",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=GREY,
+        transform=ax_foot.transAxes,
+    )
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap2.2_database.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  stap2.2_database.png")
 
 
 # ---------------------------------------------------------------------------
-# 9. Geo-stack
+# 9. Geo stack
 # ---------------------------------------------------------------------------
 
 
 def make_geo_stack() -> None:
-    fig = plt.figure(figsize=(14, 9), facecolor=BG)
+    """GeoPandas + Leaflet flow + vergelijking met PostGIS."""
+    fig = plt.figure(figsize=(13, 7), facecolor=BG)
+
     fig.suptitle(
-        "Geo-stack:  GeoPandas (server) + Leaflet (frontend)  --  geen PostGIS vereist",
+        "Geo Stack  --  GeoPandas + Leaflet  (Stap 4)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
         y=0.99,
     )
+
     gs = gridspec.GridSpec(
         2,
-        1,
-        height_ratios=[1.4, 1],
-        hspace=0.50,
-        top=0.93,
-        bottom=0.04,
-        left=0.04,
-        right=0.97,
+        2,
+        figure=fig,
+        width_ratios=[9, 11],
+        height_ratios=[12, 1],
+        hspace=0.15,
+        wspace=0.35,
     )
-    ax_flow = fig.add_subplot(gs[0])
-    ax_table = fig.add_subplot(gs[1])
 
-    # ---- top: flow ----
-    ax_flow.set_xlim(0, 14)
-    ax_flow.set_ylim(0, 4.5)
-    ax_flow.axis("off")
+    # --- Left: flow table ---
+    ax_l = fig.add_subplot(gs[0, 0])
+    ax_l.axis("off")
+    ax_l.set_facecolor(BG)
+    ax_l.set_title("GeoJSON-flow", fontsize=11, fontweight="bold", color=DARK, pad=8)
 
-    flow_boxes = [
-        (
-            1.4,
-            2.2,
-            2.4,
-            3.6,
-            "#f1f3f5",
-            GREY,
-            "#023e8a",
-            "Brondata",
-            [
-                "Shapefiles (dijkringen)",
-                "optimalise_ring_2011.sqlite",
-                "WKT in SQLite (trajectories)",
-            ],
-        ),
-        (
-            4.6,
-            2.2,
-            2.6,
-            3.6,
-            "#e8f4fd",
-            "#0077b6",
-            "#023e8a",
-            "GeoPandas",
-            [
-                "gpd.read_file(shapefile)",
-                "gdf.to_json()  ->  GeoJSON",
-                "Ruimtelijke joins",
-                "Lengteberekeningen",
-                "Clippen op dijkring",
-            ],
-        ),
-        (
-            7.8,
-            2.2,
-            2.4,
-            3.6,
-            "#fff3cd",
-            ORANGE,
-            "#856404",
-            "FastAPI",
-            [
-                "GET /trajectories/{id}/geojson",
-                "Content-Type:",
-                "application/geo+json",
-                "Stap 4.2 (gepland)",
-            ],
-        ),
-        (
-            11.0,
-            2.2,
-            2.4,
-            3.6,
-            "#dbeafe",
-            "#0077b6",
-            "#023e8a",
-            "Leaflet",
-            [
-                "Dijkvakken op kaart",
-                "Kleurgradiënt NCW",
-                "P(t) per segment",
-                "Klikbare maatregelen",
-            ],
-        ),
+    flow_rows = [
+        ["1", "Brondata", "shapefiles, WKT in SQLite"],
+        ["2", "GeoPandas", "gpd.read_file() of read_wkt()"],
+        ["3", "GeoPandas", "gdf.to_json() -> GeoJSON dict"],
+        ["4", "FastAPI endpoint", "GET /trajectories/{id}/geojson"],
+        ["5", "Leaflet (React)", "Laad GeoJSON, render op kaart"],
+        ["6", "Leaflet", "Kleurgradiënt op P(t) of NCW"],
     ]
 
-    for cx, cy, bw, bh, fc, ec, tc, title, items in flow_boxes:
-        _box(ax_flow, cx - bw / 2, cy - bh / 2, bw, bh, fc, ec, lw=2, radius=0.12)
-        ax_flow.text(
-            cx,
-            cy + bh / 2 - 0.30,
-            title,
-            ha="center",
-            va="center",
-            fontsize=11,
-            fontweight="bold",
-            color=tc,
-        )
-        for i, s in enumerate(items):
-            ax_flow.text(
-                cx,
-                cy + bh / 2 - 0.70 - i * 0.42,
-                s,
-                ha="center",
-                va="center",
-                fontsize=8,
-                color="#333",
-            )
+    tbl_l = ax_l.table(
+        cellText=flow_rows,
+        colLabels=["Stap", "Component", "Wat"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_l, n_cols=3)
 
-    arrow_midpoints = [
-        (2.6, 3.3, "#0077b6"),
-        (5.9, 3.3, ORANGE),
-        (9.1, 3.3, "#0077b6"),
-    ]
-    gap = 0.35
-    for cx, bw, color in arrow_midpoints:
-        x0 = cx + bw / 2 + gap * 0.2
-        x1 = cx + bw / 2 + gap * 0.8
-        _arrow(ax_flow, x0, 2.2, x1, 2.2, color=color, lw=2.0)
-
-    ax_flow.text(3.5, 2.35, "read", ha="center", fontsize=9, color=GREY)
-    ax_flow.text(6.75, 2.35, "GeoJSON", ha="center", fontsize=9, color="#0077b6")
-    ax_flow.text(9.95, 2.35, "HTTP", ha="center", fontsize=9, color=ORANGE)
-
-    # ---- bottom: comparison table ----
-    ax_table.axis("off")
-    ax_table.set_title(
-        "Waarom GeoPandas + Leaflet in plaats van PostGIS",
+    # --- Right: comparison table ---
+    ax_r = fig.add_subplot(gs[0, 1])
+    ax_r.axis("off")
+    ax_r.set_facecolor(BG)
+    ax_r.set_title(
+        "GeoPandas + Leaflet  vs  PostGIS",
         fontsize=11,
         fontweight="bold",
         color=DARK,
-        pad=10,
+        pad=8,
     )
 
-    tbl_headers = ["Aspect", "GeoPandas + Leaflet", "PostGIS"]
-    tbl_rows = [
-        ["Installatie", "Nul  (pip install geopandas)", "Docker / server vereist"],
-        ["Dijkvak-geometrie", "WKT in SQLite + GeoPandas", "native geometry kolom"],
-        ["GeoJSON naar Leaflet", "gdf.to_json()", "ST_AsGeoJSON()"],
-        ["Ruimtelijke query", "Python-code  (voldoende MVP)", "SQL spatial functions"],
-        ["Prod upgrade pad", "DATABASE_URL -> PostgreSQL", "altijd beschikbaar"],
+    cmp_rows = [
+        ["Installatie", "pip install geopandas", "Docker / server"],
+        ["Dijkvak geometrie", "WKT in SQLite", "native geometry kolom"],
+        ["GeoJSON voor Leaflet", "gdf.to_json()", "ST_AsGeoJSON()"],
+        ["Ruimtelijke DB-queries", "Python-code", "SQL spatial functions"],
+        ["Concurrent queries", "Prima (read-only geo)", "Prima"],
+        ["Upgrade pad", "DATABASE_URL=postgresql://", "altijd beschikbaar"],
     ]
-    tbl = ax_table.table(
-        cellText=tbl_rows,
-        colLabels=tbl_headers,
-        loc="center",
-        cellLoc="center",
-        bbox=[0.0, 0.02, 1.0, 0.90],
-    )
-    tbl.auto_set_font_size(False)
-    tbl.set_fontsize(9.5)
-    tbl.scale(1, 1.9)
-    for (r, c), cell in tbl.get_celld().items():
-        if r == 0:
-            cell.set_facecolor(DARK)
-            cell.set_text_props(color=WHITE, fontweight="bold")
-        elif c == 0:
-            cell.set_text_props(fontweight="bold", color=DARK)
-        elif c == 1:
-            cell.set_text_props(color="#059669")
-        elif r % 2 == 0:
-            cell.set_facecolor("#f0fdf4")
 
-    plt.savefig(OUT / "geo_stack.png", dpi=150, bbox_inches="tight")
-    plt.close()
+    tbl_r = ax_r.table(
+        cellText=cmp_rows,
+        colLabels=["Aspect", "GeoPandas + Leaflet", "PostGIS"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_r, n_cols=3)
+
+    # --- Footer ---
+    ax_foot = fig.add_subplot(gs[1, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
+        0.5,
+        0.5,
+        "PostGIS beschikbaar via upgrade -- "
+        "docker-compose.yml + init_schema() staan klaar",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=GREY,
+        transform=ax_foot.transAxes,
+    )
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "geo_stack.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     print("  geo_stack.png")
 
 
