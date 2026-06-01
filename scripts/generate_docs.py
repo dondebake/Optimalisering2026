@@ -934,6 +934,173 @@ def make_database_mapping() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 6. Stap 1.4 — Smoke test resultaten
+# ---------------------------------------------------------------------------
+
+
+def make_smoke_test() -> None:
+    """Visualiseert de end-to-end smoke test: traject -> optimizer -> resultaat."""
+    fig = plt.figure(figsize=(13, 8), facecolor=BG)
+    gs = gridspec.GridSpec(2, 2, hspace=0.45, wspace=0.35)
+
+    ax_flow = fig.add_subplot(gs[0, :])  # end-to-end flow
+    ax_time = fig.add_subplot(gs[1, 0])  # rekentijden
+    ax_table = fig.add_subplot(gs[1, 1])  # resultaten per objective
+
+    fig.suptitle(
+        "Stap 1.4 — Smoke Test: Traject → Optimizer → Resultaat",
+        fontsize=14,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+
+    # --- Flow diagram ---
+    ax_flow.set_xlim(0, 13)
+    ax_flow.set_ylim(0, 3)
+    ax_flow.axis("off")
+
+    boxes = [
+        (
+            0.4,
+            1.5,
+            2.0,
+            1.8,
+            BLUE,
+            "Trajectory\n& Scenario",
+            r"$P_0=1/200$, $\alpha=4$, $\eta=0.003$",
+        ),
+        (
+            3.0,
+            1.5,
+            2.0,
+            1.8,
+            GREEN,
+            "5 Kandidaat-\nmaatregelen",
+            "Δh: 0.15–0.50 m\nkosten: 0.5–2 M€",
+        ),
+        (
+            5.8,
+            1.5,
+            2.0,
+            1.8,
+            PURPLE,
+            "Risk Layer\n(NCW berekening)",
+            r"$\mathrm{NCW}=\sum P(s)\cdot V_0\cdot e^{(\gamma-\delta)s}$",
+        ),
+        (8.6, 1.5, 2.0, 1.8, RED, "BruteForce\n& Pyomo", r"$2^5=32$ combinaties"),
+        (11.4, 1.5, 1.4, 1.8, "#059669", "Resultaat\n✓ MATCH", "3/3 objectives"),
+    ]
+
+    for x, y, w, h, color, title, sub in boxes:
+        rect = mpatches.FancyBboxPatch(
+            (x - w / 2, y - h / 2),
+            w,
+            h,
+            boxstyle="round,pad=0.12",
+            facecolor=color + "33",
+            edgecolor=color,
+            linewidth=2,
+        )
+        ax_flow.add_patch(rect)
+        ax_flow.text(
+            x,
+            y + 0.25,
+            title,
+            ha="center",
+            va="center",
+            fontsize=9,
+            fontweight="bold",
+            color=color,
+        )
+        ax_flow.text(
+            x, y - 0.30, sub, ha="center", va="center", fontsize=7, color="#333333"
+        )
+
+    # Pijlen
+    for x_start, x_end in [(1.4, 2.0), (4.0, 4.8), (6.8, 7.6), (9.6, 10.4)]:
+        ax_flow.annotate(
+            "",
+            xy=(x_end, 1.5),
+            xytext=(x_start, 1.5),
+            arrowprops=dict(arrowstyle="-|>", color=GREY, lw=2),
+        )
+
+    # --- Rekentijden ---
+    objectives = ["MIN_COST", "MAX_RISK_RED.", "MIN_NCW"]
+    bf_times = [9.6, 5.2, 6.3]  # ms uit smoke test output
+    py_times = [184.6, 55.6, 7.6]
+
+    x_pos = np.arange(len(objectives))
+    w = 0.35
+    ax_time.bar(x_pos - w / 2, bf_times, w, label="BruteForce", color=RED, alpha=0.85)
+    ax_time.bar(x_pos + w / 2, py_times, w, label="Pyomo/HiGHS", color=BLUE, alpha=0.85)
+
+    for i, (b, p) in enumerate(zip(bf_times, py_times)):
+        ax_time.text(i - w / 2, b + 1.5, f"{b:.0f}", ha="center", fontsize=8, color=RED)
+        ax_time.text(
+            i + w / 2, p + 1.5, f"{p:.0f}", ha="center", fontsize=8, color=BLUE
+        )
+
+    ax_time.set_xticks(x_pos)
+    ax_time.set_xticklabels(objectives, fontsize=9)
+    ax_time.set_ylabel("Rekentijd [ms]", fontsize=10)
+    ax_time.set_title("Rekentijden  (N=5 maatregelen)", fontsize=11, color=DARK)
+    ax_time.legend(fontsize=9)
+    ax_time.set_ylim(0, 220)
+    ax_time.text(
+        0.98,
+        0.96,
+        "BruteForce sneller voor N≤5\nPyomo schaalt beter voor grote N",
+        ha="right",
+        va="top",
+        fontsize=8,
+        color=GREY,
+        transform=ax_time.transAxes,
+        bbox=dict(boxstyle="round,pad=0.3", facecolor=WHITE, edgecolor=GREY),
+    )
+
+    # --- Resultaten tabel ---
+    ax_table.axis("off")
+    ax_table.set_title("Verificatieresultaten", fontsize=11, color=DARK)
+    headers = ["Objective", "Optimum", "Waarde", "Match"]
+    rows = [
+        ["MIN_COST", "{M02, M04}", "€ 1,089,224", "BF = Py ✓"],
+        ["MAX_RISK_R.", "{M02, M03, M04}", "Δh = 0.80 m", "BF = Py ✓"],
+        ["MIN_NCW", "{alle 5}", "NCW = 9.0 M€", "BF = Py ✓"],
+    ]
+    tbl = ax_table.table(
+        cellText=rows, colLabels=headers, loc="center", cellLoc="center"
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(9)
+    tbl.scale(1, 2.0)
+    for (r, c), cell in tbl.get_celld().items():
+        if r == 0:
+            cell.set_facecolor(DARK)
+            cell.set_text_props(color="white", fontweight="bold")
+        elif c == 3:
+            cell.set_text_props(color="#059669", fontweight="bold")
+        elif r % 2 == 0:
+            cell.set_facecolor("#f0fdf4")
+
+    ax_table.text(
+        0.5,
+        0.05,
+        "58/58 tests geslaagd  ·  exitcode 0  ·  mypy schoon",
+        ha="center",
+        fontsize=9,
+        color="#059669",
+        fontweight="bold",
+        transform=ax_table.transAxes,
+    )
+
+    plt.savefig(OUT / "stap1.4_smoke_test.png", dpi=150, bbox_inches="tight")
+    plt.close()
+    print("  stap1.4_smoke_test.png")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -944,4 +1111,5 @@ if __name__ == "__main__":
     make_risk_ncw()
     make_optimization()
     make_database_mapping()
+    make_smoke_test()
     print(f"\nKlaar — alle PNG's opgeslagen in {OUT}/")

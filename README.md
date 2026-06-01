@@ -86,7 +86,7 @@ Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
 | Fase | Status | Inhoud |
 |---|---|---|
 | 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, CI-tooling |
-| 1 — MVP rekenkernel | ✅ 1.1–1.3 klaar | Physics, Risk, Optimization (traject-niveau) |
+| 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ⏳ Gepland | FastAPI, PostgreSQL, Celery |
 | 3 — Uitbreidingen | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
 | 4 — Frontend | ⏳ Gepland | React + Vite, kaartviewer |
@@ -100,6 +100,7 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | Niveau | Methode | Status |
 |---|---|---|
 | Unit | pytest per functie | ✅ 46/46 geslaagd |
+| Integratie | CLI smoke test end-to-end | ✅ 12/12 geslaagd |
 | Laag | Protocol-conformiteit via mypy | ✅ Schoon |
 | Integratie | BruteForce == Optimizer voor alle testcases | ✅ 6/6 testcases |
 | Regressie | CI runt validatie bij elke commit | ⏳ Gepland |
@@ -155,8 +156,19 @@ Beide implementaties achter `OptimizationStrategy` Protocol:
 
 **Kritieke verificatie:** `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 6 testcases ✅
 
-#### Stap 1.4 — Integratie smoke test (CLI) ⏳
-End-to-end run zonder API of database: traject → optimizer → resultaat via CLI-script.
+#### Stap 1.4 — Integratie smoke test (CLI) ✅
+
+```bash
+python scripts/run_smoke_test.py
+```
+
+End-to-end run zonder API of database: traject → optimizer → resultaat.
+
+| Objective | Optimum | Waarde | Match |
+|---|---|---|---|
+| `MIN_COST` | {M02, M04} | € 1,089,224 | BF = Py ✓ |
+| `MAX_RISK_REDUCTION` | {M02, M03, M04} | Δh = 0.80 m | BF = Py ✓ |
+| `MIN_NCW` | {alle 5} | NCW = € 9.0M | BF = Py ✓ |
 
 ---
 

@@ -223,6 +223,60 @@ Zie ook: `docs/stap1.3_optimization.svg`
 - `README.md` volledig bijgewerkt: voortgangsstatus per stap, KaTeX-formules, docs-overzicht
 - `requirements.txt` bijgewerkt: `pyomo`, `highspy`, `matplotlib` toegevoegd
 - Alle formules in `development_log.md` omgezet naar KaTeX-notatie ($\LaTeX$)
+- `stap1.4_smoke_test.png` toegevoegd
+
+---
+
+## 2026-06-01 — Stap 1.4: Integratie smoke test (CLI)
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Nieuwe bestanden:**
+- `scripts/run_smoke_test.py` — CLI-script, end-to-end zonder API of database
+- `tests/integration/test_cli_smoke.py` — 12 integratietests
+- `conftest.py` — voegt projectroot toe aan `sys.path` (voor import van `scripts/`)
+- `docs/stap1.4_smoke_test.png` — flowdiagram + rekentijden + verificatietabel
+
+**Testcase:** realistisch Rijnmond-achtig traject
+
+| Parameter | Waarde |
+|---|---|
+| $P_0$ | $1/200$ per jaar |
+| norm | $1/1000$ per jaar $\Rightarrow h_{\min} = \frac{\ln(5)}{4.0} = 0.402\,\mathrm{m}$ |
+| $\alpha$ | $4.0\ \mathrm{m}^{-1}$ |
+| $\eta$ | $0.003\ \mathrm{m/jaar}$ (W+) |
+| Schade $V_0$ | 5 miljard € |
+| Horizon $T$ | 100 jaar |
+| $N$ | 5 kandidaatmaatregelen (Δh 0.15–0.50 m, kosten 0.5–2.0 M€) |
+
+### Verificatie geslaagd
+
+- Exitcode 0 ✓
+- `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 3 objectives ✓
+
+| Objective | Optimum | Waarde |
+|---|---|---|
+| `MIN_COST` | {M02, M04} | investering € 1,089,224 |
+| `MAX_RISK_REDUCTION` | {M02, M03, M04} | Δh = 0.80 m binnen € 2M budget |
+| `MIN_NCW` | {alle 5} | NCW = € 9,020,808 |
+
+**Rekentijd (N=5, T=100):**
+
+| Optimizer | MIN_COST | MAX_RR | MIN_NCW | Totaal |
+|---|---|---|---|---|
+| BruteForce | 9.6 ms | 5.2 ms | 6.3 ms | **21 ms** |
+| Pyomo/HiGHS | 184.6 ms | 55.6 ms | 7.6 ms | 248 ms |
+
+BruteForce is sneller voor N=5 (geen solver-startup overhead). Pyomo schaalt beter voor grote N.
+
+- **58/58 tests geslaagd** (46 unit + 12 integratie) ✓
+- `mypy` schoon ✓
+
+### Volgende stap
+
+**Fase 1 volledig afgerond.** Volgende: **Stap 2.1** — FastAPI service
 
 ---
 
