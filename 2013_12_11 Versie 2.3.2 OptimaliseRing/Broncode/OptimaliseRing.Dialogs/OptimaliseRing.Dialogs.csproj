@@ -1,0 +1,237 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E5483664-0894-4659-BDFB-D0C48F5CDFA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OptimaliseRing.Dialogs</RootNamespace>
+    <AssemblyName>OptimaliseRing.Dialogs</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>OptimaliseRing.Dialogs.snk</AssemblyOriginatorKeyFile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REGISTERED;DOTNET2;DUTCH</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;REGISTERED;DOTNET2;DUTCH</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnsiCharBuffer.cs" />
+    <Compile Include="CaAboutDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaColorDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="caCommonDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="caCustDlgParams.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="caFileDialogBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="caFileOpenDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaFolderDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaFontDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaModelessDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaPageSetupDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaPickIconDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaPrintDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaRunDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CharBuffer.cs" />
+    <Compile Include="CustDlgParamsEditor.cs" />
+    <Compile Include="DesignerFormEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Design\DesignTimeServices.cs" />
+    <Compile Include="Design\DockedFormPropertyEditor.cs" />
+    <Compile Include="Design\DropDownEditorBase.cs" />
+    <Compile Include="Design\DropDownListCtrl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DialogConsts.cs" />
+    <Compile Include="DialogDesignerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogDesignerFormEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DropDownButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileFilterEditor.cs" />
+    <Compile Include="FileListViewStyles.cs" />
+    <Compile Include="FilterEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FindForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LicUuidLicenseProvider.cs" />
+    <Compile Include="PreviewWarnForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RecentFilesTabForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RecentListCtrl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Shell.cs" />
+    <Compile Include="ShellUtils.cs" />
+    <Compile Include="SpecialShellFolderEnum.cs" />
+    <Compile Include="UnicodeCharBuffer.cs" />
+    <Compile Include="Win32.cs" />
+    <Compile Include="WinFormsServices.cs" />
+    <Compile Include="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CaAboutDialog.resx">
+      <DependentUpon>CaAboutDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaColorDialog.resx">
+      <DependentUpon>CaColorDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="caCommonDialog.resx">
+      <DependentUpon>caCommonDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="caCustDlgParams.resx">
+      <DependentUpon>caCustDlgParams.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="caFileDialogBase.resx">
+      <DependentUpon>caFileDialogBase.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaFontDialog.resx">
+      <DependentUpon>CaFontDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaModelessDialog.resx">
+      <DependentUpon>CaModelessDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaPageSetupDialog.resx">
+      <DependentUpon>CaPageSetupDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaPickIconDialog.resx">
+      <DependentUpon>CaPickIconDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaPrintDialog.resx">
+      <DependentUpon>CaPrintDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaRunDialog.resx">
+      <DependentUpon>CaRunDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DesignerFormEx.resx">
+      <DependentUpon>DesignerFormEx.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Design\DropDownListCtrl.resx">
+      <DependentUpon>DropDownListCtrl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogDesignerForm.resx">
+      <DependentUpon>DialogDesignerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AboutForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\cage_logo.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OptimaliseRing.Dialogs.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,435 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OptimaliseRing.UI</RootNamespace>
+    <AssemblyName>OptimaliseRing</AssemblyName>
+    <ApplicationIcon>rws.ico</ApplicationIcon>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>OptimaliseRing.UI.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetMagic2005, Version=5.0.1.0, Culture=neutral, PublicKeyToken=6cf6edec59e036ec, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.ReportViewer.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="NMathCore, Version=2.2.2.0, Culture=neutral, PublicKeyToken=f5f99359d617d502" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TeeChart, Version=2.0.2306.26232, Culture=neutral, PublicKeyToken=9c8126276c77bdb7, processorArchitecture=MSIL" />
+    <Reference Include="TeeChart.Languages, Version=2.0.2306.26232, Culture=neutral, PublicKeyToken=9c8126276c77bdb7, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\Map\ColorConverter.cs" />
+    <Compile Include="Classes\Map\KaartlaagEigenschappen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Classes\Map\KaartlaagEigenschappen.designer.cs">
+      <DependentUpon>KaartlaagEigenschappen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\Map\KaartlagenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Classes\Map\KaartlagenForm.designer.cs">
+      <DependentUpon>KaartlagenForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\Map\MapControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Classes\Map\MapControl.designer.cs">
+      <DependentUpon>MapControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\Map\MapTips.cs" />
+    <Compile Include="Classes\Project.cs" />
+    <Compile Include="Classes\Selectie.cs" />
+    <Compile Include="Classes\LegendaItem.cs" />
+    <Compile Include="Classes\SingleApplication.cs" />
+    <Compile Include="Classes\ThisApp.cs" />
+    <Compile Include="Forms\BerekeningenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BerekeningenForm.Designer.cs">
+      <DependentUpon>BerekeningenForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GrafiekForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GrafiekForm.Designer.cs">
+      <DependentUpon>GrafiekForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InstellingenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InstellingenForm.Designer.cs">
+      <DependentUpon>InstellingenForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KeringenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KeringenForm.Designer.cs">
+      <DependentUpon>KeringenForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LegendaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LegendaForm.Designer.cs">
+      <DependentUpon>LegendaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LegendaItemsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LegendaItemsForm.Designer.cs">
+      <DependentUpon>LegendaItemsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ParameterOnzekerheidForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ParameterOnzekerheidForm.Designer.cs">
+      <DependentUpon>ParameterOnzekerheidForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ResultatenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ResultatenForm.Designer.cs">
+      <DependentUpon>ResultatenForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UitvoerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UitvoerForm.Designer.cs">
+      <DependentUpon>UitvoerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Forms\BerekeningenForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BerekeningenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GrafiekForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GrafiekForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InstellingenForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InstellingenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LegendaForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LegendaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LegendaItemsForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LegendaItemsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ResultatenForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ResultatenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UitvoerForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>UitvoerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <None Include="AchtergrondShapes\buitenland.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\buitenland.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\buitenland.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\la_ned.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\la_ned.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\la_ned.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\plaatsen.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\plaatsen.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\plaatsen.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\waterned.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\waterned.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\waterned.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Aimms\Dijk1.amb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Aimms\Dijk1.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Aimms\Dijk1.nch">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Aimms\Dijk1.prj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+    <None Include="DijkringDelen\contournl.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\contournl.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\contournl.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\den bosch.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\den bosch.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\den bosch.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dijkringdelen.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dijkringdelen.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dijkringdelen.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dww_dijkring2002_1.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dww_dijkring2002_1.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DijkringDelen\dww_dijkring2002_1.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\tiel.dbf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\tiel.shp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AchtergrondShapes\tiel.shx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Gebruikershandleiding OptimaliseRing.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Language.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="OptimaliseRing.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="OptimaliseRing.UI.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Optimalisering.Aimms\OptimaliseRing.Aimms.csproj">
+      <Project>{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}</Project>
+      <Name>OptimaliseRing.Aimms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OptimaliseRing.Core\OptimaliseRing.Core.csproj">
+      <Project>{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}</Project>
+      <Name>OptimaliseRing.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OptimaliseRing.General\OptimaliseRing.General.csproj">
+      <Project>{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}</Project>
+      <Name>OptimaliseRing.General</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Classes\Map\KaartlaagEigenschappen.en-GB.resx">
+      <DependentUpon>KaartlaagEigenschappen.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Classes\Map\KaartlaagEigenschappen.resx">
+      <DependentUpon>KaartlaagEigenschappen.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Classes\Map\KaartlagenForm.en-GB.resx">
+      <DependentUpon>KaartlagenForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Classes\Map\KaartlagenForm.resx">
+      <DependentUpon>KaartlagenForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Classes\Map\MapControl.en-GB.resx">
+      <DependentUpon>MapControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Classes\Map\MapControl.resx">
+      <DependentUpon>MapControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BerekeningenForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BerekeningenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GrafiekForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GrafiekForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InstellingenForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InstellingenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KeringenForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>KeringenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KeringenForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>KeringenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LegendaForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LegendaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LegendaItemsForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LegendaItemsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ParameterOnzekerheidForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ParameterOnzekerheidForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ParameterOnzekerheidForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ParameterOnzekerheidForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ResultatenForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ResultatenForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UitvoerForm.en-GB.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>UitvoerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Images\acrobat.ico" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Content Include="Databases\Database OptimaliseRing 2011_04_07.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Acroread.png" />
+    <Content Include="Images\chart_curve.png" />
+    <Content Include="Images\dijkringen.bmp" />
+    <Content Include="Images\help.png" />
+    <Content Include="Images\information.png" />
+    <Content Include="Images\page.png" />
+    <Content Include="Images\rws.ico" />
+    <Content Include="Instellingen\Default.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="rws.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxMapObjectsLT2">
+      <Guid>{9FD0251A-54CC-11D3-9F62-00C04F796AAD}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="MapObjectsLT2">
+      <Guid>{9FD0251A-54CC-11D3-9F62-00C04F796AAD}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

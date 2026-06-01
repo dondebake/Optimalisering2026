@@ -1,0 +1,2298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnParameterScenarios.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 631</value>
+  </data>
+  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>509, 24</value>
+  </data>
+  <data name="&gt;&gt;lblScenarioVoorHoeveelheidSchade.ZOrder" xml:space="preserve">
+    <value>52</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="panelInstellingen.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>282, 13</value>
+  </data>
+  <data name="lblEconomischScenario.Size" type="System.Drawing.Size, System.Drawing">
+    <value>114, 13</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringenUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 96</value>
+  </data>
+  <data name="nudFactorGroeiSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 519</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwonerUnit.ZOrder" xml:space="preserve">
+    <value>39</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKosten.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffeneUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblRamingVoorSlachtoffers.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="lblKlimaatScenarioEnFysischMaxAfvoer.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblSchadeFunctie.ZOrder" xml:space="preserve">
+    <value>30</value>
+  </data>
+  <data name="toolStripMenuItem4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;groupBoxInstellingen.Parent" xml:space="preserve">
+    <value>panelInstellingen</value>
+  </data>
+  <data name="btnParameterScenarios.Text" xml:space="preserve">
+    <value>&amp;Parameterscenario's</value>
+  </data>
+  <data name="&gt;&gt;btnBkeringen.Name" xml:space="preserve">
+    <value>btnBkeringen</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerInwoner.Name" xml:space="preserve">
+    <value>nudBedragPerInwoner</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem3.Name" xml:space="preserve">
+    <value>toolStripMenuItem3</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>246, 13</value>
+  </data>
+  <data name="lblAversiefactorUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 256</value>
+  </data>
+  <data name="btnOK.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="cboTypeKostenfunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="&gt;&gt;menuBestandOpschonen.Name" xml:space="preserve">
+    <value>menuBestandOpschonen</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem4.Name" xml:space="preserve">
+    <value>toolStripMenuItem4</value>
+  </data>
+  <data name="&gt;&gt;lblEconomischScenario.Name" xml:space="preserve">
+    <value>lblEconomischScenario</value>
+  </data>
+  <data name="nudBeleidsfactorOverstromingsSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="uxButtonPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>509, 38</value>
+  </data>
+  <data name="&gt;&gt;nudAversiefactor.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKansUnit.Name" xml:space="preserve">
+    <value>lblFactorKansUnit</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerDodelijkSlachtoffer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBestandSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;label2.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchadeUnit.ZOrder" xml:space="preserve">
+    <value>17</value>
+  </data>
+  <data name="label2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblKlimaatScenarioEnFysischMaxAfvoer.Name" xml:space="preserve">
+    <value>lblKlimaatScenarioEnFysischMaxAfvoer</value>
+  </data>
+  <data name="chkParametersonzekerheid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>60, 631</value>
+  </data>
+  <data name="panelInstellingen.TabIndex" type="System.Int32, mscorlib">
+    <value>36</value>
+  </data>
+  <data name="label2.TabIndex" type="System.Int32, mscorlib">
+    <value>55</value>
+  </data>
+  <data name="&gt;&gt;menuBestandWerkmap.Name" xml:space="preserve">
+    <value>menuBestandWerkmap</value>
+  </data>
+  <data name="&gt;&gt;panelInstellingen.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringenUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="lblBedragPerGetroffeneUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 13</value>
+  </data>
+  <data name="lblZichtJaarUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="lblAversiefactorUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>59</value>
+  </data>
+  <data name="&gt;&gt;btnCancel.Name" xml:space="preserve">
+    <value>btnCancel</value>
+  </data>
+  <data name="nudDiscontovoetSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 67</value>
+  </data>
+  <data name="nudOptimaleOverstromingskansenJaar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 40</value>
+  </data>
+  <data name="uxButtonPanel.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Bottom</value>
+  </data>
+  <data name="menuBestandOpschonen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringenUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="uxButtonPanel.TabIndex" type="System.Int32, mscorlib">
+    <value>32</value>
+  </data>
+  <data name="menuBestandOpenen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;menuBestandOpenen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="&gt;&gt;cboKlimaatScenarioEnFysischMaxAfvoer.Name" xml:space="preserve">
+    <value>cboKlimaatScenarioEnFysischMaxAfvoer</value>
+  </data>
+  <data name="lblBedragPerGetroffene.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;lblKostenfactorUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboRamingVoorSlachtoffers.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetSchade.Text" xml:space="preserve">
+    <value>Discontovoet schade</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudFactorKosten.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="&gt;&gt;btnBkeringen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschadeUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;btnOK.Name" xml:space="preserve">
+    <value>btnOK</value>
+  </data>
+  <data name="nudBedragPerInwoner.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="lblParametersKostenfunctie.Text" xml:space="preserve">
+    <value>Parameters kostenfunctie</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>509, 738</value>
+  </data>
+  <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator.Name" xml:space="preserve">
+    <value>toolStripSeparator</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="cboTypeKostenfunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 413</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetInvesteringen.Name" xml:space="preserve">
+    <value>nudDiscontovoetInvesteringen</value>
+  </data>
+  <data name="btnParameterScenarios.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 23</value>
+  </data>
+  <data name="&gt;&gt;cboEconomischScenario.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="toolStripMenuItem2.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaar.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="toolStripSeparator.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtofferUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="btnBkeringen.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;groupBoxInstellingen.Name" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblAversiefactorUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringenUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblFactorGroeiSchade.Text" xml:space="preserve">
+    <value>Vermenigvuldigingsfactor voor de groei van de schade</value>
+  </data>
+  <data name="nudBeleidsfactorOverstromingsSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 332</value>
+  </data>
+  <data name="lblFactorGroeiSchade.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;btnBkeringen.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lblBkeringen.Name" xml:space="preserve">
+    <value>lblBkeringen</value>
+  </data>
+  <data name="&gt;&gt;btnParameterScenarios.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="lblBkeringen.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cboTypeKostenfunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="btnParameterScenarios.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>InstellingenForm</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwoner.ZOrder" xml:space="preserve">
+    <value>58</value>
+  </data>
+  <data name="chkParametersonzekerheid.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cboSchadeFunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="mnuBestandOpen.Text" xml:space="preserve">
+    <value>&amp;Openen</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffene.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblParametersKostenfunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKosten.ZOrder" xml:space="preserve">
+    <value>28</value>
+  </data>
+  <data name="menuBestandSave.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAixJREFUOE+tk91L
+        k3EUx/cvdN9N0EW3NTWGa7EaPOUcyqphWBG9PZEv5dJlmqhYmUYtXyBb4dJJy+kknFT4BqZIjaFMJUsz
+        V7TEoabYRDD49ju/6Pm1Mi+iH5zLz+c855zvo1L9j/fsaRRUvvZltHmX8Ni9gMaGCO47ZlBb8wn22yHc
+        KJ9CackECgteIy93FBfOB6H0JrC3B6ipXsVGb2V1Dca0XhxOe8JLEXhbF7mgsuLLX3mCIwsr2G1+DrVa
+        huWQRwjcj+a5oLTk87qCn/D78CLiTD4UXJ7GAXOTEDjrZ7ngku3dH4Jf4ZHJCLZJXlhzxpGa4hSCurth
+        LsjOGo0R/A4PBsPYrHdDlgMwmRxCUF31kQvkMwFFsB7c4/+ATYkNOHL0BZKSaoXgZuU0urvATgkcP/kK
+        lmMDfNu0MJqZPps6/4D7cNDSCUmyC8HVskl0+MAyADS5vrG7f0X59Tm+VFoYzZyZEVTg5NR2GAwVQnCl
+        cByeZuChc40FJwpjek5MmU/YkH6uiHdOTmHwfg/0+jIhsOWNMRiouhPlnUnAQoI4rYSht7MYm5qDnHsN
+        e41tHNbucUGnKxICiqXjHpTPJgHBZ/Nv4U1oHqGZJVwstiNe72JwI+J3PYA2MV8IMjOG2dzLfOatBg+2
+        7JDQ0tEPX9cguvv8GHg5hH0mC9S6eiQweLumDhqNVQgo06dP9fN4UsIoJHRnOhVtmxZGM1NXKoJ3JmTH
+        Cv71r/4OTrQ4xWMwWlcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="&gt;&gt;cboEconomischScenario.Name" xml:space="preserve">
+    <value>cboEconomischScenario</value>
+  </data>
+  <data name="&gt;&gt;lblParametersKostenfunctie.Name" xml:space="preserve">
+    <value>lblParametersKostenfunctie</value>
+  </data>
+  <data name="lblDiscontovoetSchadeUnit.Text" xml:space="preserve">
+    <value>%/jaar</value>
+  </data>
+  <data name="nudBedragPerInwoner.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 174</value>
+  </data>
+  <data name="nudFactorGroeiSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="lblBedragPerInwonerUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 13</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactor.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBedragPerGetroffeneUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 231</value>
+  </data>
+  <data name="btnCancel.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="btnCancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="lblBedragPerGetroffene.Location" type="System.Drawing.Point, System.Drawing">
+    <value>191, 231</value>
+  </data>
+  <data name="lblZichtJaar.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="uxButtonPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 700</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtoffer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>151, 204</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschadeUnit.ZOrder" xml:space="preserve">
+    <value>33</value>
+  </data>
+  <data name="nudBedragPerInwoner.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="nudAversiefactor.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="nudDiscontovoetSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="toolStripMenuItem1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAlpJREFUOE+tk21I
+        k1EYhif0oyA0sqIQCix/+GcQFFH9CCmiUBTLLEjShJofVBgL2fxoU9Pp5ubUlS5rU9f8rCyjsA+pUCRC
+        TR1ppmVFUSlmhq78unrnQF1KGHTg/nEOz30993PO+7qJFrmUeiv2n+Mij+XLRLLYULdF2pxlEVIDcw0p
+        AsyxD5fmI/rQ94pqi26eOlsfuZj+7BgSm01QdA4ih7m73Yx9qGpavwatjPebqCzOprPt8YKQgzFagqL0
+        BEjyEFWVaBkdLHMxT34uYNwWR9nVTEoL0zHlp2DMSeaSRk6eKt4VWm5WM/rVPNN5SjDTLQebZEHNA1wr
+        UvHjk3E6tsNcV62e1r3KLGqtKm6WplNpSsVqVFJsOM8VfSKFWjkGtcyZptSYzvC7XByx3zQoqCnTMvlG
+        CX1prnornPUmQJcUXsbSVhGK5bIOkcmQyveeTHiv4VZ5Nk33Nc6iuSO8CIfmECYa/bE/8ON1iRipJNh5
+        F0V6Bd86lfQ1JlFj1TDVq4COKCegLVIwHmGiKRB7/V6G7+5koHozymgfYRy5E1CgTWKgXcZ1i5qWp0KS
+        rjgBcAJawph6FszYk/2M1O1isGYLX8p9ab6wgqP+3rMvYciS01GfzA1LFvQkQ6sQ9/khxhoCGHnox1Dt
+        NvorxXw0b8Km8UQh2cip6GOzgNyMeKqKM7HdjqFZJ5pRk2YJ9aql3EnxoCJxNaZ4Ly6e3UDY3O6OEXRp
+        59ApTpIhiyDh9GHORAZyPHQPB/ZtZ/cOMVvFPvh6e7F+3SrWrHRnraf7Xz/xf/rJ/kvxb84I3U1y+9/W
+        AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="lblParametersKostenfunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>174, 443</value>
+  </data>
+  <data name="&gt;&gt;nudOptimaleOverstromingskansenJaar.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="nudDiscontovoetInvesteringen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKans.Name" xml:space="preserve">
+    <value>nudFactorKans</value>
+  </data>
+  <data name="&gt;&gt;nudBeleidsfactorOverstromingsSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringenUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 13</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschade.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="toolStripMenuItem4.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;nudFactorGroeiSchade.Name" xml:space="preserve">
+    <value>nudFactorGroeiSchade</value>
+  </data>
+  <data name="cboDijkringspecifiekeFactorSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 386</value>
+  </data>
+  <data name="lblFactorGroeiSchade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblSchadeFunctie.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="lblRamingVoorSlachtoffers.Location" type="System.Drawing.Point, System.Drawing">
+    <value>127, 150</value>
+  </data>
+  <data name="&gt;&gt;cboDijkringspecifiekeFactorSchade.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;lblEconomischScenario.ZOrder" xml:space="preserve">
+    <value>59</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchade.Name" xml:space="preserve">
+    <value>lblDiscontovoetSchade</value>
+  </data>
+  <data name="lblBedragPerGetroffeneUnit.Text" xml:space="preserve">
+    <value>K€</value>
+  </data>
+  <data name="&gt;&gt;menuBestandOpenen.Name" xml:space="preserve">
+    <value>menuBestandOpenen</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandSave.Name" xml:space="preserve">
+    <value>mnuBestandSave</value>
+  </data>
+  <data name="cboEconomischScenario.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="&gt;&gt;btnCancel.Parent" xml:space="preserve">
+    <value>uxButtonPanel</value>
+  </data>
+  <data name="toolStripMenuItem1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="lblZichtJaar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>143, 13</value>
+  </data>
+  <data name="&gt;&gt;cboRamingVoorSlachtoffers.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblVeiligheidsnormen.TabIndex" type="System.Int32, mscorlib">
+    <value>49</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem2.Name" xml:space="preserve">
+    <value>toolStripMenuItem2</value>
+  </data>
+  <data name="&gt;&gt;lblSchadeFunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;cboEconomischScenario.ZOrder" xml:space="preserve">
+    <value>50</value>
+  </data>
+  <data name="lblDiscontovoetSchadeUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="lblBkeringen.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem5.Name" xml:space="preserve">
+    <value>toolStripMenuItem5</value>
+  </data>
+  <data name="&gt;&gt;cboParametersKostenfunctie.Name" xml:space="preserve">
+    <value>cboParametersKostenfunctie</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschadeUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="&gt;&gt;nudOptimaleOverstromingskansenJaar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerGetroffene.Text" xml:space="preserve">
+    <value>Bedrag per getroffene</value>
+  </data>
+  <data name="&gt;&gt;nudBeleidsfactorOverstromingsSchade.ZOrder" xml:space="preserve">
+    <value>36</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchadeUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="label1.TabIndex" type="System.Int32, mscorlib">
+    <value>53</value>
+  </data>
+  <data name="&gt;&gt;uxButtonPanel.Name" xml:space="preserve">
+    <value>uxButtonPanel</value>
+  </data>
+  <data name="&gt;&gt;lblKostenfactorUnit.ZOrder" xml:space="preserve">
+    <value>26</value>
+  </data>
+  <data name="lblAversiefactorUnit.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtofferUnit.Text" xml:space="preserve">
+    <value>K€</value>
+  </data>
+  <data name="&gt;&gt;panelInstellingen.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cboParametersKostenfunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 440</value>
+  </data>
+  <data name="cboVeiligheidsnorm.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 572</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerGetroffene.ZOrder" xml:space="preserve">
+    <value>42</value>
+  </data>
+  <data name="&gt;&gt;lblParametersKostenfunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblKostenfactorUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="nudBedragPerGetroffene.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="cboVeiligheidsnorm.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="toolStripMenuItem3.Text" xml:space="preserve">
+    <value>Ops&amp;laan als</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="&gt;&gt;btnParameterScenarios.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtoffer.ZOrder" xml:space="preserve">
+    <value>57</value>
+  </data>
+  <data name="&gt;&gt;nudZichtJaar.Name" xml:space="preserve">
+    <value>nudZichtJaar</value>
+  </data>
+  <data name="&gt;&gt;cboVeiligheidsnorm.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblKostenfactorUnit.Name" xml:space="preserve">
+    <value>lblKostenfactorUnit</value>
+  </data>
+  <data name="&gt;&gt;cboParametersKostenfunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnBkeringen.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="toolStripMenuItem3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
+    <value>toolStripSeparator5</value>
+  </data>
+  <data name="nudAanpassingsfactorOverstromingsSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="cboKlimaatScenarioEnFysischMaxAfvoer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 545</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Name" xml:space="preserve">
+    <value>toolStripMenuItem1</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaarUnit.ZOrder" xml:space="preserve">
+    <value>20</value>
+  </data>
+  <data name="lblVeiligheidsnormen.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>225, 13</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="btnCancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>431, 9</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
+    <value>menuStrip</value>
+  </data>
+  <data name="menuBestandOpenen.Text" xml:space="preserve">
+    <value>&amp;Openen</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchadeUnit.Name" xml:space="preserve">
+    <value>lblFactorGroeiSchadeUnit</value>
+  </data>
+  <data name="&gt;&gt;nudFactorGroeiSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudAversiefactor.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 254</value>
+  </data>
+  <data name="lblFactorKosten.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 13</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.Text" xml:space="preserve">
+    <value>Dijkringspecifieke aanpassingsfactor overstromingsschade</value>
+  </data>
+  <data name="lblBedragPerInwoner.Text" xml:space="preserve">
+    <value>Bedrag per inwoner</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwoner.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 13</value>
+  </data>
+  <data name="panelInstellingen.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;uxButtonPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudAanpassingsfactorOverstromingsSchade.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="lblTypeKostenfunctie.Text" xml:space="preserve">
+    <value>Type kostenfunctie</value>
+  </data>
+  <data name="&gt;&gt;label1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>105, 42</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBedragPerGetroffeneUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cboDijkringspecifiekeFactorSchade.Name" xml:space="preserve">
+    <value>cboDijkringspecifiekeFactorSchade</value>
+  </data>
+  <data name="menuBestandOpschonen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactorUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschade.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchadeUnit.Name" xml:space="preserve">
+    <value>lblDiscontovoetSchadeUnit</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>19, 389</value>
+  </data>
+  <data name="btnBkeringen.Text" xml:space="preserve">
+    <value>Percen&amp;tages</value>
+  </data>
+  <data name="nudFactorKans.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="lblKlimaatScenarioEnFysischMaxAfvoer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>91, 548</value>
+  </data>
+  <data name="&gt;&gt;cboScenarioVoorHoeveelheidSchade.ZOrder" xml:space="preserve">
+    <value>48</value>
+  </data>
+  <data name="lblAversiefactor.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnOK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="cboKlimaatScenarioEnFysischMaxAfvoer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="nudOptimaleOverstromingskansenJaar.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;menuBestandSaveAs.Name" xml:space="preserve">
+    <value>menuBestandSaveAs</value>
+  </data>
+  <data name="lblFactorKosten.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblKostenfactorUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>37</value>
+  </data>
+  <data name="&gt;&gt;lblParametersKostenfunctie.ZOrder" xml:space="preserve">
+    <value>53</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwonerUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="label1.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="cboScenarioVoorHoeveelheidSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="lblBedragPerInwonerUnit.Text" xml:space="preserve">
+    <value>K€</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschadeUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="toolStripMenuItem2.Text" xml:space="preserve">
+    <value>O&amp;pslaan</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKosten.Name" xml:space="preserve">
+    <value>lblFactorKosten</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschadeUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="toolStripMenuItem4.Text" xml:space="preserve">
+    <value>Op&amp;schonen</value>
+  </data>
+  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>34</value>
+  </data>
+  <data name="lblEconomischScenario.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblRamingVoorSlachtoffers.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;cboSchadeFunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschadeUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>367, 362</value>
+  </data>
+  <data name="lblAversiefactorUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschadeUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorKans.TabIndex" type="System.Int32, mscorlib">
+    <value>38</value>
+  </data>
+  <data name="toolStripMenuItem2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="cboSchadeFunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;nudAversiefactor.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;menuBestandExit.Name" xml:space="preserve">
+    <value>menuBestandExit</value>
+  </data>
+  <data name="btnBkeringen.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="&gt;&gt;label2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblRamingVoorSlachtoffers.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 13</value>
+  </data>
+  <data name="menuBestandOpenen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKansUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblKostenfactorUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.TabIndex" type="System.Int32, mscorlib">
+    <value>52</value>
+  </data>
+  <data name="&gt;&gt;lblOptimaleOverstromingskansenJaar.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;btnParameterScenarios.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mnuBestand.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 20</value>
+  </data>
+  <data name="lblBkeringen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>158, 607</value>
+  </data>
+  <data name="&gt;&gt;lblTypeKostenfunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtofferUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchade.ZOrder" xml:space="preserve">
+    <value>19</value>
+  </data>
+  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandOpen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxButtonPanel.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschadeUnit.Name" xml:space="preserve">
+    <value>lblBeleidsfactorOverstromingsschadeUnit</value>
+  </data>
+  <data name="nudBedragPerGetroffene.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="toolStripMenuItem6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;nudOptimaleOverstromingskansenJaar.Name" xml:space="preserve">
+    <value>nudOptimaleOverstromingskansenJaar</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchade.ZOrder" xml:space="preserve">
+    <value>61</value>
+  </data>
+  <data name="toolStripMenuItem5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="lblBkeringen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>143, 13</value>
+  </data>
+  <data name="&gt;&gt;btnCancel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtofferUnit.ZOrder" xml:space="preserve">
+    <value>38</value>
+  </data>
+  <data name="toolStripMenuItem5.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="lblSchadeFunctie.Text" xml:space="preserve">
+    <value>Schadefunctie</value>
+  </data>
+  <data name="lblDiscontovoetSchadeUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 13</value>
+  </data>
+  <data name="lblBedragPerGetroffene.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="lblParametersKostenfunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;lblSchadeFunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboVeiligheidsnorm.Name" xml:space="preserve">
+    <value>cboVeiligheidsnorm</value>
+  </data>
+  <data name="&gt;&gt;lblSchadeFunctie.Name" xml:space="preserve">
+    <value>lblSchadeFunctie</value>
+  </data>
+  <data name="lblFactorKosten.Location" type="System.Drawing.Point, System.Drawing">
+    <value>141, 470</value>
+  </data>
+  <data name="lblVeiligheidsnormen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>209, 575</value>
+  </data>
+  <data name="&gt;&gt;nudAanpassingsfactorOverstromingsSchade.Name" xml:space="preserve">
+    <value>nudAanpassingsfactorOverstromingsSchade</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupBoxInstellingen.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>55, 361</value>
+  </data>
+  <data name="&gt;&gt;lblScenarioVoorHoeveelheidSchade.Name" xml:space="preserve">
+    <value>lblScenarioVoorHoeveelheidSchade</value>
+  </data>
+  <data name="&gt;&gt;cboSchadeFunctie.ZOrder" xml:space="preserve">
+    <value>29</value>
+  </data>
+  <data name="&gt;&gt;cboEconomischScenario.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringenUnit.Text" xml:space="preserve">
+    <value>%/jaar</value>
+  </data>
+  <data name="&gt;&gt;cboTypeKostenfunctie.Name" xml:space="preserve">
+    <value>cboTypeKostenfunctie</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschadeUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>367, 335</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerGetroffene.Name" xml:space="preserve">
+    <value>nudBedragPerGetroffene</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringen.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerInwoner.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschadeUnit.ZOrder" xml:space="preserve">
+    <value>34</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerInwoner.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKosten.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboTypeKostenfunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorKans.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblZichtJaar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>158, 16</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerInwoner.ZOrder" xml:space="preserve">
+    <value>44</value>
+  </data>
+  <data name="mnuBestandOpen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAlpJREFUOE+tk21I
+        k1EYhif0oyA0sqIQCix/+GcQFFH9CCmiUBTLLEjShJofVBgL2fxoU9Pp5ubUlS5rU9f8rCyjsA+pUCRC
+        TR1ppmVFUSlmhq78unrnQF1KGHTg/nEOz30993PO+7qJFrmUeiv2n+Mij+XLRLLYULdF2pxlEVIDcw0p
+        AsyxD5fmI/rQ94pqi26eOlsfuZj+7BgSm01QdA4ih7m73Yx9qGpavwatjPebqCzOprPt8YKQgzFagqL0
+        BEjyEFWVaBkdLHMxT34uYNwWR9nVTEoL0zHlp2DMSeaSRk6eKt4VWm5WM/rVPNN5SjDTLQebZEHNA1wr
+        UvHjk3E6tsNcV62e1r3KLGqtKm6WplNpSsVqVFJsOM8VfSKFWjkGtcyZptSYzvC7XByx3zQoqCnTMvlG
+        CX1prnornPUmQJcUXsbSVhGK5bIOkcmQyveeTHiv4VZ5Nk33Nc6iuSO8CIfmECYa/bE/8ON1iRipJNh5
+        F0V6Bd86lfQ1JlFj1TDVq4COKCegLVIwHmGiKRB7/V6G7+5koHozymgfYRy5E1CgTWKgXcZ1i5qWp0KS
+        rjgBcAJawph6FszYk/2M1O1isGYLX8p9ab6wgqP+3rMvYciS01GfzA1LFvQkQ6sQ9/khxhoCGHnox1Dt
+        NvorxXw0b8Km8UQh2cip6GOzgNyMeKqKM7HdjqFZJ5pRk2YJ9aql3EnxoCJxNaZ4Ly6e3UDY3O6OEXRp
+        59ApTpIhiyDh9GHORAZyPHQPB/ZtZ/cOMVvFPvh6e7F+3SrWrHRnraf7Xz/xf/rJ/kvxb84I3U1y+9/W
+        AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblEconomischScenario.Location" type="System.Drawing.Point, System.Drawing">
+    <value>187, 123</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>196, 13</value>
+  </data>
+  <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;nudAanpassingsfactorOverstromingsSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblZichtJaarUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKosten.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblFactorKans.Location" type="System.Drawing.Point, System.Drawing">
+    <value>38, 496</value>
+  </data>
+  <data name="cboEconomischScenario.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 120</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="menuBestandWerkmap.Text" xml:space="preserve">
+    <value>&amp;Werkmap</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwonerUnit.Name" xml:space="preserve">
+    <value>lblBedragPerInwonerUnit</value>
+  </data>
+  <data name="nudBedragPerDodelijkSlachtoffer.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="nudFactorGroeiSchade.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;cboScenarioVoorHoeveelheidSchade.Name" xml:space="preserve">
+    <value>cboScenarioVoorHoeveelheidSchade</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffeneUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudBedragPerInwoner.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="lblOptimaleOverstromingskansenJaar.Text" xml:space="preserve">
+    <value>Jaar voor optimale overstromingskansen</value>
+  </data>
+  <data name="&gt;&gt;nudOptimaleOverstromingskansenJaar.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="panelInstellingen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="&gt;&gt;btnOK.Parent" xml:space="preserve">
+    <value>uxButtonPanel</value>
+  </data>
+  <data name="nudBedragPerDodelijkSlachtoffer.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;lblScenarioVoorHoeveelheidSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cboSchadeFunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="menuBestandExit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="cboTypeKostenfunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="mnuBestandSave.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschade.Name" xml:space="preserve">
+    <value>lblBeleidsfactorOverstromingsschade</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterParent</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>&amp;Annuleren</value>
+  </data>
+  <data name="lblBkeringen.Text" xml:space="preserve">
+    <value>Toedeling kosten B-keringen</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaarUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffeneUnit.Name" xml:space="preserve">
+    <value>lblBedragPerGetroffeneUnit</value>
+  </data>
+  <data name="lblAversiefactor.Location" type="System.Drawing.Point, System.Drawing">
+    <value>173, 255</value>
+  </data>
+  <data name="&gt;&gt;cboSchadeFunctie.Name" xml:space="preserve">
+    <value>cboSchadeFunctie</value>
+  </data>
+  <data name="cboParametersKostenfunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtoffer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 13</value>
+  </data>
+  <data name="&gt;&gt;cboScenarioVoorHoeveelheidSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblTypeKostenfunctie.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;nudAversiefactor.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringen.Text" xml:space="preserve">
+    <value>Discontovoet investeringen</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringen.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschadeUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschadeUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblDiscontovoetSchade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem6.Name" xml:space="preserve">
+    <value>toolStripMenuItem6</value>
+  </data>
+  <data name="lblAversiefactorUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="cboScenarioVoorHoeveelheidSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;cboKlimaatScenarioEnFysischMaxAfvoer.ZOrder" xml:space="preserve">
+    <value>47</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerInwoner.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudBedragPerDodelijkSlachtoffer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 201</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKans.ZOrder" xml:space="preserve">
+    <value>24</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>165, 96</value>
+  </data>
+  <data name="&gt;&gt;cboKlimaatScenarioEnFysischMaxAfvoer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mnuBestandOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;lblTypeKostenfunctie.Name" xml:space="preserve">
+    <value>lblTypeKostenfunctie</value>
+  </data>
+  <data name="nudZichtJaar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="lblVeiligheidsnormen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>92, 13</value>
+  </data>
+  <data name="lblBedragPerInwonerUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 177</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKans.ZOrder" xml:space="preserve">
+    <value>25</value>
+  </data>
+  <data name="lblKlimaatScenarioEnFysischMaxAfvoer.Text" xml:space="preserve">
+    <value>Klimaatscenario en fysisch maximum afvoer</value>
+  </data>
+  <data name="lblFactorKans.Text" xml:space="preserve">
+    <value>Vermenigvuldigingsfactor voor kansen uitgangssituatie</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKans.Name" xml:space="preserve">
+    <value>lblFactorKans</value>
+  </data>
+  <data name="&gt;&gt;label2.Name" xml:space="preserve">
+    <value>label2</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtoffer.Name" xml:space="preserve">
+    <value>lblBedragPerDodelijkSlachtoffer</value>
+  </data>
+  <data name="&gt;&gt;menuBestandSaveAs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschadeUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="lblFactorKansUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKansUnit.ZOrder" xml:space="preserve">
+    <value>23</value>
+  </data>
+  <data name="&gt;&gt;nudBeleidsfactorOverstromingsSchade.Name" xml:space="preserve">
+    <value>nudBeleidsfactorOverstromingsSchade</value>
+  </data>
+  <data name="&gt;&gt;lblVeiligheidsnormen.Name" xml:space="preserve">
+    <value>lblVeiligheidsnormen</value>
+  </data>
+  <data name="menuBestandWerkmap.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKosten.ZOrder" xml:space="preserve">
+    <value>27</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschadeUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblKlimaatScenarioEnFysischMaxAfvoer.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudFactorKans.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtofferUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschadeUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="nudAanpassingsfactorOverstromingsSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 359</value>
+  </data>
+  <data name="cboEconomischScenario.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="cboRamingVoorSlachtoffers.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="&gt;&gt;lblBkeringen.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="toolStripMenuItem2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAixJREFUOE+tk91L
+        k3EUx/cvdN9N0EW3NTWGa7EaPOUcyqphWBG9PZEv5dJlmqhYmUYtXyBb4dJJy+kknFT4BqZIjaFMJUsz
+        V7TEoabYRDD49ju/6Pm1Mi+iH5zLz+c855zvo1L9j/fsaRRUvvZltHmX8Ni9gMaGCO47ZlBb8wn22yHc
+        KJ9CackECgteIy93FBfOB6H0JrC3B6ipXsVGb2V1Dca0XhxOe8JLEXhbF7mgsuLLX3mCIwsr2G1+DrVa
+        huWQRwjcj+a5oLTk87qCn/D78CLiTD4UXJ7GAXOTEDjrZ7ngku3dH4Jf4ZHJCLZJXlhzxpGa4hSCurth
+        LsjOGo0R/A4PBsPYrHdDlgMwmRxCUF31kQvkMwFFsB7c4/+ATYkNOHL0BZKSaoXgZuU0urvATgkcP/kK
+        lmMDfNu0MJqZPps6/4D7cNDSCUmyC8HVskl0+MAyADS5vrG7f0X59Tm+VFoYzZyZEVTg5NR2GAwVQnCl
+        cByeZuChc40FJwpjek5MmU/YkH6uiHdOTmHwfg/0+jIhsOWNMRiouhPlnUnAQoI4rYSht7MYm5qDnHsN
+        e41tHNbucUGnKxICiqXjHpTPJgHBZ/Nv4U1oHqGZJVwstiNe72JwI+J3PYA2MV8IMjOG2dzLfOatBg+2
+        7JDQ0tEPX9cguvv8GHg5hH0mC9S6eiQweLumDhqNVQgo06dP9fN4UsIoJHRnOhVtmxZGM1NXKoJ3JmTH
+        Cv71r/4OTrQ4xWMwWlcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerDodelijkSlachtoffer.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblFactorKansUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>40</value>
+  </data>
+  <data name="lblDiscontovoetSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>193, 69</value>
+  </data>
+  <data name="lblFactorKansUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;nudFactorGroeiSchade.ZOrder" xml:space="preserve">
+    <value>18</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKans.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;groupBoxInstellingen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuStrip.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="nudBeleidsfactorOverstromingsSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="toolStripMenuItem6.Text" xml:space="preserve">
+    <value>&amp;Afsluiten</value>
+  </data>
+  <data name="chkParametersonzekerheid.Text" xml:space="preserve">
+    <value>Rekenen met parametersonzekerheid</value>
+  </data>
+  <data name="menuBestandWerkmap.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschadeUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>29</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>OptimaliseRing - Instellingen</value>
+  </data>
+  <data name="lblRamingVoorSlachtoffers.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblScenarioVoorHoeveelheidSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudDiscontovoetInvesteringen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 93</value>
+  </data>
+  <data name="&gt;&gt;nudAanpassingsfactorOverstromingsSchade.ZOrder" xml:space="preserve">
+    <value>35</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaarUnit.Name" xml:space="preserve">
+    <value>lblZichtJaarUnit</value>
+  </data>
+  <data name="menuBestandSave.Text" xml:space="preserve">
+    <value>O&amp;pslaan</value>
+  </data>
+  <data name="mnuBestandSaveAs.Text" xml:space="preserve">
+    <value>Ops&amp;laan als</value>
+  </data>
+  <data name="btnOK.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="&gt;&gt;btnOK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerInwoner.Size" type="System.Drawing.Size, System.Drawing">
+    <value>99, 13</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringenUnit.ZOrder" xml:space="preserve">
+    <value>40</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandSaveAs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblOptimaleOverstromingskansenJaar.Name" xml:space="preserve">
+    <value>lblOptimaleOverstromingskansenJaar</value>
+  </data>
+  <data name="lblZichtJaarUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>43</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mnuBestand.Name" xml:space="preserve">
+    <value>mnuBestand</value>
+  </data>
+  <data name="&gt;&gt;lblTypeKostenfunctie.ZOrder" xml:space="preserve">
+    <value>16</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactor.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cboKlimaatScenarioEnFysischMaxAfvoer.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="&gt;&gt;menuBestandSave.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschade.Text" xml:space="preserve">
+    <value>Algemene aanpassingsfactor overstromingsschade</value>
+  </data>
+  <data name="lblZichtJaar.Text" xml:space="preserve">
+    <value>Eerste jaar in de optimalisatie</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaar.Name" xml:space="preserve">
+    <value>lblZichtJaar</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKans.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="groupBoxInstellingen.Text" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="&gt;&gt;nudAanpassingsfactorOverstromingsSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtoffer.Text" xml:space="preserve">
+    <value>Bedrag per dodelijk slachtoffer</value>
+  </data>
+  <data name="&gt;&gt;chkParametersonzekerheid.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschade.ZOrder" xml:space="preserve">
+    <value>55</value>
+  </data>
+  <data name="&gt;&gt;nudZichtJaar.ZOrder" xml:space="preserve">
+    <value>21</value>
+  </data>
+  <data name="&gt;&gt;lblVeiligheidsnormen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>46</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetInvesteringen.ZOrder" xml:space="preserve">
+    <value>45</value>
+  </data>
+  <data name="&gt;&gt;menuBestandOpschonen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboKlimaatScenarioEnFysischMaxAfvoer.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudZichtJaar.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="nudZichtJaar.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetSchade.ZOrder" xml:space="preserve">
+    <value>46</value>
+  </data>
+  <data name="&gt;&gt;cboVeiligheidsnorm.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="nudAversiefactor.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="mnuBestandSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;lblDijkringspecifiekeFactorSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblKostenfactorUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;btnOK.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lblFactorKansUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 496</value>
+  </data>
+  <data name="cboVeiligheidsnorm.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="&gt;&gt;cboDijkringspecifiekeFactorSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblBedragPerInwonerUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cboRamingVoorSlachtoffers.Name" xml:space="preserve">
+    <value>cboRamingVoorSlachtoffers</value>
+  </data>
+  <data name="&gt;&gt;chkParametersonzekerheid.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactorUnit.Name" xml:space="preserve">
+    <value>lblAversiefactorUnit</value>
+  </data>
+  <data name="lblFactorKosten.TabIndex" type="System.Int32, mscorlib">
+    <value>35</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandOpen.Name" xml:space="preserve">
+    <value>mnuBestandOpen</value>
+  </data>
+  <data name="&gt;&gt;lblRamingVoorSlachtoffers.Name" xml:space="preserve">
+    <value>lblRamingVoorSlachtoffers</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>61</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringenUnit.Name" xml:space="preserve">
+    <value>lblDiscontovoetInvesteringenUnit</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchadeUnit.ZOrder" xml:space="preserve">
+    <value>41</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="lblBedragPerInwonerUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffene.Name" xml:space="preserve">
+    <value>lblBedragPerGetroffene</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschade.ZOrder" xml:space="preserve">
+    <value>54</value>
+  </data>
+  <data name="toolStripMenuItem5.Text" xml:space="preserve">
+    <value>&amp;Werkmap</value>
+  </data>
+  <data name="lblDiscontovoetInvesteringen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 13</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="lblTypeKostenfunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>47</value>
+  </data>
+  <data name="&gt;&gt;lblDijkringspecifiekeFactorSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblKlimaatScenarioEnFysischMaxAfvoer.ZOrder" xml:space="preserve">
+    <value>51</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwoner.Name" xml:space="preserve">
+    <value>lblBedragPerInwoner</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 6</value>
+  </data>
+  <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 42</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschade.Text" xml:space="preserve">
+    <value>Beleidsfactor overstromingsschade</value>
+  </data>
+  <data name="lblFactorGroeiSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>37, 522</value>
+  </data>
+  <data name="&gt;&gt;lblBkeringen.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblAversiefactor.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblDijkringspecifiekeFactorSchade.Name" xml:space="preserve">
+    <value>lblDijkringspecifiekeFactorSchade</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandSaveAs.Name" xml:space="preserve">
+    <value>mnuBestandSaveAs</value>
+  </data>
+  <data name="&gt;&gt;lblEconomischScenario.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mnuBestandSave.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerInwoner.Location" type="System.Drawing.Point, System.Drawing">
+    <value>202, 177</value>
+  </data>
+  <data name="&gt;&gt;menuBestandSave.Name" xml:space="preserve">
+    <value>menuBestandSave</value>
+  </data>
+  <data name="&gt;&gt;lblFactorKansUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchadeUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorKansUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="menuBestandSaveAs.Text" xml:space="preserve">
+    <value>Ops&amp;laan als</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerGetroffene.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwonerUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblKlimaatScenarioEnFysischMaxAfvoer.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblDiscontovoetSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="lblScenarioVoorHoeveelheidSchade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblDiscontovoetSchadeUnit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblFactorKosten.Text" xml:space="preserve">
+    <value>Vermenigvuldigingsfactor kosten</value>
+  </data>
+  <data name="&gt;&gt;label1.Name" xml:space="preserve">
+    <value>label1</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtoffer.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchadeUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudZichtJaar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 14</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtofferUnit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 13</value>
+  </data>
+  <data name="lblFactorGroeiSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>264, 13</value>
+  </data>
+  <data name="cboRamingVoorSlachtoffers.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 147</value>
+  </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 13</value>
+  </data>
+  <data name="&gt;&gt;lblBkeringen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblFactorKans.Size" type="System.Drawing.Size, System.Drawing">
+    <value>263, 13</value>
+  </data>
+  <data name="lblScenarioVoorHoeveelheidSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>129, 281</value>
+  </data>
+  <data name="&gt;&gt;label1.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschadeUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblTypeKostenfunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 13</value>
+  </data>
+  <data name="cboParametersKostenfunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="&gt;&gt;mnuBestand.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="groupBoxInstellingen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>503, 670</value>
+  </data>
+  <data name="lblAversiefactor.Text" xml:space="preserve">
+    <value>Aversiefactor groepsrisico</value>
+  </data>
+  <data name="lblBedragPerGetroffene.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 13</value>
+  </data>
+  <data name="lblScenarioVoorHoeveelheidSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 13</value>
+  </data>
+  <data name="menuBestandExit.Text" xml:space="preserve">
+    <value>&amp;Afsluiten</value>
+  </data>
+  <data name="toolStripMenuItem1.Text" xml:space="preserve">
+    <value>&amp;Openen</value>
+  </data>
+  <data name="nudAversiefactor.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="lblVeiligheidsnormen.Text" xml:space="preserve">
+    <value>Veiligheidsnormen</value>
+  </data>
+  <data name="nudFactorKosten.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 467</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtofferUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 204</value>
+  </data>
+  <data name="nudFactorKosten.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="mnuBestandSave.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAixJREFUOE+tk91L
+        k3EUx/cvdN9N0EW3NTWGa7EaPOUcyqphWBG9PZEv5dJlmqhYmUYtXyBb4dJJy+kknFT4BqZIjaFMJUsz
+        V7TEoabYRDD49ju/6Pm1Mi+iH5zLz+c855zvo1L9j/fsaRRUvvZltHmX8Ni9gMaGCO47ZlBb8wn22yHc
+        KJ9CackECgteIy93FBfOB6H0JrC3B6ipXsVGb2V1Dca0XhxOe8JLEXhbF7mgsuLLX3mCIwsr2G1+DrVa
+        huWQRwjcj+a5oLTk87qCn/D78CLiTD4UXJ7GAXOTEDjrZ7ngku3dH4Jf4ZHJCLZJXlhzxpGa4hSCurth
+        LsjOGo0R/A4PBsPYrHdDlgMwmRxCUF31kQvkMwFFsB7c4/+ATYkNOHL0BZKSaoXgZuU0urvATgkcP/kK
+        lmMDfNu0MJqZPps6/4D7cNDSCUmyC8HVskl0+MAyADS5vrG7f0X59Tm+VFoYzZyZEVTg5NR2GAwVQnCl
+        cByeZuChc40FJwpjek5MmU/YkH6uiHdOTmHwfg/0+jIhsOWNMRiouhPlnUnAQoI4rYSht7MYm5qDnHsN
+        e41tHNbucUGnKxICiqXjHpTPJgHBZ/Nv4U1oHqGZJVwstiNe72JwI+J3PYA2MV8IMjOG2dzLfOatBg+2
+        7JDQ0tEPX9cguvv8GHg5hH0mC9S6eiQweLumDhqNVQgo06dP9fN4UsIoJHRnOhVtmxZGM1NXKoJ3JmTH
+        Cv71r/4OTrQ4xWMwWlcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="btnOK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>350, 9</value>
+  </data>
+  <data name="&gt;&gt;nudAversiefactor.Name" xml:space="preserve">
+    <value>nudAversiefactor</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerDodelijkSlachtoffer.Name" xml:space="preserve">
+    <value>nudBedragPerDodelijkSlachtoffer</value>
+  </data>
+  <data name="groupBoxInstellingen.TabIndex" type="System.Int32, mscorlib">
+    <value>36</value>
+  </data>
+  <data name="lblParametersKostenfunctie.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="groupBoxInstellingen.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringenUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>76, 651</value>
+  </data>
+  <data name="&gt;&gt;nudFactorGroeiSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblVeiligheidsnormen.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaar.ZOrder" xml:space="preserve">
+    <value>22</value>
+  </data>
+  <data name="&gt;&gt;nudZichtJaar.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblAversiefactor.Size" type="System.Drawing.Size, System.Drawing">
+    <value>128, 13</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerDodelijkSlachtoffer.ZOrder" xml:space="preserve">
+    <value>43</value>
+  </data>
+  <data name="nudDiscontovoetInvesteringen.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="nudBedragPerGetroffene.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 228</value>
+  </data>
+  <data name="lblTypeKostenfunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>203, 416</value>
+  </data>
+  <data name="&gt;&gt;nudBedragPerGetroffene.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKans.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblZichtJaarUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 16</value>
+  </data>
+  <data name="&gt;&gt;nudBeleidsfactorOverstromingsSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKans.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblKlimaatScenarioEnFysischMaxAfvoer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudOptimaleOverstromingskansenJaar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="btnBkeringen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 23</value>
+  </data>
+  <data name="lblDijkringspecifiekeFactorSchade.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblRamingVoorSlachtoffers.Text" xml:space="preserve">
+    <value>Raming voor het aantal slachtoffers</value>
+  </data>
+  <data name="&gt;&gt;menuBestandWerkmap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtoffer.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="panelInstellingen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>509, 676</value>
+  </data>
+  <data name="&gt;&gt;chkParametersonzekerheid.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mnuBestandSave.Text" xml:space="preserve">
+    <value>O&amp;pslaan</value>
+  </data>
+  <data name="&gt;&gt;panelInstellingen.Name" xml:space="preserve">
+    <value>panelInstellingen</value>
+  </data>
+  <data name="&gt;&gt;btnParameterScenarios.Name" xml:space="preserve">
+    <value>btnParameterScenarios</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschadeUnit.Name" xml:space="preserve">
+    <value>lblAanpassingsfactorOverstromingsschadeUnit</value>
+  </data>
+  <data name="&gt;&gt;cboParametersKostenfunctie.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="cboScenarioVoorHoeveelheidSchade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 278</value>
+  </data>
+  <data name="&gt;&gt;nudZichtJaar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBestandSaveAs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="nudFactorKosten.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="lblKostenfactorUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="label1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;chkParametersonzekerheid.Name" xml:space="preserve">
+    <value>chkParametersonzekerheid</value>
+  </data>
+  <data name="&gt;&gt;lblTypeKostenfunctie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboRamingVoorSlachtoffers.ZOrder" xml:space="preserve">
+    <value>31</value>
+  </data>
+  <data name="lblScenarioVoorHoeveelheidSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactor.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;lblOptimaleOverstromingskansenJaar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
+    <value>toolStripSeparator3</value>
+  </data>
+  <data name="&gt;&gt;lblAanpassingsfactorOverstromingsschade.Name" xml:space="preserve">
+    <value>lblAanpassingsfactorOverstromingsschade</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="cboDijkringspecifiekeFactorSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="mnuBestand.Text" xml:space="preserve">
+    <value>&amp;Bestand</value>
+  </data>
+  <data name="nudDiscontovoetInvesteringen.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactorUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudBeleidsfactorOverstromingsSchade.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="chkParametersonzekerheid.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
+    <value>toolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetSchade.Name" xml:space="preserve">
+    <value>nudDiscontovoetSchade</value>
+  </data>
+  <data name="lblBedragPerDodelijkSlachtoffer.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;cboScenarioVoorHoeveelheidSchade.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtofferUnit.Name" xml:space="preserve">
+    <value>lblBedragPerDodelijkSlachtofferUnit</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringen.Name" xml:space="preserve">
+    <value>lblDiscontovoetInvesteringen</value>
+  </data>
+  <data name="nudOptimaleOverstromingskansenJaar.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBedragPerGetroffeneUnit.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="lblAversiefactor.TabIndex" type="System.Int32, mscorlib">
+    <value>57</value>
+  </data>
+  <data name="menuBestandOpschonen.Text" xml:space="preserve">
+    <value>Op&amp;schonen</value>
+  </data>
+  <data name="chkParametersonzekerheid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>203, 17</value>
+  </data>
+  <data name="lblEconomischScenario.Text" xml:space="preserve">
+    <value>Economische scenario</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetInvesteringen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKosten.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudDiscontovoetSchade.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffene.ZOrder" xml:space="preserve">
+    <value>56</value>
+  </data>
+  <data name="nudFactorKans.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="cboRamingVoorSlachtoffers.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringen.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudBedragPerDodelijkSlachtoffer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="nudFactorKans.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 493</value>
+  </data>
+  <data name="&gt;&gt;btnCancel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetSchadeUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblVeiligheidsnormen.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;lblBeleidsfactorOverstromingsschade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactor.Name" xml:space="preserve">
+    <value>lblAversiefactor</value>
+  </data>
+  <data name="lblDiscontovoetSchadeUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 69</value>
+  </data>
+  <data name="lblAanpassingsfactorOverstromingsschade.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>(Houd rekening met een aanzienlijke rekentijd)</value>
+  </data>
+  <data name="&gt;&gt;lblRamingVoorSlachtoffers.ZOrder" xml:space="preserve">
+    <value>32</value>
+  </data>
+  <data name="btnCancel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffene.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
+    <value>toolStripSeparator6</value>
+  </data>
+  <data name="&gt;&gt;lblVeiligheidsnormen.ZOrder" xml:space="preserve">
+    <value>14</value>
+  </data>
+  <data name="&gt;&gt;lblZichtJaarUnit.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="lblEconomischScenario.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;cboTypeKostenfunctie.ZOrder" xml:space="preserve">
+    <value>15</value>
+  </data>
+  <data name="groupBoxInstellingen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="nudAanpassingsfactorOverstromingsSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
+  <data name="mnuBestandOpen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="lblScenarioVoorHoeveelheidSchade.Text" xml:space="preserve">
+    <value>Scenario voor hoeveelheid schade</value>
+  </data>
+  <data name="&gt;&gt;lblEconomischScenario.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudFactorGroeiSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="lblSchadeFunctie.TabIndex" type="System.Int32, mscorlib">
+    <value>33</value>
+  </data>
+  <data name="cboSchadeFunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 305</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtofferUnit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerDodelijkSlachtoffer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;panelInstellingen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mnuBestandSaveAs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="&gt;&gt;lblAversiefactorUnit.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="lblFactorGroeiSchade.TabIndex" type="System.Int32, mscorlib">
+    <value>45</value>
+  </data>
+  <data name="&gt;&gt;nudDiscontovoetInvesteringen.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="nudBedragPerGetroffene.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="lblSchadeFunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 13</value>
+  </data>
+  <data name="&gt;&gt;uxButtonPanel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>171, 13</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
+    <value>toolStripSeparator4</value>
+  </data>
+  <data name="lblZichtJaar.TabIndex" type="System.Int32, mscorlib">
+    <value>41</value>
+  </data>
+  <data name="&gt;&gt;cboParametersKostenfunctie.ZOrder" xml:space="preserve">
+    <value>49</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerInwoner.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblBkeringen.TabIndex" type="System.Int32, mscorlib">
+    <value>63</value>
+  </data>
+  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="lblRamingVoorSlachtoffers.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;menuBestandExit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="btnBkeringen.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 602</value>
+  </data>
+  <data name="lblTypeKostenfunctie.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;nudFactorKosten.Name" xml:space="preserve">
+    <value>nudFactorKosten</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchade.Name" xml:space="preserve">
+    <value>lblFactorGroeiSchade</value>
+  </data>
+  <data name="lblSchadeFunctie.Location" type="System.Drawing.Point, System.Drawing">
+    <value>225, 308</value>
+  </data>
+  <data name="lblKostenfactorUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 470</value>
+  </data>
+  <data name="menuBestandSave.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 22</value>
+  </data>
+  <data name="lblKlimaatScenarioEnFysischMaxAfvoer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>210, 13</value>
+  </data>
+  <data name="&gt;&gt;lblFactorGroeiSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nudDiscontovoetSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 20</value>
+  </data>
+  <data name="lblZichtJaarUnit.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="cboDijkringspecifiekeFactorSchade.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 21</value>
+  </data>
+  <data name="lblBeleidsfactorOverstromingsschade.Location" type="System.Drawing.Point, System.Drawing">
+    <value>130, 335</value>
+  </data>
+  <data name="&gt;&gt;lblOptimaleOverstromingskansenJaar.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="menuBestandOpenen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAlpJREFUOE+tk21I
+        k1EYhif0oyA0sqIQCix/+GcQFFH9CCmiUBTLLEjShJofVBgL2fxoU9Pp5ubUlS5rU9f8rCyjsA+pUCRC
+        TR1ppmVFUSlmhq78unrnQF1KGHTg/nEOz30993PO+7qJFrmUeiv2n+Mij+XLRLLYULdF2pxlEVIDcw0p
+        AsyxD5fmI/rQ94pqi26eOlsfuZj+7BgSm01QdA4ih7m73Yx9qGpavwatjPebqCzOprPt8YKQgzFagqL0
+        BEjyEFWVaBkdLHMxT34uYNwWR9nVTEoL0zHlp2DMSeaSRk6eKt4VWm5WM/rVPNN5SjDTLQebZEHNA1wr
+        UvHjk3E6tsNcV62e1r3KLGqtKm6WplNpSsVqVFJsOM8VfSKFWjkGtcyZptSYzvC7XByx3zQoqCnTMvlG
+        CX1prnornPUmQJcUXsbSVhGK5bIOkcmQyveeTHiv4VZ5Nk33Nc6iuSO8CIfmECYa/bE/8ON1iRipJNh5
+        F0V6Bd86lfQ1JlFj1TDVq4COKCegLVIwHmGiKRB7/V6G7+5koHozymgfYRy5E1CgTWKgXcZ1i5qWp0KS
+        rjgBcAJawph6FszYk/2M1O1isGYLX8p9ab6wgqP+3rMvYciS01GfzA1LFvQkQ6sQ9/khxhoCGHnox1Dt
+        NvorxXw0b8Km8UQh2cip6GOzgNyMeKqKM7HdjqFZJ5pRk2YJ9aql3EnxoCJxNaZ4Ly6e3UDY3O6OEXRp
+        59ApTpIhiyDh9GHORAZyPHQPB/ZtZ/cOMVvFPvh6e7F+3SrWrHRnraf7Xz/xf/rJ/kvxb84I3U1y+9/W
+        AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="lblFactorGroeiSchadeUnit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 522</value>
+  </data>
+  <data name="lblParametersKostenfunctie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>127, 13</value>
+  </data>
+  <data name="lblBedragPerInwoner.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cboDijkringspecifiekeFactorSchade.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboVeiligheidsnorm.Parent" xml:space="preserve">
+    <value>groupBoxInstellingen</value>
+  </data>
+  <data name="&gt;&gt;lblBedragPerGetroffeneUnit.ZOrder" xml:space="preserve">
+    <value>37</value>
+  </data>
+  <data name="&gt;&gt;lblDijkringspecifiekeFactorSchade.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblDiscontovoetInvesteringen.ZOrder" xml:space="preserve">
+    <value>60</value>
+  </data>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>32</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 0</value>
+  </metadata>
+</root>

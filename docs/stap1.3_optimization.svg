@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="700" height="500">
+
+  <rect x="0" y="0" width="700" height="500" fill="#f8f9fa" rx="8"/>
+
+  <!-- Title -->
+  <text x="20" y="26" font-size="14" font-weight="bold" fill="#1a1a2e" font-family="Arial">Stap 1.3 - Optimization Layer: BruteForce vs Pyomo/HiGHS</text>
+  <text x="20" y="44" font-size="10" fill="#6c757d" font-family="Arial">Kritieke eis: BruteForce.solve() == PyomoOptimizer.solve() voor alle testcases</text>
+
+  <!-- Problem formulation box -->
+  <rect x="20" y="54" width="660" height="110" rx="6" fill="white" stroke="#4361ee" stroke-width="1.5"/>
+  <rect x="20" y="54" width="660" height="22" rx="6" fill="#4361ee"/>
+  <text x="30" y="70" font-size="11" font-weight="bold" fill="white" font-family="Arial">Optimalisatieprobleem (MVP)</text>
+
+  <text x="30" y="92" font-size="10" fill="#212529" font-family="Arial">Beslissingsvariabelen: x_i in {0,1}  voor elke kandidaatmaatregel i</text>
+  <text x="30" y="108" font-size="10" fill="#212529" font-family="Arial">Doelfunctie (MIN_COST):   min  sum( c_i * x_i )   s.t.  sum( h_i * x_i ) >= h_min</text>
+  <text x="30" y="124" font-size="10" fill="#212529" font-family="Arial">Doelfunctie (MAX_RR):    max  sum( h_i * x_i )   s.t.  sum( c_i * x_i ) &lt;= Budget</text>
+  <text x="30" y="140" font-size="10" fill="#212529" font-family="Arial">Doelfunctie (MIN_NCW):   min  sum( (c_i - C*alpha*h_i) * x_i )   [lineaire benadering]</text>
+  <text x="30" y="155" font-size="9" fill="#6c757d" font-family="Arial">h_min = ln(P0/norm) / alpha  [uit Physics Layer]   C = NCW_risico zonder maatregelen  [uit Risk Layer]</text>
+
+  <!-- Two optimizer boxes side by side -->
+
+  <!-- BruteForce box -->
+  <rect x="20" y="178" width="320" height="180" rx="6" fill="white" stroke="#e63946" stroke-width="1.5"/>
+  <rect x="20" y="178" width="320" height="22" rx="6" fill="#e63946"/>
+  <text x="30" y="194" font-size="11" font-weight="bold" fill="white" font-family="Arial">BruteForceOptimizer</text>
+
+  <text x="30" y="216" font-size="10" font-weight="bold" fill="#212529" font-family="Arial">Methode: itereert alle 2^N deelverzamelingen</text>
+  <text x="30" y="232" font-size="10" fill="#495057" font-family="Arial">voor r = 0 .. N:</text>
+  <text x="42" y="248" font-size="10" fill="#495057" font-family="Arial">voor elke subset van grootte r:</text>
+  <text x="54" y="264" font-size="10" fill="#495057" font-family="Arial">- check afhankelijkheden</text>
+  <text x="54" y="280" font-size="10" fill="#495057" font-family="Arial">- check norm (MIN_COST)</text>
+  <text x="54" y="296" font-size="10" fill="#495057" font-family="Arial">- bereken NCW via Risk Layer</text>
+  <text x="30" y="314" font-size="10" fill="#e63946" font-family="Arial">Tijdcomplexiteit: O(2^N x T)  |  Exact  |  N &lt;= 15</text>
+  <text x="30" y="330" font-size="9" fill="#6c757d" font-family="Arial">Referentie-implementatie voor validatie</text>
+  <text x="30" y="345" font-size="9" fill="#6c757d" font-family="Arial">Geen fysische formules in de optimizer</text>
+
+  <!-- Arrow between boxes -->
+  <text x="352" y="278" font-size="20" fill="#059669" font-family="Arial">==</text>
+  <text x="344" y="298" font-size="9" fill="#059669" font-family="Arial">voor alle</text>
+  <text x="344" y="310" font-size="9" fill="#059669" font-family="Arial">testcases</text>
+
+  <!-- PyomoOptimizer box -->
+  <rect x="380" y="178" width="300" height="180" rx="6" fill="white" stroke="#4361ee" stroke-width="1.5"/>
+  <rect x="380" y="178" width="300" height="22" rx="6" fill="#4361ee"/>
+  <text x="390" y="194" font-size="11" font-weight="bold" fill="white" font-family="Arial">PyomoOptimizer + HiGHS</text>
+
+  <text x="390" y="216" font-size="10" font-weight="bold" fill="#212529" font-family="Arial">Methode: MILP via Pyomo 6.10 / HiGHS 1.14</text>
+  <text x="390" y="232" font-size="10" fill="#495057" font-family="Arial">MIN_COST / MAX_RR:</text>
+  <text x="402" y="248" font-size="10" fill="#495057" font-family="Arial">Pyomo ConcreteModel</text>
+  <text x="402" y="264" font-size="10" fill="#495057" font-family="Arial">Binary vars + constraints</text>
+  <text x="402" y="280" font-size="10" fill="#495057" font-family="Arial">HiGHS MILP solver  (exact)</text>
+  <text x="390" y="296" font-size="10" fill="#495057" font-family="Arial">MIN_NCW:</text>
+  <text x="402" y="312" font-size="10" fill="#495057" font-family="Arial">Lineair MILP (Taylor O1)</text>
+  <text x="390" y="330" font-size="9" fill="#6c757d" font-family="Arial">Schaalt naar grote N  |  prod.-gereed</text>
+  <text x="390" y="345" font-size="9" fill="#6c757d" font-family="Arial">Geen fysische formules in de optimizer</text>
+
+  <!-- Testcases table -->
+  <rect x="20" y="372" width="660" height="118" rx="6" fill="white" stroke="#dee2e6" stroke-width="1"/>
+  <text x="30" y="390" font-size="11" font-weight="bold" fill="#212529" font-family="Arial">Verificatietestcases (13/13 geslaagd)</text>
+
+  <rect x="30" y="396" width="640" height="18" rx="2" fill="#f1f3f5"/>
+  <text x="38"  y="409" font-size="9" font-weight="bold" fill="#495057" font-family="Arial">TC</text>
+  <text x="65"  y="409" font-size="9" font-weight="bold" fill="#495057" font-family="Arial">Objective</text>
+  <text x="175" y="409" font-size="9" font-weight="bold" fill="#495057" font-family="Arial">Setup</text>
+  <text x="430" y="409" font-size="9" font-weight="bold" fill="#495057" font-family="Arial">Verwacht</text>
+  <text x="590" y="409" font-size="9" font-weight="bold" fill="#495057" font-family="Arial">Status</text>
+
+  <text x="38"  y="425" font-size="9" fill="#333" font-family="Arial">TC1</text>
+  <text x="65"  y="425" font-size="9" fill="#333" font-family="Arial">MIN_COST</text>
+  <text x="175" y="425" font-size="9" fill="#333" font-family="Arial">M01(0.5m,2M) M02(0.3m,1M) M03(0.2m,0.5M)</text>
+  <text x="430" y="425" font-size="9" fill="#333" font-family="Arial">{M02,M03} voor 1.5M</text>
+  <text x="590" y="425" font-size="9" fill="#059669" font-family="Arial">BF==Pyomo ✓</text>
+
+  <text x="38"  y="441" font-size="9" fill="#333" font-family="Arial">TC2</text>
+  <text x="65"  y="441" font-size="9" fill="#333" font-family="Arial">MIN_COST</text>
+  <text x="175" y="441" font-size="9" fill="#333" font-family="Arial">P0 &lt; norm (norm al gehaald)</text>
+  <text x="430" y="441" font-size="9" fill="#333" font-family="Arial">{} lege set</text>
+  <text x="590" y="441" font-size="9" fill="#059669" font-family="Arial">BF==Pyomo ✓</text>
+
+  <text x="38"  y="457" font-size="9" fill="#333" font-family="Arial">TC3</text>
+  <text x="65"  y="457" font-size="9" fill="#333" font-family="Arial">MIN_COST</text>
+  <text x="175" y="457" font-size="9" fill="#333" font-family="Arial">M02 vereist M01 (afhankelijkheid)</text>
+  <text x="430" y="457" font-size="9" fill="#333" font-family="Arial">{M01} gerespecteerd</text>
+  <text x="590" y="457" font-size="9" fill="#059669" font-family="Arial">BF==Pyomo ✓</text>
+
+  <text x="38"  y="473" font-size="9" fill="#333" font-family="Arial">TC4</text>
+  <text x="65"  y="473" font-size="9" fill="#333" font-family="Arial">MAX_RISK_REDUCTION</text>
+  <text x="175" y="473" font-size="9" fill="#333" font-family="Arial">Budget=1.5M, M01(2M) te duur</text>
+  <text x="430" y="473" font-size="9" fill="#333" font-family="Arial">{M02,M03} max Dh</text>
+  <text x="590" y="473" font-size="9" fill="#059669" font-family="Arial">BF==Pyomo ✓</text>
+
+  <text x="38"  y="489" font-size="9" fill="#333" font-family="Arial">TC5-6</text>
+  <text x="65"  y="489" font-size="9" fill="#333" font-family="Arial">MIN_NCW</text>
+  <text x="175" y="489" font-size="9" fill="#333" font-family="Arial">Kleine maatregelen alpha*h=0.1, fout &lt;1%</text>
+  <text x="430" y="489" font-size="9" fill="#333" font-family="Arial">Beslissing identiek</text>
+  <text x="590" y="489" font-size="9" fill="#059669" font-family="Arial">BF==Pyomo ✓</text>
+
+</svg>

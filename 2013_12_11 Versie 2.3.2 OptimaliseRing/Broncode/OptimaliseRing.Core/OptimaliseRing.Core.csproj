@@ -1,0 +1,151 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OptimaliseRing.Core</RootNamespace>
+    <AssemblyName>OptimaliseRing.Core</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>OptimaliseRing.Core.snk</AssemblyOriginatorKeyFile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetMagic2005, Version=5.0.1.0, Culture=neutral, PublicKeyToken=6cf6edec59e036ec, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NMathCore, Version=2.2.2.0, Culture=neutral, PublicKeyToken=f5f99359d617d502" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Berekening.cs" />
+    <Compile Include="DataGridViewHelper.cs" />
+    <Compile Include="Compartimenteringsdijk.cs" />
+    <Compile Include="DijkringDeel.cs" />
+    <Compile Include="DijkringTraject.cs" />
+    <Compile Include="Forms\CompartimenteringForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CompartimenteringForm.designer.cs">
+      <DependentUpon>CompartimenteringForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OverForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OverForm.designer.cs">
+      <DependentUpon>OverForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReportForm.Designer.cs">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Function.cs" />
+    <Compile Include="Instellingen.cs" />
+    <Compile Include="Investering.cs" />
+    <Compile Include="IStatus.cs" />
+    <Compile Include="Kansen.cs" />
+    <Compile Include="OptimaliseRingDB.cs" />
+    <Compile Include="OptimaliseRingDialog.cs" />
+    <Compile Include="OptimaliseRingEnum.cs" />
+    <Compile Include="PmiddensPerScenario.cs" />
+    <Compile Include="ProgressInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Selectie.cs" />
+    <Compile Include="Strategie.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Optimalisering.Aimms\OptimaliseRing.Aimms.csproj">
+      <Project>{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}</Project>
+      <Name>OptimaliseRing.Aimms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OptimaliseRing.Dialogs\OptimaliseRing.Dialogs.csproj">
+      <Project>{E5483664-0894-4659-BDFB-D0C48F5CDFA9}</Project>
+      <Name>OptimaliseRing.Dialogs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OptimaliseRing.General\OptimaliseRing.General.csproj">
+      <Project>{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}</Project>
+      <Name>OptimaliseRing.General</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="OptimaliseRing.Core.snk" />
+    <None Include="Properties\DataSources\Kansen.datasource" />
+    <None Include="Properties\DataSources\Strategie.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\CompartimenteringForm.en-GB.resx">
+      <DependentUpon>CompartimenteringForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CompartimenteringForm.resx">
+      <DependentUpon>CompartimenteringForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OverForm.en-GB.resx">
+      <DependentUpon>OverForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OverForm.resx">
+      <DependentUpon>OverForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ReportForm.en-GB.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\KansenNL.rdlc" />
+    <EmbeddedResource Include="Reports\KansenUK.rdlc" />
+    <EmbeddedResource Include="Reports\StrategieNL.rdlc" />
+    <EmbeddedResource Include="Reports\StrategieUK.rdlc" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

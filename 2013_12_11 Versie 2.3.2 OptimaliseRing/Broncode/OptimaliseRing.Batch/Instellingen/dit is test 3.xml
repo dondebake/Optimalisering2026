@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--OptimaliseRing versie : 0.3.0.0-->
+<OptimaliseRing>
+  <Instellingen>
+    <ZichtJaar>2015</ZichtJaar>
+    <DiscontovoetSchade>4.0</DiscontovoetSchade>
+    <DiscontovoetInvesteringen>4.0</DiscontovoetInvesteringen>
+    <EconomischScenario>1</EconomischScenario>
+    <BedragPerInwoner>0</BedragPerInwoner>
+    <BedragPerDodelijkSlachtoffer>0</BedragPerDodelijkSlachtoffer>
+    <BedragPerGetroffene>0</BedragPerGetroffene>
+    <BeleidsfactorOverstromingsschade>1.00</BeleidsfactorOverstromingsschade>
+    <AanpassingsfactorOverstromingsschade>1.00</AanpassingsfactorOverstromingsschade>
+    <ParametersKostenfunctie>1</ParametersKostenfunctie>
+    <ScenarioVoorHoeveelheidSchade>1</ScenarioVoorHoeveelheidSchade>
+    <AfvoerBovenMaatgevendeAfvoer>1</AfvoerBovenMaatgevendeAfvoer>
+    <KlimaatScenario>1</KlimaatScenario>
+    <RamingVoorSlachtoffers>1</RamingVoorSlachtoffers>
+    <SchadeFunctie>1</SchadeFunctie>
+    <FactorKosten>1.00</FactorKosten>
+    <FactorKans>1.00</FactorKans>
+    <FactorGroeiSchade>1.00</FactorGroeiSchade>
+  </Instellingen>
+</OptimaliseRing>

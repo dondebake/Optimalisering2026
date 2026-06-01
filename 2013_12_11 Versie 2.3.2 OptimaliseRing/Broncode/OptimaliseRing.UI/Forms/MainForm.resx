@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="menuRekenen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>61, 20</value>
+  </data>
+  <data name="&gt;&gt;statusStripMain.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="menuBestandWerkmap.Text" xml:space="preserve">
+    <value>&amp;Werkmap...</value>
+  </data>
+  <data name="&gt;&gt;BottomToolStripPanel.Name" xml:space="preserve">
+    <value>BottomToolStripPanel</value>
+  </data>
+  <data name="statusStripMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>577, 22</value>
+  </data>
+  <data name="menuBewerkenWereld.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="&gt;&gt;statusStripMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBestandWerkmap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="fileToolStripMenuItem1.Text" xml:space="preserve">
+    <value>&amp;Bestand</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomGebied.Name" xml:space="preserve">
+    <value>menuBewerkenZoomGebied</value>
+  </data>
+  <data name="menuBewerkenSchuif.Text" xml:space="preserve">
+    <value>Schuif&amp;mode</value>
+  </data>
+  <data name="TopToolStripPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuBewerkenZoomUit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="menuBewerkenZoomGebied.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="&gt;&gt;ContentPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripContentPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LeftToolStripPanel.Name" xml:space="preserve">
+    <value>LeftToolStripPanel</value>
+  </data>
+  <data name="BottomToolStripPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;mapControlMain.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="toolStripMenuItem2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 6</value>
+  </data>
+  <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>149, 6</value>
+  </data>
+  <data name="statusLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>562, 17</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomIn.Name" xml:space="preserve">
+    <value>menuBewerkenZoomIn</value>
+  </data>
+  <data name="&gt;&gt;menuStripMain.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="mapControlMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>577, 446</value>
+  </data>
+  <data name="menuBestandWerkmap.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="bewerkenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>66, 20</value>
+  </data>
+  <data name="&gt;&gt;TopToolStripPanel.Name" xml:space="preserve">
+    <value>TopToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenSelectie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mapControlMain.Name" xml:space="preserve">
+    <value>mapControlMain</value>
+  </data>
+  <data name="&gt;&gt;menuRekenenBerekeningen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenMapTips.Text" xml:space="preserve">
+    <value>&amp;Maptips</value>
+  </data>
+  <data name="ContentPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>630, 430</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="&gt;&gt;statusLabel.Name" xml:space="preserve">
+    <value>statusLabel</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenCentreer.Name" xml:space="preserve">
+    <value>menuBewerkenCentreer</value>
+  </data>
+  <data name="menuHelpOver.Text" xml:space="preserve">
+    <value>&amp;Over...</value>
+  </data>
+  <data name="menuBewerkenCentreer.Text" xml:space="preserve">
+    <value>&amp;Centreermode</value>
+  </data>
+  <data name="&gt;&gt;bewerkenToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>OptimaliseRing</value>
+  </data>
+  <data name="&gt;&gt;menuHelpHandleiding.Name" xml:space="preserve">
+    <value>menuHelpHandleiding</value>
+  </data>
+  <data name="&gt;&gt;LeftToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomGebied.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuHelp.Text" xml:space="preserve">
+    <value>&amp;Help</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="&gt;&gt;menuHelpHandleiding.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenSelectie.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="&gt;&gt;bewerkenToolStripMenuItem.Name" xml:space="preserve">
+    <value>bewerkenToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;menuRekenenResultaten.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenKaartlagen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="menuBewerkenWereld.Text" xml:space="preserve">
+    <value>&amp;Hele wereld</value>
+  </data>
+  <data name="&gt;&gt;menuRekenenBerekeningen.Name" xml:space="preserve">
+    <value>menuRekenenBerekeningen</value>
+  </data>
+  <data name="mnuBewerkenLegenda.Text" xml:space="preserve">
+    <value>&amp;Legenda</value>
+  </data>
+  <data name="&gt;&gt;menuBestandExit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenZoomIn.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="menuBewerkenSelectie.Text" xml:space="preserve">
+    <value>&amp;Selectiemode</value>
+  </data>
+  <data name="menuStripMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;menuStripMain.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="mapControlMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>577, 400</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenKaartlagen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="statusStripMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 424</value>
+  </data>
+  <data name="menuBewerkenZoomIn.Text" xml:space="preserve">
+    <value>Zoom-&amp;in-mode</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="statusStripMain.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;menuHelpOver.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenKaartlagen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAvBJREFUOE+lk1lP
+        E1EYhuvdqNF4bYKBACKgFpU6QCnQlmmhdKd0h0IXKEV2jYQE0EGDokFQEEGs0EIBa6hlExDZjJCIiRhC
+        RRZpUa/8EcevF4qICRdOci4mM+97nuebMwcQQpT/ui4vmPHyeTNe+saEF03rccsrHZ47qsX1L5R45rN0
+        XNktwtOtPFzYysFTm5i4f8M/F6V8Po8omTNhhVN6LH88CzMNa7AclwLT9ksxhU2ISTtSMX4LgXHvJWGs
+        W3RiT0HxrJG49DrnIJCQQEKWzpnIoik9aZnQkaYRLZnjUpLa/nRSYReRglZOJ5BUA0n1ryJKwWQ2kfcy
+        8xCQ2AqnDTTLRHZc7og20eBWsXTODI7aIeZldPL54naumHWbUQkkPCCx/i4AXwJ8DxfNGOygwICi1bK3
+        eZ9LZo1rQLZuHs/cMA6rN7MH5Jsqh/i73CbYgLIfQLIIJIsU8CXA9wgMz24cUidDAQKCSuOgqj57QPEw
+        0ylzqHslgxCcFLdxP0JwntuQtAUkbiBBFE2vhJB3CY6aRjR23XM5D2aCTMPqDijuz3LKRtUOyYy8i78g
+        eZz6nveAvc5tTFpi1tG3mXVxQ/RrNESRPeUTojbuMUDsVvaIpTATBEpjEJ5TOSTvwH9J3J6ynNbM9hB3
+        GF4IrtBraNtxNdFuWkUUogASAS6E0i4cE7QQVTATpOmTehR24Zr0CW9T0Ep4UxqZXnZ9vC+hFvdB+BOt
+        guqLvkp1UUsjdg4FkFiBRAroSNUj+iCzpi0LH3FWUppYHnY9YzXhRsxqbNUFDwRXqCXh3rPF4c4IS+hO
+        AZBYgcQKM0Hg+zWtOfkbpyERXOnb8dcv+vDKc97zV874g1vh+aFfYDlCjUG7j6X/2wIJApIh3n3WIHGX
+        4U68GesC3wHwdUaVRfadLgzrOWUOsYUYAruCdAF7C4AEAQkCZ5RQG4MAGwE28vtGFpxEYbnBKFgfiAKz
+        AtAJzfG9BX+f9f3ud/1Z+738r+c/ASsl+hh77k39AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenMapTips.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenZoomGebied.Text" xml:space="preserve">
+    <value>Zoom-&amp;gebied-mode</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Name" xml:space="preserve">
+    <value>toolStripMenuItem1</value>
+  </data>
+  <data name="menuRekenenResultaten.Size" type="System.Drawing.Size, System.Drawing">
+    <value>188, 22</value>
+  </data>
+  <data name="menuHelpHandleiding.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="&gt;&gt;mapControlMain.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem2.Name" xml:space="preserve">
+    <value>toolStripMenuItem2</value>
+  </data>
+  <data name="menuHelpOver.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="mapControlMain.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomUit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuRekenencompartimentering.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBestandExit.Name" xml:space="preserve">
+    <value>menuBestandExit</value>
+  </data>
+  <data name="&gt;&gt;menuHelpOver.Name" xml:space="preserve">
+    <value>menuHelpOver</value>
+  </data>
+  <data name="&gt;&gt;mnuBewerkenLegenda.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuHelp.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuRekenencompartimentering.Text" xml:space="preserve">
+    <value>&amp;Compartimentering...</value>
+  </data>
+  <data name="&gt;&gt;ContentPanel.Name" xml:space="preserve">
+    <value>ContentPanel</value>
+  </data>
+  <data name="menuBewerkenMapTips.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>139, 6</value>
+  </data>
+  <data name="RightToolStripPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>MainForm</value>
+  </data>
+  <data name="&gt;&gt;statusStripMain.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="menuBewerkenSchuif.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="&gt;&gt;BottomToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenWereld.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenMapTips.Name" xml:space="preserve">
+    <value>menuBewerkenMapTips</value>
+  </data>
+  <data name="menuBestandExit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenKaartlagen.Name" xml:space="preserve">
+    <value>menuBewerkenKaartlagen</value>
+  </data>
+  <data name="&gt;&gt;menuRekenencompartimentering.Name" xml:space="preserve">
+    <value>menuRekenencompartimentering</value>
+  </data>
+  <data name="&gt;&gt;menuRekenenResultaten.Name" xml:space="preserve">
+    <value>menuRekenenResultaten</value>
+  </data>
+  <data name="menuHelpHandleiding.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <data name="&gt;&gt;RightToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuRekenenBerekeningen.Text" xml:space="preserve">
+    <value>&amp;Berekeningen...</value>
+  </data>
+  <data name="menuStripMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>577, 24</value>
+  </data>
+  <data name="&gt;&gt;fileToolStripMenuItem1.Name" xml:space="preserve">
+    <value>fileToolStripMenuItem1</value>
+  </data>
+  <data name="&gt;&gt;menuRekenen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenSelectie.Name" xml:space="preserve">
+    <value>menuBewerkenSelectie</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BottomToolStripPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RightToolStripPanel.Name" xml:space="preserve">
+    <value>RightToolStripPanel</value>
+  </data>
+  <data name="TopToolStripPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuRekenencompartimentering.Size" type="System.Drawing.Size, System.Drawing">
+    <value>188, 22</value>
+  </data>
+  <data name="menuBewerkenKaartlagen.Text" xml:space="preserve">
+    <value>&amp;Kaartlagen...</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomUit.Name" xml:space="preserve">
+    <value>menuBewerkenZoomUit</value>
+  </data>
+  <data name="&gt;&gt;statusLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mnuBewerkenLegenda.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="&gt;&gt;fileToolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBewerkenZoomUit.Text" xml:space="preserve">
+    <value>Zoom-&amp;uit-mode</value>
+  </data>
+  <data name="mapControlMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenZoomIn.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenSchuif.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStripMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuRekenen.Text" xml:space="preserve">
+    <value>&amp;Rekenen</value>
+  </data>
+  <data name="menuHelpHandleiding.Text" xml:space="preserve">
+    <value>&amp;Handleiding...</value>
+  </data>
+  <data name="LeftToolStripPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;menuStripMain.Name" xml:space="preserve">
+    <value>menuStripMain</value>
+  </data>
+  <data name="LeftToolStripPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStripMain.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="menuStripMain.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;menuBestandWerkmap.Name" xml:space="preserve">
+    <value>menuBestandWerkmap</value>
+  </data>
+  <data name="menuBewerkenCentreer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 22</value>
+  </data>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAICD/AAAAAACoCAAAFgAAACgAAAAgAAAAQAAAAAEACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA6OgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEB
+        AQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAQEB
+        AQEBAQEBAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEBAQAAAAAAAAAAAAAAAAAAAAAB
+        AQEBAQEBAQEBAQEBAQEBAQAAAAAAAAAAAAAAAAAAAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAAAAAAAAAAA
+        AAABAQEBAQEBAQEBAQEBAQEBAQEBAQAAAAAAAAAAAAAAAQEAAAAAAAEBAQEBAQEBAQEBAQEBAQEAAAAA
+        AAAAAAEBAQEBAQEAAAAAAQEBAQEBAQEBAQEBAQEBAAAAAAABAQEBAAAAAAEBAQAAAAEBAQEBAQEBAQEB
+        AQEAAAAAAAEBAQEBAQEBAAAAAQEAAAABAQEBAQEBAQEAAAAAAAAAAAEBAQAAAAEBAQAAAQEBAAABAQEB
+        AQEAAAAAAAAAAAAAAAABAAAAAAAAAQEAAAEBAAAAAQEAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAEBAAAB
+        AQAAAAEBAAAAAAAAAAAAAAAAAAEAAAAAAAEBAAABAQAAAQEAAAAAAAEBAAAAAAAAAAAAAAABAQEBAAAA
+        AQAAAQEAAAEBAQAAAAAAAAAAAAAAAAAAAAAAAAEBAQAAAQABAQEAAAAAAQEAAAAAAAAAAAAAAAABAQEB
+        AQAAAQEBAQEBAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAQEBAQEBAQAAAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAEBAQEBAQAAAAAAAAEBAQEBAQEAAAAAAAAA
+        AAAAAQEBAQEBAAAAAAAAAQEBAQEBAQEAAAAAAAAAAAAAAQEBAQEAAAAAAAABAQEBAQEBAAAAAAAAAAAB
+        AAAAAAAAAAAAAAAAAQEBAQEBAAAAAAAAAAABAQEBAQEBAQAAAAAAAAAAAAABAQAAAAAAAAABAQEBAQEB
+        AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAAAAA
+        AAAAAAAAAAAAAP/9////+f////D////gf///wD///4A///8AD//+AA///AAH//gAA//wAAD/8AAA/+fA
+        AD/AeAAPh44AD4BzgD/HGMD/9+Zz//4ZnP/75mfP/h2Y///Gjz/8GAH//+Af//+A/D//A/Af+B+Af+D8
+        B/v/wP8A/8/gH///Af///j//
+</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenCentreer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mnuBewerkenLegenda.Name" xml:space="preserve">
+    <value>mnuBewerkenLegenda</value>
+  </data>
+  <data name="statusLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenSchuif.Name" xml:space="preserve">
+    <value>menuBewerkenSchuif</value>
+  </data>
+  <data name="menuRekenenResultaten.Text" xml:space="preserve">
+    <value>&amp;Resultaten...</value>
+  </data>
+  <data name="&gt;&gt;statusStripMain.Name" xml:space="preserve">
+    <value>statusStripMain</value>
+  </data>
+  <data name="&gt;&gt;TopToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="menuBestandWerkmap.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="menuHelp.Size" type="System.Drawing.Size, System.Drawing">
+    <value>40, 20</value>
+  </data>
+  <data name="&gt;&gt;mapControlMain.Type" xml:space="preserve">
+    <value>OptimaliseRing.UI.MapControl, OptimaliseRing, Version=1.5.0.0, Culture=neutral, PublicKeyToken=0d82c60477ab6efa</value>
+  </data>
+  <data name="&gt;&gt;menuBewerkenWereld.Name" xml:space="preserve">
+    <value>menuBewerkenWereld</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>Manual</value>
+  </data>
+  <data name="&gt;&gt;menuRekenen.Name" xml:space="preserve">
+    <value>menuRekenen</value>
+  </data>
+  <data name="menuRekenenBerekeningen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>188, 22</value>
+  </data>
+  <data name="fileToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 20</value>
+  </data>
+  <data name="bewerkenToolStripMenuItem.Text" xml:space="preserve">
+    <value>B&amp;ewerken</value>
+  </data>
+  <data name="RightToolStripPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuBestandExit.Text" xml:space="preserve">
+    <value>&amp;Afsluiten</value>
+  </data>
+  <data name="&gt;&gt;menuHelp.Name" xml:space="preserve">
+    <value>menuHelp</value>
+  </data>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>56</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="menuStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 0</value>
+  </metadata>
+  <metadata name="statusStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 424</value>
+  </metadata>
+</root>

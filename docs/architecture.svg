@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="520" height="410">
+
+  <rect x="0" y="0" width="520" height="410" fill="#f8f9fa" rx="8"/>
+
+  <!-- Title -->
+  <text x="145" y="30" font-size="15" font-weight="bold" fill="#1a1a2e" font-family="Arial">FloodOpt Architectuur</text>
+  <text x="90" y="48" font-size="10" fill="#6c757d" font-family="Arial">Drie strikte lagen - de optimizer bevat nooit fysica</text>
+
+  <!-- Optimization Layer -->
+  <rect x="50" y="62" width="420" height="76" rx="8" fill="#4361ee" stroke="#3a0ca3" stroke-width="1.5"/>
+  <text x="165" y="90" font-size="14" font-weight="bold" fill="white" font-family="Arial">Optimization Layer</text>
+  <text x="80" y="108" font-size="11" fill="#c8d8ff" font-family="Arial">Zoekt optimale maatregelencombinatie via Pyomo</text>
+  <text x="95" y="126" font-size="10" fill="#9cb4ff" font-family="Arial">Output: optimale strategie (welke maatregelen, wanneer)</text>
+
+  <!-- Arrow down -->
+  <line x1="260" y1="138" x2="260" y2="162" stroke="#6c757d" stroke-width="2"/>
+  <polygon points="252,162 268,162 260,173" fill="#6c757d"/>
+
+  <!-- Risk Layer -->
+  <rect x="50" y="173" width="420" height="76" rx="8" fill="#7209b7" stroke="#560bad" stroke-width="1.5"/>
+  <text x="195" y="201" font-size="14" font-weight="bold" fill="white" font-family="Arial">Risk Layer</text>
+  <text x="130" y="219" font-size="11" fill="#e0b3ff" font-family="Arial">Schade, NCW, risico-indicatoren</text>
+  <text x="85" y="237" font-size="10" fill="#cc88ff" font-family="Arial">Output: verwachte schade [E/jaar], risico NCW [E]</text>
+
+  <!-- Arrow down -->
+  <line x1="260" y1="249" x2="260" y2="273" stroke="#6c757d" stroke-width="2"/>
+  <polygon points="252,273 268,273 260,284" fill="#6c757d"/>
+
+  <!-- Physics Layer -->
+  <rect x="50" y="284" width="420" height="76" rx="8" fill="#06d6a0" stroke="#05b484" stroke-width="1.5"/>
+  <text x="185" y="312" font-size="14" font-weight="bold" fill="#003d2e" font-family="Arial">Physics Layer</text>
+  <text x="110" y="330" font-size="11" fill="#004d3a" font-family="Arial">Hydraulica, geotechniek, riviermodellen</text>
+  <text x="80" y="348" font-size="10" fill="#005a44" font-family="Arial">Output: faalkansen P(t) [1/j], kruinhoogte h_crest [m]</text>
+
+  <!-- Status row -->
+  <rect x="50"  y="374" width="128" height="20" rx="4" fill="#06d6a0"/>
+  <text x="60"  y="388" font-size="9" fill="#003d2e" font-weight="bold" font-family="Arial">Stap 1.1 + 1.2 klaar</text>
+
+  <rect x="190" y="374" width="108" height="20" rx="4" fill="#7209b7"/>
+  <text x="200" y="388" font-size="9" fill="white" font-family="Arial">Stap 1.3 volgende</text>
+
+  <rect x="310" y="374" width="100" height="20" rx="4" fill="#4361ee"/>
+  <text x="320" y="388" font-size="9" fill="white" font-family="Arial">Stap 1.4 pending</text>
+
+</svg>

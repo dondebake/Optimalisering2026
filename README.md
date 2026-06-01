@@ -20,68 +20,89 @@ Optimization Layer
 Physics Layer
 ```
 
-| Laag | Verantwoordelijkheid | Output |
-|---|---|---|
-| Physics | Fysische modellen (hydraulica, geotechniek, rivieren) | Faalkansen, kruinhoogten |
-| Risk | Schade, NCW, risico-indicatoren | Verwachte schade, risico NCW |
-| Optimization | Zoekt optimale strategie via Pyomo | Optimale maatregelencombinatie |
+| Laag | Verantwoordelijkheid | Kernformule | Output |
+|---|---|---|---|
+| Physics | Hydraulica, geotechniek | $P(t) = P_0 \cdot e^{\alpha\eta t} \cdot e^{-\alpha\Delta h}$ | Faalkansen, kruinhoogten |
+| Risk | Schade, NCW | $\mathrm{NCW} = \sum_{s=0}^{T-1} P(s)\cdot V_0\cdot e^{(\gamma-\delta)s}$ | Verwachte schade, risico NCW |
+| Optimization | Maatregelstrategie via Pyomo | $\min \sum c_i x_i \;\text{s.t.}\; \sum h_i x_i \geq h_{\min}$ | Optimale maatregelencombinatie |
+
+Zie `docs/architecture.png` voor het volledige architectuurdiagram.
 
 ## Tech stack
 
 | Component | Technologie |
 |---|---|
 | Rekenkernel | Python (`floodopt-core`) |
-| Backend API | FastAPI |
-| Database | PostgreSQL + PostGIS |
-| Queue | Redis + Celery |
-| Optimizer | Pyomo + HiGHS / CBC / Ipopt |
-| Frontend | React + Vite + Leaflet / MapLibre |
+| Optimizer | Pyomo 6 + HiGHS (MILP) / Ipopt (NLP) |
+| Backend API | FastAPI *(gepland fase 2)* |
+| Database | PostgreSQL + PostGIS *(gepland fase 2)* |
+| Queue | Redis + Celery *(gepland fase 2)* |
+| Frontend | React + Vite + Leaflet / MapLibre *(gepland fase 4)* |
+| Documentatie | matplotlib (formules + diagrammen) |
 
 ## Projectstructuur
 
 ```
 floodopt/
-├── floodopt-core/       # rekenkernel — geen FastAPI, pure Python
-│   ├── physics/         # hydraulica, geotechniek, riviermodellen
-│   ├── risk/            # faalkansen, schade, NCW
-│   ├── optimization/    # Pyomo-modellen, solver-abstractie
-│   ├── io/              # datamodellen (Measure, Scenario, Trajectory)
-│   └── utils/
-├── floodopt-api/        # FastAPI backend
-├── floodopt-worker/     # Celery workers voor zware berekeningen
-├── floodopt-frontend/   # React + Vite
-└── tests/
-    ├── unit/
-    ├── integration/
-    └── validation/      # brute-force vs. optimizer vergelijkingen
+├── floodopt-core/           # rekenkernel — geen FastAPI, pure Python
+│   └── floodopt_core/
+│       ├── io/              # Pydantic datamodellen (Measure, Scenario, Trajectory)
+│       ├── physics/         # PhysicsModel Protocol + SimpleDikeOverflow
+│       ├── risk/            # RiskCalculator Protocol + SimpleRiskCalculator
+│       ├── optimization/    # OptimizationStrategy Protocol + BruteForce + Pyomo
+│       └── utils/
+├── floodopt-api/            # FastAPI backend (gepland)
+├── floodopt-worker/         # Celery workers (gepland)
+├── floodopt-frontend/       # React + Vite (gepland)
+├── tests/
+│   ├── unit/                # 46 tests — alle lagen
+│   ├── integration/
+│   └── validation/          # optimalise_ring_2011.sqlite (referentiedata)
+├── docs/                    # Diagrammen (PNG) + SVG bronbestanden
+└── scripts/                 # generate_docs.py, convert_mdb_to_sqlite.py
 ```
 
 ## Ontwikkelprincipes
 
-- **Strikte laagscheiding** — optimizer roept altijd de rekenkernel aan
+- **Strikte laagscheiding** — optimizer roept altijd de rekenkernel aan; bevat nooit fysische formules
 - **Modulaire interfaces** — elke laag implementeert een Protocol; implementaties zijn vervangbaar
 - **Dubbele validatie** — elke optimalisatie wordt geverifieerd met een brute-force referentie
 - **Stapsgewijze uitbreiding** — MVP eerst, complexiteit per fase toevoegen
 
+## Documentatie
+
+Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
+
+| Diagram | Bestand |
+|---|---|
+| Architectuur | `docs/architecture.png` |
+| Physics Layer — $P(t)$ formule | `docs/stap1.1_physics_formula.png` |
+| Risk Layer — NCW berekening | `docs/stap1.2_risk_ncw.png` |
+| Optimization Layer — BruteForce vs Pyomo | `docs/stap1.3_optimization.png` |
+| Database mapping MDB → FloodOpt | `docs/database_mapping.png` |
+
 ## Fasering
 
-| Fase | Inhoud |
-|---|---|
-| 1 (MVP) | Traject-niveau, eenvoudige schade/kosten, enkele maatregelen |
-| 2 | Probabilistische sterkte (FORM / Monte Carlo), klimaatscenario's |
-| 3 | Lengte-effecten, correlaties, robuuste optimalisatie |
-| 4 | Rivierverruiming, hydraulische interacties, trajectoverschrijdende effecten |
+| Fase | Status | Inhoud |
+|---|---|---|
+| 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, CI-tooling |
+| 1 — MVP rekenkernel | ✅ 1.1–1.3 klaar | Physics, Risk, Optimization (traject-niveau) |
+| 2 — Backend & API | ⏳ Gepland | FastAPI, PostgreSQL, Celery |
+| 3 — Uitbreidingen | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
+| 4 — Frontend | ⏳ Gepland | React + Vite, kaartviewer |
 
 ## Validatiestrategie
 
 Elke optimalisatie wordt gevalideerd door de uitkomst te vergelijken met een brute-force berekening over dezelfde maatregelencombinaties. Bij afwijking stopt de ontwikkeling totdat de oorzaak is vastgesteld.
 
-| Niveau | Methode |
-|---|---|
-| Unit | pytest per functie |
-| Laag | Protocol-conformiteit via mypy |
-| Integratie | brute-force == optimizer voor alle testcases |
-| Regressie | CI runt validatie bij elke commit |
+Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid van OptimaliseRing v2.3.2 (HKV, 2013), 103 dijkringen, 176 trajecten.
+
+| Niveau | Methode | Status |
+|---|---|---|
+| Unit | pytest per functie | ✅ 46/46 geslaagd |
+| Laag | Protocol-conformiteit via mypy | ✅ Schoon |
+| Integratie | BruteForce == Optimizer voor alle testcases | ✅ 6/6 testcases |
+| Regressie | CI runt validatie bij elke commit | ⏳ Gepland |
 
 ---
 
@@ -93,76 +114,55 @@ Na elke stap: verificatie en validatie voor er verder wordt gegaan.
 
 ### Fase 0 — Projectstructuur & Tooling
 
-#### Stap 0.1 — Repository & package layout
-- Mapstructuur aanmaken (zie Projectstructuur)
-- Tooling: `uv`/`poetry`, `pytest`, `ruff`, `mypy`, `pre-commit`
+#### Stap 0.1 — Repository & package layout ✅
+- Mapstructuur aangemaakt, tooling geïnstalleerd (`pytest`, `ruff`, `mypy`, `pre-commit`)
+- `floodopt-core` als editable package geïnstalleerd
 
-**Verificatie:**
-- `floodopt-core` importeerbaar als package
-- Alle submodules aanwezig (`__init__.py`)
-- `pytest` runt zonder fouten (0 tests, 0 errors)
-
-#### Stap 0.2 — Data model
-Generieke datastructuren als Pydantic models in `floodopt-core/io/`:
-- `Measure` — id, type, cost, year, effect, location, dependencies
-- `Scenario` — id, climate, q_design, h_design
-- `Trajectory` — id, norm, length, measures
-
-**Verificatie:**
-- Unit tests: aanmaken en serialiseren
-- `mypy` geeft geen errors
-- JSON round-trip (serialize → deserialize → gelijk)
+#### Stap 0.2 — Data model ✅
+Pydantic v2 models in `floodopt_core/io/`:
+- `Measure` — id, type, cost, year, **effect** [m], location, dependencies
+- `Scenario` — id, climate, q_design, h_design, **eta** [m/jaar]
+- `Trajectory` — id, norm, length, **p0**, **alpha**, **base_year**, measures
 
 ---
 
 ### Fase 1 — MVP rekenkernel (traject-niveau)
 
-#### Stap 1.1 — Physics Layer
-- Abstracte `PhysicsModel` Protocol interface
-- MVP-implementatie: `SimpleDikeOverflow` (analytisch, kruinhoogte vs. waterstand)
-- Output: `PhysicsResult` (pf_overflow, h_crest)
+#### Stap 1.1 — Physics Layer ✅
 
-**Verificatie:**
-- Handmatige berekening voor 3 testcases klopt
-- Protocol-conformiteit via mypy
-- Geen optimizer-logica in physics
+$$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$$
 
-#### Stap 1.2 — Risk Layer
-- Abstracte `RiskCalculator` Protocol interface
-- MVP: `pf × schade_per_overstroming`, NCW-berekening
-- Output: `RiskResult` (expected_damage, risk_reduction, ncw)
+Implementatie: `SimpleDikeOverflow` achter `PhysicsModel` Protocol.
+Formule identiek aan OptimaliseRing 2.3.2 (HKV, 2013).
 
-**Verificatie:**
-- Handmatige NCW-berekening voor referentiecasus
-- NCW neemt af naarmate meer maatregelen worden genomen
+#### Stap 1.2 — Risk Layer ✅
 
-#### Stap 1.3 — Optimization Layer
-Beide implementaties achter hetzelfde `OptimizationStrategy` Protocol:
+$$\mathrm{NCW} = \sum_{s=0}^{T-1} P(s) \cdot V_0 \cdot e^{(\gamma - \delta)\,s}$$
 
-1. `BruteForceOptimizer` — itereert alle combinaties (referentie)
-2. `PyomoOptimizer` — algebraïsch model met HiGHS solver
+Implementatie: `SimpleRiskCalculator` achter `RiskCalculator` Protocol.
 
-Ondersteunde objective functions: `min_ncw`, `min_cost`, `max_risk_reduction`
+#### Stap 1.3 — Optimization Layer ✅
+Beide implementaties achter `OptimizationStrategy` Protocol:
 
-**Verificatie (kritiek):**
-- Voor alle testcases: `BruteForce.solve() == PyomoOptimizer.solve()`
-- Bij afwijking: bouwen stopt, oorzaak wordt geanalyseerd
-- Optimizer bevat zelf geen fysische formules
+1. `BruteForceOptimizer` — itereert alle $2^N$ combinaties (referentie, exact)
+2. `PyomoOptimizer` — MILP via Pyomo + HiGHS
 
-#### Stap 1.4 — Integratie smoke test (CLI)
+| Objective | Formulering | Solver |
+|---|---|---|
+| `MIN_COST` | $\min \sum c_i x_i \;\text{s.t.}\; \sum h_i x_i \geq h_{\min}$ | HiGHS MILP (exact) |
+| `MAX_RISK_REDUCTION` | $\max \sum h_i x_i \;\text{s.t.}\; \sum c_i x_i \leq B$ | HiGHS MILP (exact) |
+| `MIN_NCW` | $\min \sum (c_i - C\alpha h_i)\,x_i$ | HiGHS MILP (lineaire benadering) |
+
+**Kritieke verificatie:** `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 6 testcases ✅
+
+#### Stap 1.4 — Integratie smoke test (CLI) ⏳
 End-to-end run zonder API of database: traject → optimizer → resultaat via CLI-script.
-
-**Verificatie:**
-- Runt zonder errors
-- Resultaat identiek aan brute-force
-- Rekentijd brute-force vs. Pyomo gelogd
 
 ---
 
-### Fase 2 — Backend & API
+### Fase 2 — Backend & API ⏳
 
 #### Stap 2.1 — FastAPI service
-Endpoints MVP:
 ```
 POST /scenarios
 POST /trajectories
@@ -170,27 +170,13 @@ POST /optimize
 GET  /results/{job_id}
 ```
 
-**Verificatie:**
-- Swagger UI beschikbaar op `/docs`
-- `POST /optimize` geeft zelfde resultaat als CLI (stap 1.4)
-- Geen business logic in API-laag
-
 #### Stap 2.2 — Database (PostgreSQL + PostGIS)
-Schema: trajecten, maatregelen, scenarios, resultaten.
-
-**Verificatie:**
-- Round-trip: scenario opslaan → ophalen → identiek
-- Optimalisatieresultaten persistent opgeslagen
 
 #### Stap 2.3 — Async queue (Redis + Celery)
-**Verificatie:**
-- `POST /optimize` geeft direct `job_id` terug
-- Status: `pending` → `running` → `done`
-- Worker crasht niet bij ongeldige input
 
 ---
 
-### Fase 3 — Uitbreidingen rekenkernel
+### Fase 3 — Uitbreidingen rekenkernel ⏳
 
 | Stap | Inhoud | Wat blijft ongewijzigd |
 |---|---|---|
@@ -198,15 +184,11 @@ Schema: trajecten, maatregelen, scenarios, resultaten.
 | 3.2 | Lengte-effecten & correlaties | Optimizer, Physics Layer |
 | 3.3 | Rivierverruiming & hydraulische interacties | Optimizer, Risk Layer |
 
-Nieuwe implementaties achter bestaande Protocols — optimizer hoeft niet aangepast te worden.
-
 ---
 
-### Fase 4 — Frontend
+### Fase 4 — Frontend ⏳
 
-React + Vite, Leaflet/MapLibre voor kaarten. Start na werkende API (stap 2.1).
-
-Componenten: kaartviewer, scenario-editor, maatregel-editor, resultaten-dashboards.
+React + Vite, Leaflet/MapLibre voor kaarten.
 
 ---
 

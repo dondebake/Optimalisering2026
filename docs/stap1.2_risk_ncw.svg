@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="660" height="450">
+
+  <rect x="0" y="0" width="660" height="450" fill="#f8f9fa" rx="8"/>
+
+  <!-- Title -->
+  <text x="20" y="26" font-size="14" font-weight="bold" fill="#1a1a2e" font-family="Arial">Stap 1.2 - Risk Layer: NCW = som( P(s) * V0 * exp(g*s) * exp(-d*s) )</text>
+  <text x="20" y="44" font-size="10" fill="#6c757d" font-family="Arial">P0=1e-3, eta=0, V0=1e9 E, gamma=0.02, delta=0.04, T=50 jaar</text>
+
+  <!-- Graph background -->
+  <rect x="70" y="58" width="480" height="230" fill="white" stroke="#dee2e6" stroke-width="1" rx="2"/>
+
+  <!-- Grid horizontal: y=288 (S=0), y=230 (S=300k), y=172 (S=600k), y=114 (S=900k), y=58 (S=1.1M)
+       y = 288 - (S/1.1e6)*230 -->
+  <line x1="70" y1="230" x2="550" y2="230" stroke="#e9ecef" stroke-width="1"/>
+  <line x1="70" y1="172" x2="550" y2="172" stroke="#e9ecef" stroke-width="1"/>
+  <line x1="70" y1="114" x2="550" y2="114" stroke="#e9ecef" stroke-width="1"/>
+
+  <!-- Grid vertical: x=70(s=0), x=166(s=10), x=262(s=20), x=358(s=30), x=454(s=40), x=550(s=50) -->
+  <line x1="166" y1="58" x2="166" y2="288" stroke="#e9ecef" stroke-width="1"/>
+  <line x1="262" y1="58" x2="262" y2="288" stroke="#e9ecef" stroke-width="1"/>
+  <line x1="358" y1="58" x2="358" y2="288" stroke="#e9ecef" stroke-width="1"/>
+  <line x1="454" y1="58" x2="454" y2="288" stroke="#e9ecef" stroke-width="1"/>
+
+  <!-- Axes -->
+  <line x1="70" y1="288" x2="550" y2="288" stroke="#333333" stroke-width="2"/>
+  <line x1="70" y1="58"  x2="70"  y2="288" stroke="#333333" stroke-width="2"/>
+
+  <!-- X ticks -->
+  <line x1="70"  y1="288" x2="70"  y2="295" stroke="#333333" stroke-width="1"/>
+  <line x1="166" y1="288" x2="166" y2="295" stroke="#333333" stroke-width="1"/>
+  <line x1="262" y1="288" x2="262" y2="295" stroke="#333333" stroke-width="1"/>
+  <line x1="358" y1="288" x2="358" y2="295" stroke="#333333" stroke-width="1"/>
+  <line x1="454" y1="288" x2="454" y2="295" stroke="#333333" stroke-width="1"/>
+  <line x1="550" y1="288" x2="550" y2="295" stroke="#333333" stroke-width="1"/>
+  <text x="64"  y="308" font-size="10" fill="#6c757d" font-family="Arial">0</text>
+  <text x="158" y="308" font-size="10" fill="#6c757d" font-family="Arial">10</text>
+  <text x="254" y="308" font-size="10" fill="#6c757d" font-family="Arial">20</text>
+  <text x="350" y="308" font-size="10" fill="#6c757d" font-family="Arial">30</text>
+  <text x="446" y="308" font-size="10" fill="#6c757d" font-family="Arial">40</text>
+  <text x="542" y="308" font-size="10" fill="#6c757d" font-family="Arial">50</text>
+  <text x="240" y="326" font-size="11" fill="#495057" font-family="Arial">s [jaar na basisjaar]</text>
+
+  <!-- Y ticks -->
+  <line x1="63" y1="288" x2="70" y2="288" stroke="#333333" stroke-width="1"/>
+  <line x1="63" y1="230" x2="70" y2="230" stroke="#333333" stroke-width="1"/>
+  <line x1="63" y1="172" x2="70" y2="172" stroke="#333333" stroke-width="1"/>
+  <line x1="63" y1="114" x2="70" y2="114" stroke="#333333" stroke-width="1"/>
+  <text x="20" y="292" font-size="9" fill="#6c757d" font-family="Arial">0</text>
+  <text x="8"  y="234" font-size="9" fill="#6c757d" font-family="Arial">300k</text>
+  <text x="8"  y="176" font-size="9" fill="#6c757d" font-family="Arial">600k</text>
+  <text x="8"  y="118" font-size="9" fill="#6c757d" font-family="Arial">900k</text>
+  <text x="8"  y="62"  font-size="9" fill="#6c757d" font-family="Arial">1.1M</text>
+  <text x="8" y="185" font-size="9" fill="#495057" font-family="Arial">E/j</text>
+
+  <!--
+    x = 70 + (s/50)*480     y = 288 - (S/1.1e6)*230
+    Curve 1 Dh=0: S(s) = 1e6*exp(-0.02*s)
+      s=0:  S=1.000e6  y=288-209=79   x=70
+      s=10: S=0.819e6  y=288-171=117  x=166
+      s=20: S=0.670e6  y=288-140=148  x=262
+      s=30: S=0.549e6  y=288-115=173  x=358
+      s=40: S=0.449e6  y=288-94=194   x=454
+      s=50: S=0.368e6  y=288-77=211   x=550
+
+    Curve 2 Dh=0.5m: S(s) = 82085*exp(-0.02*s)
+      s=0:  S=82085   y=288-17=271   x=70
+      s=50: S=30225   y=288-6=282    x=550
+
+    Curve 3 Dh=1.0m: near zero, y~288
+  -->
+
+  <!-- NCW shading -->
+  <polygon points="70,288 70,79 166,117 262,148 358,173 454,194 550,211 550,288" fill="#e63946" opacity="0.10"/>
+
+  <!-- Curve 1: geen maatregelen -->
+  <polyline points="70,79 166,117 262,148 358,173 454,194 550,211" fill="none" stroke="#e63946" stroke-width="2.5"/>
+
+  <!-- Curve 2: Dh=0.5m -->
+  <polyline points="70,271 166,273 262,276 358,278 454,281 550,282" fill="none" stroke="#f4a261" stroke-width="2.5"/>
+
+  <!-- Curve 3: Dh=1.0m (near zero) -->
+  <line x1="70" y1="287" x2="550" y2="287" stroke="#06d6a0" stroke-width="2.5"/>
+
+  <!-- S(0) marker -->
+  <circle cx="70" cy="79" r="5" fill="#e63946"/>
+  <text x="78" y="75" font-size="10" fill="#e63946" font-family="Arial">S(0)=1M E/j (Dh=0)</text>
+
+  <!-- NCW label -->
+  <text x="220" y="210" font-size="11" fill="#e63946" font-family="Arial">NCW = 31.9 M E</text>
+
+  <!-- Legend -->
+  <rect x="72" y="63" width="194" height="62" rx="4" fill="white" stroke="#dee2e6" stroke-width="1"/>
+  <line x1="82" y1="79" x2="107" y2="79" stroke="#e63946" stroke-width="2.5"/>
+  <text x="113" y="83" font-size="10" fill="#333333" font-family="Arial">Dh = 0  (geen maatregelen)</text>
+  <line x1="82" y1="96" x2="107" y2="96" stroke="#f4a261" stroke-width="2.5"/>
+  <text x="113" y="100" font-size="10" fill="#333333" font-family="Arial">Dh = 0.5 m</text>
+  <line x1="82" y1="113" x2="107" y2="113" stroke="#06d6a0" stroke-width="2.5"/>
+  <text x="113" y="117" font-size="10" fill="#333333" font-family="Arial">Dh = 1.0 m</text>
+
+  <!-- Results table -->
+  <rect x="70" y="344" width="520" height="96" rx="6" fill="white" stroke="#dee2e6" stroke-width="1"/>
+  <text x="88" y="362" font-size="11" font-weight="bold" fill="#212529" font-family="Arial">NCW-resultaten (verificatie stap 1.2)</text>
+
+  <!-- Table header -->
+  <rect x="80" y="368" width="500" height="18" rx="2" fill="#f1f3f5"/>
+  <text x="88"  y="381" font-size="10" font-weight="bold" fill="#495057" font-family="Arial">Dh [m]</text>
+  <text x="218" y="381" font-size="10" font-weight="bold" fill="#495057" font-family="Arial">S(t=0) [E/jaar]</text>
+  <text x="378" y="381" font-size="10" font-weight="bold" fill="#495057" font-family="Arial">NCW [E]</text>
+  <text x="498" y="381" font-size="10" font-weight="bold" fill="#495057" font-family="Arial">Reductie</text>
+
+  <text x="88"  y="399" font-size="10" fill="#333333" font-family="Arial">0</text>
+  <text x="218" y="399" font-size="10" fill="#e63946" font-family="Arial">1 000 000</text>
+  <text x="378" y="399" font-size="10" fill="#e63946" font-family="Arial">31 923 000</text>
+  <text x="498" y="399" font-size="10" fill="#6c757d" font-family="Arial">-</text>
+
+  <text x="88"  y="417" font-size="10" fill="#333333" font-family="Arial">0.5</text>
+  <text x="218" y="417" font-size="10" fill="#f4a261" font-family="Arial">82 085</text>
+  <text x="378" y="417" font-size="10" fill="#f4a261" font-family="Arial">2 620 000</text>
+  <text x="498" y="417" font-size="10" fill="#059669" font-family="Arial">-91.8%</text>
+
+  <text x="88"  y="430" font-size="10" fill="#333333" font-family="Arial">1.0</text>
+  <text x="218" y="430" font-size="10" fill="#06d6a0" font-family="Arial">6 738</text>
+  <text x="378" y="430" font-size="10" fill="#06d6a0" font-family="Arial">215 000</text>
+  <text x="498" y="430" font-size="10" fill="#059669" font-family="Arial">-99.3%</text>
+
+</svg>

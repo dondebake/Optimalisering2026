@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--OptimaliseRing versie : 2.3.2.0-->
+<OptimaliseRing>
+  <Instellingen>
+    <ZichtJaar>2020</ZichtJaar>
+    <OptimaleOverstromingskansenJaar>2050</OptimaleOverstromingskansenJaar>
+    <DiscontovoetSchade>5.5</DiscontovoetSchade>
+    <DiscontovoetInvesteringen>5.5</DiscontovoetInvesteringen>
+    <EconomischScenario>3</EconomischScenario>
+    <BedragPerInwoner>0</BedragPerInwoner>
+    <BedragPerDodelijkSlachtoffer>6700</BedragPerDodelijkSlachtoffer>
+    <BedragPerGetroffene>12</BedragPerGetroffene>
+    <Aversiefactor>1.00</Aversiefactor>
+    <BeleidsfactorOverstromingsschade>1.60</BeleidsfactorOverstromingsschade>
+    <AanpassingsfactorOverstromingsschade>1.00</AanpassingsfactorOverstromingsschade>
+    <DijkringspecifiekeFactorSchade>1</DijkringspecifiekeFactorSchade>
+    <ParametersKostenfunctie>1</ParametersKostenfunctie>
+    <ScenarioVoorHoeveelheidSchade>2</ScenarioVoorHoeveelheidSchade>
+    <KlimaatScenarioEnFysischMaxAfvoer>17</KlimaatScenarioEnFysischMaxAfvoer>
+    <TypeKostenfunctie>1</TypeKostenfunctie>
+    <Veiligheidsnorm>1</Veiligheidsnorm>
+    <RamingVoorSlachtoffers>2</RamingVoorSlachtoffers>
+    <SchadeFunctie>2</SchadeFunctie>
+    <FactorKosten>1.11</FactorKosten>
+    <FactorKans>1.00</FactorKans>
+    <FactorGroeiSchade>1.00</FactorGroeiSchade>
+    <Parametersonzekerheid>0</Parametersonzekerheid>
+    <Compartimentering />
+    <ParametersOnzekerheid />
+    <B-Keringen>
+      <Kering1 Kering="6" Percentage1="0" Percentage2="0" />
+      <Kering2 Kering="7" Percentage1="0" Percentage2="0" />
+    </B-Keringen>
+  </Instellingen>
+</OptimaliseRing>

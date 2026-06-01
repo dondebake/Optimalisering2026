@@ -1,0 +1,152 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OptimaliseRing.General</RootNamespace>
+    <AssemblyName>OptimaliseRing.General</AssemblyName>
+    <ApplicationIcon>hkv.ico</ApplicationIcon>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>OptimaliseRing.General.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <DocumentationFile>
+    </DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\AnalogClock\AnalogClock.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AnalogClock\AnalogClock.Designer.cs">
+      <DependentUpon>AnalogClock.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\ColorPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\ColorPicker.designer.cs">
+      <DependentUpon>ColorPicker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\ComboBoxColorPicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\ComboBoxColorPicker.designer.cs">
+      <DependentUpon>ComboBoxColorPicker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\SelectableColor.cs" />
+    <Compile Include="Controls\Colorpicker\ToolStripColorPicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\Util\ContextMenuForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\Util\ContextMenuForm.designer.cs">
+      <DependentUpon>ContextMenuForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Colorpicker\Util\CustomColors.cs" />
+    <Compile Include="Controls\Colorpicker\Util\GradientPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataAccess\MyDataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataAccess\MyOleDb.cs" />
+    <Compile Include="General\ApplicationError.cs" />
+    <Compile Include="General\CalendarConverter.cs" />
+    <Compile Include="General\ConvertString.cs" />
+    <Compile Include="General\ExcelReader.cs" />
+    <Compile Include="General\GenericSerializer.cs" />
+    <Compile Include="General\MyPath.cs" />
+    <Compile Include="General\OperatingSystem.cs" />
+    <Compile Include="General\PersistWindowState.cs" />
+    <Compile Include="General\WaitCursor.cs" />
+    <Compile Include="General\WindowsPathApi.cs" />
+    <Compile Include="General\Xml.cs" />
+    <Compile Include="Profile\Config.cs" />
+    <Compile Include="Profile\Events.cs" />
+    <Compile Include="Profile\Ini.cs" />
+    <Compile Include="Profile\IProfile.cs" />
+    <Compile Include="Profile\Profile.cs" />
+    <Compile Include="Profile\Registry.cs" />
+    <Compile Include="Profile\Xml.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\AnalogClock\AnalogClock.bmp" />
+    <EmbeddedResource Include="Controls\AnalogClock\AnalogClock.resx">
+      <DependentUpon>AnalogClock.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Colorpicker\ColorPicker.resx">
+      <DependentUpon>ColorPicker.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Colorpicker\ComboBoxColorPicker.resx">
+      <DependentUpon>ComboBoxColorPicker.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Colorpicker\ToolStripColorPicker.resx">
+      <DependentUpon>ToolStripColorPicker.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Colorpicker\Util\ContextMenuForm.resx">
+      <DependentUpon>ContextMenuForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Content Include="Controls\Colorpicker\ComboBoxColorPicker.bmp" />
+    <Content Include="Controls\Colorpicker\ColorPicker.bmp" />
+    <Content Include="Controls\Colorpicker\ToolStripColorPicker.bmp" />
+    <Content Include="Controls\Colorpicker\Util\GradientPanel.bmp" />
+    <Content Include="hkv.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OptimaliseRing.General.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

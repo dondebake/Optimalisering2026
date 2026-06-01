@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.UI", "OptimaliseRing.UI\OptimaliseRing.UI.csproj", "{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BA0D156-EEBA-4011-B1CD-95069B6B39E4} = {4BA0D156-EEBA-4011-B1CD-95069B6B39E4}
+		{E5483664-0894-4659-BDFB-D0C48F5CDFA9} = {E5483664-0894-4659-BDFB-D0C48F5CDFA9}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.General", "OptimaliseRing.General\OptimaliseRing.General.csproj", "{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.Dialogs", "OptimaliseRing.Dialogs\OptimaliseRing.Dialogs.csproj", "{E5483664-0894-4659-BDFB-D0C48F5CDFA9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.Core", "OptimaliseRing.Core\OptimaliseRing.Core.csproj", "{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.Aimms", "Optimalisering.Aimms\OptimaliseRing.Aimms.csproj", "{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaliseRing.Batch", "OptimaliseRing.Batch\OptimaliseRing.Batch.csproj", "{4BA0D156-EEBA-4011-B1CD-95069B6B39E4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "OptimaliseRing.Setup", "OptimaliseRing.Setup\OptimaliseRing.Setup.vdproj", "{771460CD-E7EF-4544-951E-B0176248626D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F08DB9CB-AE09-4A86-8F47-033E51A8DDB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86DFF771-38F0-4A6C-BB4F-19B26BCE4FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5483664-0894-4659-BDFB-D0C48F5CDFA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5483664-0894-4659-BDFB-D0C48F5CDFA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5483664-0894-4659-BDFB-D0C48F5CDFA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5483664-0894-4659-BDFB-D0C48F5CDFA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6873C6CB-AD71-4DAD-B2F1-24CDD56D1BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA0D156-EEBA-4011-B1CD-95069B6B39E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA0D156-EEBA-4011-B1CD-95069B6B39E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA0D156-EEBA-4011-B1CD-95069B6B39E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA0D156-EEBA-4011-B1CD-95069B6B39E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{771460CD-E7EF-4544-951E-B0176248626D}.Debug|Any CPU.ActiveCfg = Debug
+		{771460CD-E7EF-4544-951E-B0176248626D}.Release|Any CPU.ActiveCfg = Release
+		{771460CD-E7EF-4544-951E-B0176248626D}.Release|Any CPU.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

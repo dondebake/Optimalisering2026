@@ -1,0 +1,269 @@
+# Development Log
+
+## 2026-06-01 — Stap 0.1: Repository & package layout
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+- `.gitignore` aangemaakt in projectroot (Python/venv/tooling)
+- Mapstructuur aangemaakt conform README:
+  - `floodopt-core/floodopt_core/` met submodules `physics`, `risk`, `optimization`, `io`, `utils`
+  - `floodopt-api/`, `floodopt-worker/`, `floodopt-frontend/`
+  - `tests/unit/`, `tests/integration/`, `tests/validation/`
+- `pyproject.toml` aangemaakt voor `floodopt-core` (hatchling build, dev dependencies)
+- Tooling geïnstalleerd in `.venv`: `uv`, `pytest`, `ruff`, `mypy`, `pre-commit`
+- `.pre-commit-config.yaml` geconfigureerd (ruff, mypy, standaard hooks)
+- Pre-commit hooks geïnstalleerd (`git hooks/pre-commit`)
+- `floodopt-core` geïnstalleerd als editable package (`pip install -e`)
+
+### Verificatie geslaagd
+
+- `floodopt_core` en alle submodules importeerbaar ✓
+- Alle `__init__.py` aanwezig ✓
+- `pytest` runt zonder fouten (0 tests, 0 errors) ✓
+
+### Volgende stap
+
+**Stap 0.2** — Data model: `Measure`, `Scenario`, `Trajectory` als Pydantic models in `floodopt-core/floodopt_core/io/`
+
+---
+
+## 2026-06-01 — Stap 0.2: Data model
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+- `pydantic>=2.0` toegevoegd als dependency in `floodopt-core/pyproject.toml`
+- `floodopt_core/io/models.py` aangemaakt met drie Pydantic v2 models:
+  - `MeasureType` (str Enum: `dike_reinforcement`, `room_for_river`, `other`)
+  - `Measure` — id, type, cost (≥0), year (2000–2200), effect (>0, [m]), location, dependencies
+  - `Scenario` — id, climate, q_design (>0), h_design, eta (≥0, [m/jaar])
+  - `Trajectory` — id, norm (0 < norm ≤ 1), length (>0), p0 (>0, [1/jaar]), alpha (>0, [1/m]), measures
+- `floodopt_core/io/__init__.py` exporteert alle models via `__all__`
+- 16 unit tests geschreven in `tests/unit/test_io_models.py`
+
+**Datamodel update (nav. analyse OptimaliseRing broncode):**
+- `Measure.effect` expliciet in meters [m] (Δh kruinhoogteverhoging), effect=0 niet toegestaan
+- `Scenario.eta` toegevoegd: klimaatstijging waterstand [m/jaar], 0.0 toegestaan (geen klimaat)
+- `Trajectory.p0` toegevoegd: faalkans basisjaar [1/jaar]
+- `Trajectory.alpha` toegevoegd: schaalparameter faalkansmodel [1/m]
+- Formule: P(t) = p0 · exp(α · η · t) · exp(−α · Δh), identiek aan OptimaliseRing
+
+### Verificatie geslaagd
+
+- 16/16 tests geslaagd ✓
+- `mypy floodopt_core/io/models.py` — geen errors ✓
+- JSON round-trip klopt voor `Measure`, `Scenario`, `Trajectory` ✓
+
+### Volgende stap
+
+**Stap 1.1** — Physics Layer: `PhysicsModel` Protocol + `SimpleDikeOverflow` implementatie
+
+---
+
+## 2026-06-01 — Stap 1.1: Physics Layer
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Datamodel uitgebreid (vereist voor Physics):**
+- `Trajectory.base_year: int` toegevoegd — jaar waarvoor `p0` geldt (bijv. 2017)
+
+**Nieuwe bestanden:**
+- `floodopt_core/physics/protocols.py` — `PhysicsResult` (frozen dataclass) + `PhysicsModel` Protocol
+- `floodopt_core/physics/simple_dike_overflow.py` — `SimpleDikeOverflow` implementatie
+- `floodopt_core/physics/__init__.py` — exports
+
+**Formule (identiek aan OptimaliseRing 2.3.2):**
+
+$$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$$
+
+| Symbool | Betekenis | Eenheid | Bron |
+|---|---|---|---|
+| $P_0$ | Faalkans basisjaar | 1/jaar | `trajectory.p0` |
+| $\alpha$ | Schaalparameter | 1/m | `trajectory.alpha` |
+| $\eta$ | Klimaatstijging waterstand | m/jaar | `scenario.eta` |
+| $t$ | Jaren na basisjaar | jaar | `year − trajectory.base_year` |
+| $\Delta h$ | Totale kruinhoogteverhoging | m | $\sum_i$ `measure.effect` |
+
+Zie ook: `docs/stap1.1_physics_formula.svg`
+
+### Verificatie geslaagd
+
+- 23/23 tests geslaagd (16 datamodel + 7 physics) ✓
+- Handmatige berekening 3 testcases klopt (rel_tol=1e-9) ✓
+- `mypy` physics module — geen errors ✓
+- `SimpleDikeOverflow` bevat geen optimizer-logica ✓
+- `PhysicsResult` is immutable (frozen dataclass) ✓
+
+### Volgende stap
+
+**Stap 1.2** — Risk Layer: `RiskCalculator` Protocol + NCW berekening
+
+---
+
+## 2026-06-01 — Stap 1.2: Risk Layer
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Nieuwe bestanden:**
+- `floodopt_core/risk/protocols.py` — `RiskParams` (Pydantic), `RiskResult` (frozen dataclass), `RiskCalculator` Protocol
+- `floodopt_core/risk/simple_risk_calculator.py` — `SimpleRiskCalculator`
+- `floodopt_core/risk/__init__.py` — exports
+
+**Formules:**
+
+$$S(s) = P(s) \cdot V(s), \qquad V(s) = V_0 \cdot e^{\gamma s}$$
+
+$$\text{NCW} = \sum_{s=0}^{T-1} S(s) \cdot e^{-\delta s} = \sum_{s=0}^{T-1} P(s) \cdot V_0 \cdot e^{(\gamma - \delta)\, s}$$
+
+| Symbool | Betekenis | Bron |
+|---|---|---|
+| $V_0$ | Basisschade overstroming [€] | `RiskParams.base_damage` |
+| $\gamma$ | Economische groeivoet [1/j] | `RiskParams.gamma` |
+| $\delta$ | Discontovoet [1/j] | `RiskParams.discount_rate` |
+| $T$ | Tijdshorizon [jaar] | `RiskParams.time_horizon` |
+
+Zie ook: `docs/stap1.2_risk_ncw.svg`
+
+### Verificatie geslaagd
+
+- 33/33 tests geslaagd ✓
+- Handmatige NCW-berekening geverifieerd (rel_tol=1e-9) ✓
+- NCW neemt af bij Δh=0 → 0.5m → 1.0m ✓
+- NCW stijgt door klimaatstijging (η>0) ✓
+- `mypy` risk module — geen errors ✓
+
+### Volgende stap
+
+**Stap 1.3** — Optimization Layer: `BruteForceOptimizer` + `PyomoOptimizer`
+
+---
+
+## 2026-06-01 — Stap 1.3: Optimization Layer
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Nieuwe bestanden:**
+- `floodopt_core/optimization/protocols.py` — `ObjectiveType`, `OptimizationResult`, `OptimizationStrategy` Protocol
+- `floodopt_core/optimization/brute_force.py` — `BruteForceOptimizer`
+- `floodopt_core/optimization/pyomo_optimizer.py` — `PyomoOptimizer` (HiGHS MILP)
+- `floodopt_core/optimization/__init__.py`
+
+**Solvers geïnstalleerd:** `pyomo==6.10.0`, `highspy==1.14.0`
+
+### Objective functies
+
+| Objective | Formulering | Solver | Exact? |
+|---|---|---|---|
+| `MIN_COST` | $\min \sum c_i x_i \;\text{s.t.}\; \sum h_i x_i \geq h_{\min}$ | HiGHS MILP | ✓ Exact |
+| `MAX_RISK_REDUCTION` | $\max \sum h_i x_i \;\text{s.t.}\; \sum c_i x_i \leq B$ | HiGHS MILP (0/1 knapsack) | ✓ Exact |
+| `MIN_NCW` | $\min \sum (c_i - C \cdot \alpha \cdot h_i) x_i$ | HiGHS MILP (lineaire benadering) | ≈ Geldig voor $\alpha h_i < 0.5$ |
+
+Waarbij $h_{\min} = \frac{\ln(P_0/\text{norm})}{\alpha}$ (uit Physics Layer, geen optimizer-logica).
+
+### MIN_NCW linearisatie
+
+Eerste-orde Taylor-expansie van $\text{NCW}_\text{risico}(\Delta h)$:
+
+$$\text{NCW}_\text{risico} \approx C \cdot (1 - \alpha \cdot \Delta h), \quad \Delta h = \sum_i x_i h_i$$
+
+Netto-voordeel per maatregel $i$:
+
+$$\text{nb}_i = C \cdot \alpha \cdot h_i - c_i$$
+
+Selecteer maatregel $i$ als $\text{nb}_i > 0$ (cost-benefit criterium, identiek aan OptimaliseRing 2.3.2).
+
+Zie ook: `docs/stap1.3_optimization.svg`
+
+### Verificatie geslaagd (KRITIEK)
+
+- **13/13 tests geslaagd** ✓
+- `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 6 testcases ✓
+- TC1 `MIN_COST`: M02+M03 (1.5M) < M01 (2M) — beide optimizers kiezen M02+M03 ✓
+- TC2 `MIN_COST`: norm al gehaald → lege set ✓
+- TC3 `MIN_COST` + dependency: M02 vereist M01 — constraint gerespecteerd ✓
+- TC4 `MAX_RISK_REDUCTION`: knapsack 0/1 — M02+M03 past binnen budget ✓
+- TC5/TC6 `MIN_NCW`: kleine maatregelen ($\alpha h = 0.1$, fout < 1%) — beslissing identiek ✓
+- `mypy` optimization module — geen errors ✓
+- Optimizer bevat geen fysische formules (getest) ✓
+
+### Volgende stap
+
+**Stap 1.4** — Integratie smoke test (CLI): traject → optimizer → resultaat
+
+---
+
+## 2026-06-01 — Documentatie: formules en diagrammen
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+- `scripts/generate_docs.py` — genereert alle PNG-diagrammen met matplotlib mathtext
+- `matplotlib 3.10` geïnstalleerd; `matplotlib.use("Agg")` voor headless rendering
+- 5 PNG-diagrammen gegenereerd in `docs/`:
+
+| Bestand | Inhoud |
+|---|---|
+| `architecture.png` | Drielagen-architectuur met formule-annotaties |
+| `stap1.1_physics_formula.png` | $P(t)$-grafiek met 3 curves + testcase-waarden |
+| `stap1.2_risk_ncw.png` | $S(s)$-grafiek + NCW-tabel + formule |
+| `stap1.3_optimization.png` | MILP-formuleringen + testcase-vergelijking BF vs Pyomo |
+| `database_mapping.png` | MDB-tabellen → eenheidsconversie → FloodOpt datamodel |
+
+- SVG-bestanden bijgewerkt: XML-declaratie toegevoegd, `text-anchor`/`rotate()` verwijderd (IrfanView-compatibel)
+- `README.md` volledig bijgewerkt: voortgangsstatus per stap, KaTeX-formules, docs-overzicht
+- `requirements.txt` bijgewerkt: `pyomo`, `highspy`, `matplotlib` toegevoegd
+- Alle formules in `development_log.md` omgezet naar KaTeX-notatie ($\LaTeX$)
+
+---
+
+## 2026-06-01 — OptimaliseRing broncode & database geïmporteerd
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+- Broncode OptimaliseRing v2.3.2 (C#, HKV 2013) toegevoegd aan repo als referentie
+- `Database OptimaliseRing 2011_04_07.mdb` (Microsoft Access) geconverteerd naar SQLite
+- Conversiescript: `scripts/convert_mdb_to_sqlite.py`
+- Output: `tests/validation/optimalise_ring_2011.sqlite` (408 KB)
+
+### Database-inhoud
+
+| Tabel | Rijen | Inhoud |
+|---|---|---|
+| Dijkringen | 103 | Dijkring-id, naam, terugkeertijd (norm) |
+| DijkringTrajecten | 176 | H0 [cm], factor |
+| Klimaat_AftoppenAfvoerDataTraject | 3348 | α [1/cm], P0 [1/j], η [cm/j] per traject × klimaatscenario |
+| ParametersKostenfunctieData | 183 | λ, C_exp, b_exp, Ω kostenfunctie-parameters |
+| SchadeFunctieData | 372 | ν, ζ, ψ schade-parameters |
+
+### FloodOpt-views (eenheden omgezet naar meters)
+
+| View | Inhoud |
+|---|---|
+| `v_trajecten_floodopt` | α [1/m], P0 [1/j], η [m/j], H0 [m] — 3168 rijen |
+| `v_dijkringen_floodopt` | norm [1/j] = 1/Terugkeertijd |
+| `v_kostenfunctie_floodopt` | λ [1/m] |
+| `v_schade_floodopt` | schade- + slachtofferparameters gecombineerd |
+
+Eenheidsconversie: α × 100 (1/cm→1/m), η ÷ 100 (cm/j→m/j), H0 ÷ 100 (cm→m)
+
+### Gebruik bij validatie (stap 1.3+)
+
+```python
+import sqlite3
+conn = sqlite3.connect("tests/validation/optimalise_ring_2011.sqlite")
+rows = conn.execute("SELECT * FROM v_trajecten_floodopt WHERE p0_per_jaar > 0").fetchall()
+```
+
+Real dijkringdata beschikbaar voor brute-force vs. Pyomo vergelijking in stap 1.3.

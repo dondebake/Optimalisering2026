@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="&gt;&gt;tscMap.BottomToolStripPanel.Name" xml:space="preserve">
+    <value>tscMap.BottomToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;tscMap.BottomToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.BottomToolStripPanel.Parent" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.BottomToolStripPanel.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="mapTipsPanel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="mapTipsLabel.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="mapTipsLabel.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Courier New, 8.25pt</value>
+  </data>
+  <data name="mapTipsLabel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="mapTipsLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 14</value>
+  </data>
+  <data name="mapTipsLabel.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="mapTipsLabel.Text" xml:space="preserve">
+    <value>tooltiptext</value>
+  </data>
+  <data name="mapTipsLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="&gt;&gt;mapTipsLabel.Name" xml:space="preserve">
+    <value>mapTipsLabel</value>
+  </data>
+  <data name="&gt;&gt;mapTipsLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mapTipsLabel.Parent" xml:space="preserve">
+    <value>mapTipsPanel</value>
+  </data>
+  <data name="&gt;&gt;mapTipsLabel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="mapTipsPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>163, 196</value>
+  </data>
+  <data name="mapTipsPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 14</value>
+  </data>
+  <data name="mapTipsPanel.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;mapTipsPanel.Name" xml:space="preserve">
+    <value>mapTipsPanel</value>
+  </data>
+  <data name="&gt;&gt;mapTipsPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mapTipsPanel.Parent" xml:space="preserve">
+    <value>tscMap.ContentPanel</value>
+  </data>
+  <data name="&gt;&gt;mapTipsPanel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Canvas.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Canvas.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="Canvas.OcxState" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj0yLjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACFTeXN0
+        ZW0uV2luZG93cy5Gb3Jtcy5BeEhvc3QrU3RhdGUBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAbQAAAAIB
+        AAAAAQAAAAAdAAAAQ29weXJpZ2h0IChjKSAyMDAwIEVTUkksIEluYy4AAAAAOwAAAAAAAgARKgAA9ikA
+        AOEAAAD///8AAQABAAAAECcAAAEAAAAAAAAAAAAAAAAAAAABAP///wAAAgAAAAAACw==
+</value>
+  </data>
+  <data name="Canvas.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 406</value>
+  </data>
+  <data name="Canvas.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Canvas.Name" xml:space="preserve">
+    <value>Canvas</value>
+  </data>
+  <data name="&gt;&gt;Canvas.Type" xml:space="preserve">
+    <value>AxMapObjectsLT2.AxMap, AxInterop.MapObjectsLT2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0d82c60477ab6efa</value>
+  </data>
+  <data name="&gt;&gt;Canvas.Parent" xml:space="preserve">
+    <value>tscMap.ContentPanel</value>
+  </data>
+  <data name="&gt;&gt;Canvas.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tscMap.ContentPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 406</value>
+  </data>
+  <data name="&gt;&gt;tscMap.ContentPanel.Name" xml:space="preserve">
+    <value>tscMap.ContentPanel</value>
+  </data>
+  <data name="&gt;&gt;tscMap.ContentPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripContentPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.ContentPanel.Parent" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.ContentPanel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tscMap.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="&gt;&gt;tscMap.LeftToolStripPanel.Name" xml:space="preserve">
+    <value>tscMap.LeftToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;tscMap.LeftToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.LeftToolStripPanel.Parent" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.LeftToolStripPanel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tscMap.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;tscMap.RightToolStripPanel.Name" xml:space="preserve">
+    <value>tscMap.RightToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;tscMap.RightToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.RightToolStripPanel.Parent" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.RightToolStripPanel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tscMap.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 431</value>
+  </data>
+  <data name="tscMap.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="tscMap.Text" xml:space="preserve">
+    <value>toolStripContainer1</value>
+  </data>
+  <metadata name="uxTopoToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 0</value>
+  </metadata>
+  <data name="uxTopoToolStrip.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="uxSelectButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAYhJREFUOE+dk8tq
+        wkAUhl0VXHXbVR+jz9EX6EMILhS8tBipBqKVoKIoZCGCgogLEREXgopVF25ExEW8NiLeCAHbRfs3J1AQ
+        e4npwMDMcM53/v/MjMl0Mtrttuv0zNC+1Wqh0Wg8GEo6Dq7X6xgOh6hWq8y/ILVaDYfDAf1+H8Vi8dEw
+        RK2sAXa7HXq9HvL5PGsIUi6XoSgK1us1NpsNOp0O0un0+RBVNmRZxnK5hCRJWK1WaDabSCaT3FlKCoUC
+        9vs95vM5ptOpNglEvYlEIk+6kFwuh+12i8lkAlEUMR6PNQABK5UKAoEA/yckk8loFhaLhVZ9NpshHA4r
+        oVCoy3Hcm9/vh9fr/R2SSqUwGAzI8yvdAqlxu90fLMtefVVWQWaLxWL+UYkgCIjH41I0Gr3heV6kR0X+
+        1cqCrn8KSCQSz7FY7JrWwWDwlnpClhiGeff5fJe6EJJ3HKQmSqPRCKVSCU6n814XcBrg8XjustksCGK3
+        22W1HxeGIJTgcDhebDZb12q1fvuln0DhEn/gX4+zAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="uxSelectButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxSelectButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxSelectButton.Text" xml:space="preserve">
+    <value>uxSelectButton</value>
+  </data>
+  <data name="uxSelectButton.ToolTipText" xml:space="preserve">
+    <value>Selectie mode</value>
+  </data>
+  <data name="uxZoomInButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAoJJREFUOE+tk+9L
+        E3Ecx/0LetrDogcxK0QSvSfaEajJRFduTud+iMmw1FJJJGGiNHeVo83KH0zJGebNmHUVWJZOc247yt33
+        zDAhZPM2YsUeVDfp2fh038xHN8IHfeHz5Mu9X+/35313WVn/66zRBoLzmBjkqU8uz5DpZZpMB93GJDtW
+        w7BDauKfPjxtNPOPGhLclAmtTdZZwm6dIuiqUrBjGgvrqkaB0ZqE33nenBGCnffEeoqLitloR9QgIdXG
+        x1Kt68LPig3hxzH/oIpadaoSS3alPAlHmxjsHI6KCiSIl6Xp5mNiF4rtdvJCqkMC6fno96MrDhXy3VQy
+        shSIrk+uTdZa1uNilSS+vidOXfsrbkUxsVlKVOyzKS3ztoqkDLDsIdNhl04hObXsu+6v0PTSAA3PasAw
+        UwXzvaWKpQEyLQdMS21LhfGC2ISFaCd1FcM4QbxU/0QL9OYDUE+U/wH4qAyAoFufZEc0Fi62W7aXQmxu
+        fKEDk1cDXa+uwMSHYWiZbYRiexGcsRIgSxAa1TChoWqEi5L21vJx0YwjuzdGYYy/B1SwBwbf3wJ7yAr5
+        3blygN9ZSQSGVYm3DhXFRX4d4eOpszhyxUgJmD0msLM2qBtXQ15XDuS0ZcPTtkKdvIeBSrNfes++2+Vo
+        wXrOgvfFgyPf8PfA6c5TEA+7IBK4A4tWFTxvJA7LIEuUknjTr2TmbaVJXNZiP5nGkXM7TsKJluPwdXMK
+        vm1Nw+eFPvCSRWk6EyTTp8q0k8YVRy1Eg05IfJyEHfY+vBtvAKpEsX3g/3C2udC42H8BtuZ64NNcL6ze
+        1YK3iYgcGIAffGzOr3toyPvyuq8MvBcLtqf0BYfw/W/IWY7kaiskgAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="uxZoomInButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxZoomInButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxZoomInButton.Text" xml:space="preserve">
+    <value>uxZoomInButton</value>
+  </data>
+  <data name="uxZoomInButton.ToolTipText" xml:space="preserve">
+    <value>Zoom in</value>
+  </data>
+  <data name="uxZoomOutButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAnRJREFUOE+tk/9L
+        E2Ecx/0XgiCIoCiI9UsQUoMwjih1rHRl07nmNLNhLc0iCQdXGs5JVluRJdMfNtBtxsKjyFzNOZ3OFe6e
+        kyKFCrfboFXri94Njej6dE/Ln26EP/TA88vD836935/33ZOX97/WjLtKTnuqKeSpSQcHCSHoJoSwQ5+O
+        9GqoSPcx+T99GLfewAzUpuj+ajTjPE5GHVpZ2F4mi/SqyYi9HE31aFIh2xFDTgh2zop1FjrG7UBxTo1Y
+        volJ8A2z7FLJS3Zxa+iWyjJpU6XGriulSWh3NYWdozFOhljujLhNTIK7hBKZZoblL4ggHRP7tmXCqkKB
+        TiUlSYHcNekZZyU5m+TKRHFLVsxf/CtuQAnOKCY6GOhQkr6OkrQEEPQQQtSulYlOZ1ddV0fAiRiWq8cp
+        fK1FsrEuQpACXGLbYmH4IhaiOH8Ow2iWO/3nLMGdmmV5DQYELDkAYYcuHbmnJulERpFNwRl/tTTDz6ZG
+        +FF3ElbUFZApVMDS7r3wdftOkCSY7lFT093lCBclzl3BJDkDFn9/HoSV8RFYfjIEGe8A8M4++LxxmxQQ
+        spXKp+6qUuNWlYVeWN7MJPn9uZyx+NO6TTDUVKCV9tBVagiJ3zlw7RDytxeTeF68R0wHyOANQph7bIJk
+        1A4LUzdhtF0FD+vkGySQMYtS/syspHwdRWlc1qiZEB5dKV70Xz0Mb4Od8OF1P3ycd8Ebfxt4iX2COxck
+        169KnSf0E9ZKiIVtkHrlhHjkDrzoqwVLoezdmt/hA2OBftR8FOaHL8PccCtM3q4Ab/2uL2sG4Iv3DXv0
+        rqp8eNqmgMET8vcubf56fP4b9QebhIyW/RcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="uxZoomOutButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxZoomOutButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxZoomOutButton.Text" xml:space="preserve">
+    <value>uxZoomOutButton</value>
+  </data>
+  <data name="uxZoomOutButton.ToolTipText" xml:space="preserve">
+    <value>Zoom uit</value>
+  </data>
+  <data name="uzZoomAreaButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAppJREFUOE9jZICC
+        08tizJkYmSoYGRhtPjI+EGL4x8DA9lPuHdPvX0cYfv3psMxZexKmFoM+vyw29fySxOdnF8edO70gqubM
+        /EiNozODNI7PCqk5PjP03JHp4c8P9QekYjUAZDNEc3Tb2fufNM89+BRy7uHn/POPPudcePjR99LDD0qH
+        Jvi3He73f76v28scw5Czy+LWg2w+c/+TxrmHnzKBuPL8o09l5x59KTn/8HMh0KDo8/ffKxzs8z+3t91r
+        PYYB55bFvz69IKLmwuNPQUDNFRDNn4uhmnPOPfqUBXSRy95Wr5odrb6vMQzYv9z+75mZkRpAm7JhtsK8
+        AHLR+Yef0kGu2FHvprGvy/4vpgFL7f+CAgykEKTx3IPPeSDDzj78lAEWe/Qp5cLDz+EgA/a2YTHg6Pzo
+        18enhdScffTFA+KKT1lgzY8/pQLZyecffkw4++iT3fZq15odlW6YXjg2PWT9sSmh50ABBfR3GFRjyvlH
+        HxNBmoHe8L/4+KvM+kbP71srnDHTwqF+P/MjU/2fH+jzbzt775v8+cefHUFOBhoWeuHhJxuQ5k31Pr8u
+        rc7/v6/Y4f+6fJtIzHDo8ks9BIznvZ3e53Y3u9eA/AvC2yuda/b32P+9tqXy/+MzM//fO9L7f0+z//+N
+        yebiGIbsa/My39XitX5Hq9trUGDtabH/u6nO/cPuRp//t/e3/39xdfH/l9eX/r+1u+H/anvbv8uwGYIt
+        qa4vsI892Bfx//7R/v/PLy/4/+D45P8nZyf+b3PVuLMpzZgLZ/5AlliTZRO7pyXw//Wttf+vba3/f3hi
+        2P/V6YZvV4Vq8RBlAEjRylSz2KUxxv93Nnj8X5Fg/mxppLEI0ZphClcmWwjNijBomR9vzwETAwCRYZ9A
+        /h9FAwAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="uzZoomAreaButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uzZoomAreaButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uzZoomAreaButton.Text" xml:space="preserve">
+    <value>uzZoomAreaButton</value>
+  </data>
+  <data name="uzZoomAreaButton.ToolTipText" xml:space="preserve">
+    <value>Zoom gebied</value>
+  </data>
+  <data name="uxDragButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAHpJREFUOE+Vk0sO
+        wCAIRFlw/yu3pQlm+AomTVDhOVOUqBnM/MjX5Zg9LJBYh663sKwAARiniraAVI2HVAo0L4MY3xUg2Kl+
+        3qFB4FVS5z0D4NpvAQGy6ecVxPifFoXTsZ9bSOjABlDeyClkfKWrNl4fV6dk9TqvJ30JL1blCpHHVtii
+        AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="uxDragButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxDragButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxDragButton.Text" xml:space="preserve">
+    <value>uxDragButton</value>
+  </data>
+  <data name="uxDragButton.ToolTipText" xml:space="preserve">
+    <value>Schuif</value>
+  </data>
+  <data name="uxCenterButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAGZJREFUOE9jYBj0
+        wL1k2X+yHWmaPvc/DJNsCMhmEAYZAGOTbAhIA8gAkjSi+xndALxhAnMuso3YDMDqKph/kQMOxsYmh9Ul
+        FLkA5myKwgBbaJMcC8guoTgdIBtAUlpAVkxRXiDGVgBtdXBRUIPE7QAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="uxCenterButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxCenterButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxCenterButton.Text" xml:space="preserve">
+    <value>uxCenterButton</value>
+  </data>
+  <data name="uxCenterButton.ToolTipText" xml:space="preserve">
+    <value>Centreer</value>
+  </data>
+  <data name="uxWorldButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAA4NJREFUOE9tU1tM
+        kwcU/knUp5k9Le7NNx8aSQXD5hZ1S8g0YYq3AJYCFk1bJW0nokhruFSJGpENvDAo7cBibyCW0hvF3mmp
+        lZa2tKWlrYUhc9iN4Vxwizg+C8uWSHaS8/Cd5Lvk5JwMYl2xHLQ9GUQGewVEzt8ZxEebiDcbiOVNvxMb
+        CTdWVtpu7703tJ6zhust9Rs4dtp9joP616MfJfCkhmGecUITc2IgYsKDiBQnukqXGcMUXYWl4IP3RBge
+        xkaOo9whjt7E/JIXsYUQggvjUE77oE1OQhwK4Z5/HL1+B1rd10B9eDhQ0Fvw4X8ibEe5pDtyDclXVky+
+        ciG8GIbvhR/SeBh9yQRavHE0PY7gW5sbyrAJrS4ejorzdGsCnJHy3ZzBA29m/7BCs6jFg5da6Bds0D8L
+        QRidwt1gDGytF2y1C41jWgim78D7sxKketLbvDtfHiLS0fu1yXZ4ftFCtqiC4jc33KkAmn1hNI1NgaHx
+        gmk0onJSgKrkZVQmeOjxt+L+4+vI/W63gUjHn534VQ3xbCeaU6K0ewiulB8cgw8MlQcX3GNgxqtxcIqB
+        gxE6SoMs1D2qgj0uwd7ru54THAtlKfHSjCtRPtjxixD8ZIFs2oNS+ROwTHY0xYZAi0rxReAi9vkrcNhI
+        AavvFMbnBvFZPek1cWqI9vrpohm1gSqwAi34YcaIMpkLZQNBHOsYBcc4Cl5ACbZDgxMKJYoUl8DsKcb4
+        MxXI35D/JCoslDnfiwG0hK7gRsKCy2MjKBR7UKKMgapM4GuBG7lXLcht1OOowICTkjZUS+kwRcXI4pHn
+        Cfpw8aAycguaZDfOjjaiwS9HicSJIpkfhb0zOCKNIa/dhf03DSjq1IHexUeLhQuhmY8sbqaFODlYtK+0
+        69hyMKXFeeMZVJo4YOvMoPa4Qe2bxnH5U+TfsuG4QpReag2YbcWwJqTI5pFXsrk7itduoVB+QNVsrYY6
+        0oEGKxd1diMqFKM4o4qA3j+Jss407qfh9PcUdNj4uKRg/uP+b+UL8zfntX8VuKo/C9f8Q3RPWMFXO1Gr
+        eYIapQc1MgPuehpgjHWDJ2cgu2Z7LOc86eP3/iFf+Pnm3OY9uq03ti6LnJ0Q2dUQ2kwQjZihmhiAwFoH
+        Eo/0dtX5U+72Lf/7kavDXY05Rz5p2KnfWZs1t+3ctqXVzryQ+XwHl2zK4pJL1hPfAVasWIPIaBaSAAAA
+        AElFTkSuQmCC
+</value>
+  </data>
+  <data name="uxWorldButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxWorldButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxWorldButton.Text" xml:space="preserve">
+    <value>uxWorldButton</value>
+  </data>
+  <data name="uxWorldButton.ToolTipText" xml:space="preserve">
+    <value>Hele gebied</value>
+  </data>
+  <data name="uxSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 25</value>
+  </data>
+  <data name="uxResultaatButton.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="uxResultaatButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAd1JREFUOE+tk+0v
+        I1EUxvu37Z8grIgNH/ggvkiE/dDYRqRRW6WiUs1S1ezaIFVdNKJoVZtWla5uyXq3W2+dGaWtRovI496L
+        zoz4QOIkT27m5pzfec6ZGYXiPeL74rnK4r04tCwkYXYL+DYnwOjiYJg+RZfzBLqJI7SNx6G2/UPzyB6+
+        DO1Cad1eLvS2eAUhm7vFW9QwGM0XAAOeM1Y8tNEPa8wE81oPTJEuGMLt6Axp8DXQArVPhWavEk3uzyy3
+        rm8dBUDfvMAuXxs0t7Y3KgJMZF56+dPHvUo0t9oQEQE9ZFlPAOpixJ+QmbEF5c9COodKfVgE6KeOkbm6
+        wWiAg40qyGMsyMEe4uAgogB6OpYScK4ksH+aQZl2SQTofh0iTQD2EM86Ox7PJxvPHewcp1HSGhABGvt/
+        pLI3mAjzmFyRazrCMwfMBXFgJ9qMp1Dc6hcBLaMHuLi8Bk2mMbsmyHbg+s2TEcW3RAGVHZIRVMN7DOAi
+        hbRYqvmoAOcqLxMFfNJKRlD+2MI5Abj/PHT2xOQOxshSpcEc6CSARutfJDN58KkcTpJXiPNZsulL7Byl
+        2bwvqVTruSt8ifXmDX+NMZatMUZR1R1BRWcY5doQPmqCKFL7XtSHxhnHe/zIinssjqHqy5dIKgAAAABJ
+        RU5ErkJggg==
+</value>
+  </data>
+  <data name="uxResultaatButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxResultaatButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxResultaatButton.Text" xml:space="preserve">
+    <value>uxResultaatButton</value>
+  </data>
+  <data name="uxResultaatButton.ToolTipText" xml:space="preserve">
+    <value>Resultaten</value>
+  </data>
+  <data name="uxKaartlagenButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAvxJREFUOE9jYKAU
+        FB9PNQfh/ENAvC/RPGtnjHnqlhjzxA0R5jGrg80jFvmZB8/1Mveb4Wru1e9gjmFf0fF01/r98RzxyHg+
+        kA/G9mBsD8L19hxOHdauGAbkHUh2LTwWwll8LL0JhAsPpTTl7ktqytwV15SyJaYpYV1EU8yKoKawRX5N
+        PtPdFvhNd6vzmOhQBzcoe0+Ca9qmNK7CY2mL8g6kmmbuSLBK3RZrn7IxwiludbBb5FJ/r+CFvj7+M90C
+        nDptqjx6Hb2c2q3nwQ1I3xrjGrMzhjv3QNLijO3RtkXHUm/kHU2/WXAw+VbO7vjbGTuj76RsCLsbuy7s
+        buTCgKfBi3zuBMxye+0z1e20+wTH0wwJayNckzb48Wbtjl+cuiXKBeiN/2lbo6uSN0Z0xa8Nmxa7KmRZ
+        1PLATaELffcEzHC96DfV9Zhzt8N9tz77jcAw+c8QsyzQNXqxB1/q1qjFCWvCvPIPpvxP3RwxJ2F9+MqY
+        lSHbopYFHghZ6H08cLbHGa+Jzrfd++0uOLZbPnJst9ps3WD6nyFknq+r/3x7gYR1oUvClwQEAcPkf9KG
+        8B1xK0MOAf1/KmSBzwW/mR6XvSc5XnNtt31g32551bLe9JFlrdFG0wqD/wy+091cPSc4uYYv9t3hO8W1
+        Nm1bzP+oFUHXwhb63fKb6X7Xd7rrA9d+oMYum4d2zeYPrWtMr5tW6D00Kddbr1+o9R8emEHzveb5znAP
+        Slwf/j98qe/5kHlAW2e4XnWf6HjNucv2hl2L+Q3LWuNrxmW6V3XzVR/o5Wms1spSRRgAtGkeMH7nRS8P
+        /O872/Ox2ySXJ4599kC/Wj6yaTR7aFqu+8CoVPeBdrbmfc0MpXuaGcrLVFMUEQbAnBIy3+e/3wz3zV6T
+        HDa5dtlsBNq83qreeJ1puf5qgwKtFdq5akvV01QWqSTLL1SMl8U0AJjS/ntOdPzv3GXz367Z4j/Q2f9N
+        yvX/g/yrna32Xz1N+b9yksJ/hTjZ/3LRUpgGUJo5SdYPAJO+TmQUVKt5AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="uxKaartlagenButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxKaartlagenButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxKaartlagenButton.Text" xml:space="preserve">
+    <value>Kaartlagen</value>
+  </data>
+  <data name="uxKaartlagenButton.ToolTipText" xml:space="preserve">
+    <value>Kaartlagen</value>
+  </data>
+  <data name="uxPrintButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAi1JREFUOE+1k/9P
+        UlEYxv2nWK2tVlttGmpltrCcEQ1XUjSMaUHJNLIpNcnCragplBvUoC/okJhZLG92ySUpU8RNICdIhAio
+        EF+e7r1UZMDW1jrb+8t7z/N83vucc8rK/sdyeYIwvpopWYbRaZTk0uIx0o0/V/JbGt7lVTwxT6CKKylt
+        oLd8xGYihS/hKGz2WaaeWUnoTATsMz7UCztx9Ex7cYN3jkUQU4tb4DR5LZaAcyEAg4VE5YlLMFmJQoNQ
+        JA61gUA6k4XPH9pCN9s+gZz2oq5Jjlq+DDfUz3Fba86bOGY9jHiUdDF0mvqT7A/F4fKEcE9nZf5d1jOI
+        B4ZxVJ2U5gyc8z70akegMX3AXb0ND1+8R6/GgvZbeog61OA2K3CA2lxR34JjZ69B2T8EsVyN/Q0XcwY3
+        B14iGk8UpE43UukMNqhA6QyC4Q0srcQg7dagsbWHmuDHScj7jDC9nsJTqx0a4xjuaIfRqXoMSXc/hG0q
+        8C4owGnqwEGeFOXHxThH9eoEV7G7VpiboE2pK0qnm9H1JLz+NUzOBfHWEcAQsQSuqAuVDa1gVZzKGUgU
+        jwoMqAzxNZbC3Od1jDvDYPdth+7NCpP8Yf4V7KoR5A1arg8gmQIoGMLxLJYjWSwEMphwb2J4MoZB2yqU
+        LBZUIxHGYB9HlBfTE4jl9+GmBPTHv6lfo//+GGoaZajmXQabumXl1HHt5TRjz5Hz2HlIgB3Vp7GNzWeo
+        RcX/+pq/AwHYL0leVl8fAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="uxPrintButton.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="uxPrintButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="uxPrintButton.Text" xml:space="preserve">
+    <value>&amp;Print</value>
+  </data>
+  <data name="uxPrintButton.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="uxSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 25</value>
+  </data>
+  <data name="cmbWeergave.Items" xml:space="preserve">
+    <value>Overstromingskans</value>
+  </data>
+  <data name="cmbWeergave.Items1" xml:space="preserve">
+    <value>Overschrijdingskans</value>
+  </data>
+  <data name="cmbWeergave.Size" type="System.Drawing.Size, System.Drawing">
+    <value>134, 25</value>
+  </data>
+  <data name="uxCoordinatesLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 13</value>
+  </data>
+  <data name="uxCoordinatesLabel.Text" xml:space="preserve">
+    <value>x= , y=</value>
+  </data>
+  <data name="uxTopoToolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="uxTopoToolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 25</value>
+  </data>
+  <data name="uxTopoToolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="uxTopoToolStrip.Text" xml:space="preserve">
+    <value>uxTopoToolStrip</value>
+  </data>
+  <data name="&gt;&gt;uxTopoToolStrip.Name" xml:space="preserve">
+    <value>uxTopoToolStrip</value>
+  </data>
+  <data name="&gt;&gt;uxTopoToolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxTopoToolStrip.Parent" xml:space="preserve">
+    <value>tscMap.TopToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;uxTopoToolStrip.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tscMap.TopToolStripPanel.Name" xml:space="preserve">
+    <value>tscMap.TopToolStripPanel</value>
+  </data>
+  <data name="&gt;&gt;tscMap.TopToolStripPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.TopToolStripPanel.Parent" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.TopToolStripPanel.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;tscMap.Name" xml:space="preserve">
+    <value>tscMap</value>
+  </data>
+  <data name="&gt;&gt;tscMap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripContainer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tscMap.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tscMap.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="toolTipMap.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>150, 17</value>
+  </metadata>
+  <metadata name="mapTipsTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>256, 17</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 431</value>
+  </data>
+  <data name="&gt;&gt;uxSelectButton.Name" xml:space="preserve">
+    <value>uxSelectButton</value>
+  </data>
+  <data name="&gt;&gt;uxSelectButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxZoomInButton.Name" xml:space="preserve">
+    <value>uxZoomInButton</value>
+  </data>
+  <data name="&gt;&gt;uxZoomInButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxZoomOutButton.Name" xml:space="preserve">
+    <value>uxZoomOutButton</value>
+  </data>
+  <data name="&gt;&gt;uxZoomOutButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uzZoomAreaButton.Name" xml:space="preserve">
+    <value>uzZoomAreaButton</value>
+  </data>
+  <data name="&gt;&gt;uzZoomAreaButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxDragButton.Name" xml:space="preserve">
+    <value>uxDragButton</value>
+  </data>
+  <data name="&gt;&gt;uxDragButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxCenterButton.Name" xml:space="preserve">
+    <value>uxCenterButton</value>
+  </data>
+  <data name="&gt;&gt;uxCenterButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxWorldButton.Name" xml:space="preserve">
+    <value>uxWorldButton</value>
+  </data>
+  <data name="&gt;&gt;uxWorldButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxSeparator1.Name" xml:space="preserve">
+    <value>uxSeparator1</value>
+  </data>
+  <data name="&gt;&gt;uxSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxResultaatButton.Name" xml:space="preserve">
+    <value>uxResultaatButton</value>
+  </data>
+  <data name="&gt;&gt;uxResultaatButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxKaartlagenButton.Name" xml:space="preserve">
+    <value>uxKaartlagenButton</value>
+  </data>
+  <data name="&gt;&gt;uxKaartlagenButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxPrintButton.Name" xml:space="preserve">
+    <value>uxPrintButton</value>
+  </data>
+  <data name="&gt;&gt;uxPrintButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxSeparator2.Name" xml:space="preserve">
+    <value>uxSeparator2</value>
+  </data>
+  <data name="&gt;&gt;uxSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmbWeergave.Name" xml:space="preserve">
+    <value>cmbWeergave</value>
+  </data>
+  <data name="&gt;&gt;cmbWeergave.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;uxCoordinatesLabel.Name" xml:space="preserve">
+    <value>uxCoordinatesLabel</value>
+  </data>
+  <data name="&gt;&gt;uxCoordinatesLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolTipMap.Name" xml:space="preserve">
+    <value>toolTipMap</value>
+  </data>
+  <data name="&gt;&gt;toolTipMap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mapTipsTimer.Name" xml:space="preserve">
+    <value>mapTipsTimer</value>
+  </data>
+  <data name="&gt;&gt;mapTipsTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>MapControl</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

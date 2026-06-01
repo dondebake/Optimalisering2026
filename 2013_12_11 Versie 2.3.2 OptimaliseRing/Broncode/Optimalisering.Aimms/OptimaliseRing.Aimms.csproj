@@ -1,0 +1,92 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{28F0DE64-BBE3-45EC-AF1C-CA9D9802FFB9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Optimalisering.Aimms</RootNamespace>
+    <AssemblyName>Optimalisering.Aimms</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>OptimaliseRing.Aimms.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Optimalisering.Aimms.XML</DocumentationFile>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Optimalisering.Aimms.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Interop.Aimms, Version=3.8.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\Program Files\Paragon Decision Technology\AIMMS 3.8\Examples\VB Aimms\VBAimms\bin\Interop.Aimms.dll</HintPath>
+    </Reference>
+    <Reference Include="NMathCore, Version=2.2.2.0, Culture=neutral, PublicKeyToken=f5f99359d617d502" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Connection.cs" />
+    <Compile Include="HKV\General\ApplicationError.cs" />
+    <Compile Include="HKV\General\ConvertString.cs" />
+    <Compile Include="HKV\General\GenericSerializer.cs" />
+    <Compile Include="HKV\General\MyPath.cs" />
+    <Compile Include="HKV\General\SingleApplication.cs" />
+    <Compile Include="HKV\General\WaitCursor.cs" />
+    <Compile Include="HKV\Profile\Config.cs" />
+    <Compile Include="HKV\Profile\Events.cs" />
+    <Compile Include="HKV\Profile\Ini.cs" />
+    <Compile Include="HKV\Profile\IProfile.cs" />
+    <Compile Include="HKV\Profile\Profile.cs" />
+    <Compile Include="HKV\Profile\Registry.cs" />
+    <Compile Include="HKV\Profile\Xml.cs" />
+    <Compile Include="Input\CostParameters.cs" />
+    <Compile Include="Input\Discretization.cs" />
+    <Compile Include="Input\Input.cs" />
+    <Compile Include="Input\Partition.cs" />
+    <Compile Include="Input\Projectvariabelen.cs" />
+    <Compile Include="Input\Scenario.cs" />
+    <Compile Include="Input\Segment.cs" />
+    <Compile Include="Input\Settings.cs" />
+    <Compile Include="Input\Solve.cs" />
+    <Compile Include="Interface\IDeclarations.cs" />
+    <Compile Include="OptimaliseRingEnum.cs" />
+    <Compile Include="Output\CostObjectives.cs" />
+    <Compile Include="Output\DikeIncreases.cs" />
+    <Compile Include="Output\Flood_probability.cs" />
+    <Compile Include="Output\Output.cs" />
+    <Compile Include="Output\Solution.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OptimaliseRing.Aimms.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
