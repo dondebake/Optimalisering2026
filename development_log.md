@@ -1,5 +1,39 @@
 # Development Log
 
+## 2026-06-01 — Architectuurkeuzes: SQLite + GeoPandas + Leaflet
+
+**Status:** Besluit vastgelegd ✓
+
+### Keuzes en motivatie
+
+| Component | Keuze | Reden |
+|---|---|---|
+| Database | **SQLite** (dev) → PostgreSQL optioneel | Nul installatie; `DATABASE_URL` env-var schakelt over |
+| Geo-verwerking | **GeoPandas** + GeoJSON | Server-side Python, geen PostGIS; `gdf.to_json()` → Leaflet |
+| Frontend kaarten | **Leaflet** (React + Vite) | Leest GeoJSON direct; al in geplande tech stack |
+| PostGIS | Optioneel (upgrade-pad) | `docker-compose.yml` + `init_schema()` staan klaar |
+
+### Wat dit betekent per stap
+
+**Stap 2.2 (huidig):** SQLite als standaard-backend, geen Docker of PostgreSQL vereist.
+Tests draaien op `sqlite:///:memory:` (StaticPool) — 84/84 geslaagd.
+
+**Stap 4.2 (gepland):** `GET /trajectories/{id}/geojson` endpoint.
+GeoPandas leest WKT uit SQLite → `gdf.to_json()` → Leaflet rendert dijkvakken.
+
+**PostgreSQL wanneer?** Zodra:
+- Meerdere Celery-workers (concurrent writes, stap 2.3), of
+- Complexe ruimtelijke DB-queries nodig zijn (PostGIS)
+
+### Diagrammen bijgewerkt
+
+- `docs/architecture.png` — volledige stack inclusief Frontend + API + Geo + floodopt-core
+- `docs/architecture.svg` — IrfanView-compatibel, zelfde structuur
+- `docs/stap2.2_database.png` — SQLite/PostgreSQL repository-pattern + schema
+- `docs/geo_stack.png` — GeoPandas → GeoJSON → Leaflet + vergelijking met PostGIS
+
+---
+
 ## 2026-06-01 — Stap 0.1: Repository & package layout
 
 **Status:** Afgerond ✓

@@ -1,11 +1,10 @@
 # Runtime
 pydantic>=2.0
-sqlalchemy>=2.0
+sqlalchemy>=2.0          # ORM — SQLite ingebouwd in Python
 
-# Database backends
-# SQLite: ingebouwd in Python, geen install
-# PostgreSQL (productie): pip install psycopg2-binary
-# psycopg2-binary>=2.9
+# Backend API
+fastapi>=0.110
+uvicorn[standard]>=0.27
 
 # Optimizer
 pyomo>=6.0
@@ -16,12 +15,10 @@ pytest>=8.0
 ruff>=0.4
 mypy>=1.10
 pre-commit>=3.7
+httpx>=0.27              # FastAPI TestClient
 
 # Documentatie
 matplotlib>=3.8
 
 # Package management
 uv>=0.4
-
-# Scripts (eenmalig — niet nodig na conversie MDB→SQLite)
-# pyodbc>=5.0   # pip install pyodbc  (vereist Microsoft Access ODBC driver)

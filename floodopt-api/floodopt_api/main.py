@@ -24,7 +24,7 @@ from fastapi import Depends, FastAPI, HTTPException
 
 from floodopt_api.database import get_effective_url, init_schema, make_session
 from floodopt_api.models import OptimizeRequest, OptimizeResponse
-from floodopt_api.repositories import PostgresRepositories, Repositories
+from floodopt_api.repositories import OrmRepositories, Repositories
 from floodopt_core.io.models import Scenario, Trajectory
 from floodopt_core.optimization.brute_force import BruteForceOptimizer
 from floodopt_core.optimization.pyomo_optimizer import PyomoOptimizer
@@ -71,7 +71,7 @@ def get_repositories() -> Generator[Repositories, None, None]:
     """
     session = make_session(get_effective_url())
     try:
-        yield PostgresRepositories(session)  # werkt ook met SQLite
+        yield OrmRepositories(session)
     finally:
         session.close()
 

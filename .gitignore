@@ -47,6 +47,10 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# Gegenereerde bestanden
+*.pdf
+floodopt.db
+
 # Logs
 *.log
 

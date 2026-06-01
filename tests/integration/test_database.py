@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from floodopt_api.database import Base
 from floodopt_api.models import OptimizeResponse
-from floodopt_api.repositories import PostgresRepositories
+from floodopt_api.repositories import OrmRepositories
 from floodopt_core.optimization.protocols import ObjectiveType
 
 # Referentiedata uit stap 1.4 smoke test
@@ -60,7 +60,7 @@ def clean_tables(db_session):
 
 @pytest.fixture
 def repos(db_session):
-    return PostgresRepositories(db_session)
+    return OrmRepositories(db_session)
 
 
 # ---------------------------------------------------------------------------
@@ -140,7 +140,7 @@ def test_api_with_sqlite_backend():
     from fastapi.testclient import TestClient
 
     from floodopt_api.main import app, get_repositories
-    from floodopt_api.repositories import PostgresRepositories
+    from floodopt_api.repositories import OrmRepositories
 
     # StaticPool zorgt dat alle sessies dezelfde in-memory verbinding delen
     eng = create_engine(
@@ -152,7 +152,7 @@ def test_api_with_sqlite_backend():
 
     def override():
         with Session(eng) as session:
-            yield PostgresRepositories(session)
+            yield OrmRepositories(session)
 
     original = app.dependency_overrides.copy()
     app.dependency_overrides[get_repositories] = override

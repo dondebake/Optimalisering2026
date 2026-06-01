@@ -82,8 +82,8 @@ class MemoryRepositories:
 # ---------------------------------------------------------------------------
 
 
-class PostgresRepositories:
-    """Persistente opslag via SQLAlchemy + PostgreSQL/PostGIS."""
+class OrmRepositories:
+    """Persistente opslag via SQLAlchemy (SQLite standaard, PostgreSQL optioneel)."""
 
     def __init__(self, session: Session) -> None:
         self._s = session
