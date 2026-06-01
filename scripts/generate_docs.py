@@ -1101,6 +1101,306 @@ def make_smoke_test() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 7. Stap 2.1 — FastAPI service
+# ---------------------------------------------------------------------------
+
+
+def make_api() -> None:
+    """Visualiseert de FastAPI-architectuur en endpoint-flow."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7), facecolor=BG)
+    fig.suptitle(
+        "Stap 2.1 — FastAPI service: dunne HTTP-schil om floodopt-core",
+        fontsize=13,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+
+    # --- Panel 1: Request-flow diagram ---
+    ax = axes[0]
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis("off")
+    ax.set_title("Request-flow (stap 2.1 MVP)", fontsize=11, color=DARK)
+
+    # Client box
+    client_rect = mpatches.FancyBboxPatch(
+        (0.3, 8.0),
+        2.2,
+        1.2,
+        boxstyle="round,pad=0.1",
+        facecolor="#e8f0fe",
+        edgecolor=BLUE,
+        linewidth=2,
+    )
+    ax.add_patch(client_rect)
+    ax.text(
+        1.4,
+        8.65,
+        "Client /\nSwagger UI",
+        ha="center",
+        va="center",
+        fontsize=9,
+        fontweight="bold",
+        color=BLUE,
+    )
+
+    # API box
+    api_rect = mpatches.FancyBboxPatch(
+        (3.8, 7.5),
+        2.8,
+        2.2,
+        boxstyle="round,pad=0.1",
+        facecolor="#fff3cd",
+        edgecolor="#f4a261",
+        linewidth=2,
+    )
+    ax.add_patch(api_rect)
+    ax.text(
+        5.2,
+        9.3,
+        "FastAPI",
+        ha="center",
+        fontsize=10,
+        fontweight="bold",
+        color="#856404",
+    )
+    endpoints = [
+        "POST /scenarios",
+        "POST /trajectories",
+        "POST /optimize",
+        "GET  /results/{id}",
+    ]
+    for i, ep in enumerate(endpoints):
+        ax.text(
+            5.2,
+            8.8 - i * 0.35,
+            ep,
+            ha="center",
+            fontsize=8,
+            color="#495057",
+            fontfamily="monospace",
+        )
+
+    # Core box
+    core_rect = mpatches.FancyBboxPatch(
+        (3.8, 3.5),
+        2.8,
+        3.2,
+        boxstyle="round,pad=0.1",
+        facecolor="#d1fae5",
+        edgecolor=GREEN,
+        linewidth=2,
+    )
+    ax.add_patch(core_rect)
+    ax.text(
+        5.2,
+        6.4,
+        "floodopt-core",
+        ha="center",
+        fontsize=10,
+        fontweight="bold",
+        color="#064e3b",
+    )
+    core_items = [
+        r"Physics: $P(t)$",
+        "Risk: NCW",
+        "Optimizer: MILP",
+        "In-memory store",
+    ]
+    for i, item in enumerate(core_items):
+        ax.text(5.2, 5.9 - i * 0.55, item, ha="center", fontsize=9, color="#065f46")
+
+    # Store box
+    store_rect = mpatches.FancyBboxPatch(
+        (7.5, 5.5),
+        2.2,
+        2.2,
+        boxstyle="round,pad=0.1",
+        facecolor="#f1f3f5",
+        edgecolor=GREY,
+        linewidth=1.5,
+        linestyle="--",
+    )
+    ax.add_patch(store_rect)
+    ax.text(
+        8.6,
+        6.9,
+        "Store\n(in-memory)",
+        ha="center",
+        fontsize=9,
+        color=GREY,
+        fontweight="bold",
+    )
+    ax.text(
+        8.6,
+        6.3,
+        "scenarios{}",
+        ha="center",
+        fontsize=8,
+        color=GREY,
+        fontfamily="monospace",
+    )
+    ax.text(
+        8.6,
+        5.9,
+        "trajectories{}",
+        ha="center",
+        fontsize=8,
+        color=GREY,
+        fontfamily="monospace",
+    )
+    ax.text(
+        8.6,
+        5.5,
+        "results{}",
+        ha="center",
+        fontsize=8,
+        color=GREY,
+        fontfamily="monospace",
+    )
+    ax.text(
+        8.6,
+        5.1,
+        "→ PostgreSQL\n  (stap 2.2)",
+        ha="center",
+        fontsize=8,
+        color="#aaa",
+        fontstyle="italic",
+    )
+
+    # Pijlen
+    ax.annotate(
+        "",
+        xy=(3.8, 8.65),
+        xytext=(2.5, 8.65),
+        arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2),
+    )
+    ax.annotate(
+        "",
+        xy=(5.2, 7.5),
+        xytext=(5.2, 6.7),
+        arrowprops=dict(arrowstyle="-|>", color="#856404", lw=2),
+    )
+    ax.annotate(
+        "",
+        xy=(7.5, 6.5),
+        xytext=(6.6, 6.5),
+        arrowprops=dict(arrowstyle="-|>", color=GREY, lw=1.5),
+    )
+
+    ax.text(3.1, 8.80, "HTTP", fontsize=8, color=BLUE)
+    ax.text(5.3, 7.05, "roept aan", fontsize=8, color="#856404")
+    ax.text(6.65, 6.65, "lees/schrijf", fontsize=8, color=GREY)
+
+    ax.text(
+        5.2,
+        2.8,
+        "Geen business logic in API-laag ✓",
+        ha="center",
+        fontsize=10,
+        color="#059669",
+        fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="#f0fdf4", edgecolor="#059669"),
+    )
+
+    # --- Panel 2: Endpoint-tabel ---
+    ax2 = axes[1]
+    ax2.axis("off")
+    ax2.set_title("Endpoints & verificatie (20/20 tests ✓)", fontsize=11, color=DARK)
+
+    headers = ["Method", "Pad", "Status", "Verificatie"]
+    rows = [
+        ["POST", "/scenarios", "201", "roundtrip ✓"],
+        ["GET", "/scenarios/{id}", "200/404", "404 test ✓"],
+        ["POST", "/trajectories", "201", "roundtrip ✓"],
+        ["GET", "/trajectories/{id}", "200/404", "404 test ✓"],
+        ["POST", "/optimize", "201", "= stap 1.4 ✓"],
+        ["GET", "/results/{job_id}", "200/404", "= POST resp ✓"],
+        ["GET", "/docs", "200", "Swagger UI ✓"],
+    ]
+
+    tbl = ax2.table(
+        cellText=rows,
+        colLabels=headers,
+        loc="upper center",
+        cellLoc="center",
+        bbox=[0.0, 0.45, 1.0, 0.52],
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(9)
+    tbl.scale(1, 1.8)
+    for (r, c), cell in tbl.get_celld().items():
+        if r == 0:
+            cell.set_facecolor(DARK)
+            cell.set_text_props(color="white", fontweight="bold")
+        elif c == 0:
+            color = BLUE if rows[r - 1][0] == "POST" else GREEN
+            cell.set_text_props(color=color, fontweight="bold")
+        elif c == 3:
+            cell.set_text_props(color="#059669")
+        elif r % 2 == 0:
+            cell.set_facecolor("#f8f9fa")
+
+    # Sleutelverificaties
+    verifs = [
+        ("POST /optimize MIN_COST", "{M02, M04} investering €1,089,224", True),
+        ("POST /optimize MAX_RR", "{M02, M03, M04} Δh=0.80m", True),
+        ("POST /optimize MIN_NCW", "{alle 5} NCW=€9.0M", True),
+        ("BruteForce == Pyomo", "via API beide solvers", True),
+        ("Geen physics in API", "math.exp afwezig in main.py", True),
+    ]
+    y0 = 0.38
+    ax2.text(
+        0.5,
+        y0,
+        "Kritieke verificaties vs. stap 1.4:",
+        ha="center",
+        fontsize=10,
+        fontweight="bold",
+        color=DARK,
+        transform=ax2.transAxes,
+    )
+    for i, (label, detail, ok) in enumerate(verifs):
+        y = y0 - 0.07 * (i + 1)
+        icon = "✓" if ok else "✗"
+        color = "#059669" if ok else RED
+        ax2.text(
+            0.03,
+            y,
+            f"{icon}  {label}",
+            fontsize=9,
+            color=color,
+            fontweight="bold",
+            transform=ax2.transAxes,
+        )
+        ax2.text(
+            0.03,
+            y - 0.035,
+            f"   {detail}",
+            fontsize=8,
+            color="#495057",
+            transform=ax2.transAxes,
+        )
+
+    ax2.text(
+        0.5,
+        0.02,
+        "78/78 tests geslaagd  ·  Swagger /docs ✓  ·  mypy schoon",
+        ha="center",
+        fontsize=10,
+        color="#059669",
+        fontweight="bold",
+        transform=ax2.transAxes,
+    )
+
+    plt.tight_layout()
+    plt.savefig(OUT / "stap2.1_api.png", dpi=150, bbox_inches="tight")
+    plt.close()
+    print("  stap2.1_api.png")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -1112,4 +1412,5 @@ if __name__ == "__main__":
     make_optimization()
     make_database_mapping()
     make_smoke_test()
+    make_api()
     print(f"\nKlaar — alle PNG's opgeslagen in {OUT}/")

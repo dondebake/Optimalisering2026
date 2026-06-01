@@ -280,6 +280,50 @@ BruteForce is sneller voor N=5 (geen solver-startup overhead). Pyomo schaalt bet
 
 ---
 
+## 2026-06-01 — Stap 2.1: FastAPI service
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Nieuwe bestanden:**
+- `floodopt-api/floodopt_api/main.py` — FastAPI app, 4 + 2 endpoints
+- `floodopt-api/floodopt_api/models.py` — `OptimizeRequest`, `OptimizeResponse`
+- `floodopt-api/floodopt_api/store.py` — in-memory opslag (MVP, vervangen in stap 2.2)
+- `floodopt-api/pyproject.toml` — package definitie
+- `tests/integration/test_api.py` — 20 API-tests
+
+**Endpoints:**
+
+| Method | Pad | Status | Omschrijving |
+|---|---|---|---|
+| `POST` | `/scenarios` | 201 | Hydraulisch scenario opslaan |
+| `GET` | `/scenarios/{id}` | 200/404 | Scenario ophalen |
+| `POST` | `/trajectories` | 201 | Dijktraject opslaan |
+| `GET` | `/trajectories/{id}` | 200/404 | Traject ophalen |
+| `POST` | `/optimize` | 201 | Optimalisatie uitvoeren (synchroon MVP) |
+| `GET` | `/results/{job_id}` | 200/404 | Resultaat ophalen via job_id |
+
+`POST /optimize` accepteert `solver: "brute_force" | "pyomo"`.
+Status is altijd `"completed"` voor MVP (async queue volgt in stap 2.3).
+
+### Verificatie geslaagd
+
+- Swagger UI bereikbaar op `/docs` ✓
+- `POST /optimize MIN_COST` → {M02, M04}, investering €1,089,224 (= stap 1.4) ✓
+- `POST /optimize MAX_RISK_RED.` → {M02, M03, M04} (= stap 1.4) ✓
+- `GET /results/{job_id}` geeft zelfde data als `POST /optimize` ✓
+- 404 voor onbekende trajectory_id, scenario_id, job_id ✓
+- Geen business logic in API-laag (getest) ✓
+- BruteForce == Pyomo via API ✓
+- **78/78 tests geslaagd** (46 unit + 12 CLI-integratie + 20 API) ✓
+
+### Volgende stap
+
+**Stap 2.2** — Database (PostgreSQL + PostGIS)
+
+---
+
 ## 2026-06-01 — OptimaliseRing broncode & database geïmporteerd
 
 **Status:** Afgerond ✓
