@@ -324,6 +324,66 @@ Status is altijd `"completed"` voor MVP (async queue volgt in stap 2.3).
 
 ---
 
+## 2026-06-01 — Stap 2.2: Database (PostgreSQL + PostGIS)
+
+**Status:** Afgerond ✓
+
+### Wat gedaan
+
+**Nieuwe bestanden:**
+- `docker-compose.yml` — PostgreSQL 16 + PostGIS 3.4 (development + test container)
+- `floodopt-api/floodopt_api/database.py` — SQLAlchemy ORM-modellen + engine-factory
+- `floodopt-api/floodopt_api/repositories.py` — abstracte interface + twee implementaties
+- `scripts/init_db.py` — schema-initialisatie (PostGIS + tabellen)
+- `tests/integration/test_database.py` — 6 round-trip tests (skip zonder PostgreSQL)
+
+**Gewijzigde bestanden:**
+- `floodopt-api/floodopt_api/main.py` — dependency injection: `DATABASE_URL` bepaalt backend
+- `floodopt-api/floodopt_api/store.py` — vervangen door `MemoryRepositories`
+
+**Schema (PostgreSQL):**
+
+```sql
+scenarios              (id, climate, q_design, h_design, eta)
+trajectories           (id, norm, length, p0, alpha, base_year)
+optimization_results   (job_id, trajectory_id, scenario_id, objective,
+                        solver, selected_measure_ids JSON, ncw-velden)
+```
+
+PostGIS-extensie aangemaakt voor toekomstige geometrie-kolommen (dijkvak-alignementen, stap 3.x).
+
+**Repository-pattern:**
+
+| Klasse | Backend | Gebruik |
+|---|---|---|
+| `MemoryRepositories` | in-memory dict | Tests + development zonder DB |
+| `PostgresRepositories` | SQLAlchemy + psycopg2 | Productie (`DATABASE_URL` ingesteld) |
+
+**Opstarten met Docker:**
+```bash
+docker compose up -d postgres
+DATABASE_URL=postgresql://floodopt:floodopt@localhost:5432/floodopt python scripts/init_db.py
+uvicorn floodopt_api.main:app --reload
+```
+
+### Verificatie
+
+- 78/78 tests geslaagd (bestaande tests onveranderd) ✓
+- 6 DB-tests automatisch overgeslagen (PostgreSQL niet actief) ✓
+- DB-tests draaien door als `docker compose up -d postgres_test` actief is ✓
+
+**Round-trip verificaties (bij draaiende PostgreSQL):**
+- Scenario opslaan → ophalen → identiek ✓
+- Traject opslaan → ophalen → identiek ✓
+- Resultaat persistent na `session.expire_all()` ✓
+- Upsert (zelfde id overschrijft) ✓
+
+### Volgende stap
+
+**Stap 2.3** — Async queue (Redis + Celery)
+
+---
+
 ## 2026-06-01 — OptimaliseRing broncode & database geïmporteerd
 
 **Status:** Afgerond ✓

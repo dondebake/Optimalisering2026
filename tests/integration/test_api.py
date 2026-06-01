@@ -12,8 +12,7 @@ Verificatie:
 import pytest
 from fastapi.testclient import TestClient
 
-from floodopt_api import store
-from floodopt_api.main import app
+from floodopt_api.main import _memory_repos, app
 
 # Referentiedata uit stap 1.4 smoke test
 from scripts.run_smoke_test import (
@@ -29,10 +28,10 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def reset_store():
-    """Leeg de in-memory store voor elke test."""
-    store.reset()
+    """Leeg de in-memory repos voor elke test."""
+    _memory_repos.clear()
     yield
-    store.reset()
+    _memory_repos.clear()
 
 
 # ---------------------------------------------------------------------------

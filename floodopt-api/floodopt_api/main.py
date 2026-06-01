@@ -1,10 +1,14 @@
-"""FloodOpt API — stap 2.1 MVP.
+"""FloodOpt API — stap 2.1 / 2.2.
 
-Vier endpoints, geen business logic in deze laag:
+Endpoints:
     POST /scenarios           scenario opslaan
     POST /trajectories        traject opslaan
-    POST /optimize            optimalisatie uitvoeren (synchroon voor MVP)
+    POST /optimize            optimalisatie uitvoeren
     GET  /results/{job_id}    resultaat ophalen
+
+DATABASE_URL env-variabele bepaalt de backend:
+    niet ingesteld  →  in-memory (development/tests)
+    ingesteld       →  PostgreSQL + PostGIS (productie)
 
 Business logic zit volledig in floodopt-core.
 Async queue (Celery) volgt in stap 2.3.
@@ -13,11 +17,17 @@ Async queue (Celery) volgt in stap 2.3.
 from __future__ import annotations
 
 import uuid
+from typing import Annotated, Generator
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 
-from floodopt_api import store
+from floodopt_api.database import get_default_url, make_session
 from floodopt_api.models import OptimizeRequest, OptimizeResponse
+from floodopt_api.repositories import (
+    MemoryRepositories,
+    PostgresRepositories,
+    Repositories,
+)
 from floodopt_core.io.models import Scenario, Trajectory
 from floodopt_core.optimization.brute_force import BruteForceOptimizer
 from floodopt_core.optimization.pyomo_optimizer import PyomoOptimizer
@@ -29,18 +39,47 @@ app = FastAPI(
     description=(
         "Optimalisatie van dijkversterkingsstrategieën. "
         "Physics en Risk Layer zitten in floodopt-core; "
-        "deze API is een dunne HTTP-schil."
+        "deze API is een dunne HTTP-schil. "
+        "Stel DATABASE_URL in voor persistente PostgreSQL-opslag."
     ),
-    version="0.1.0",
+    version="0.2.0",
 )
 
-# Optimizer-instanties — gedeeld over requests (stateless berekeningen)
+# Optimizer-instanties — stateless, gedeeld over requests
 _physics = SimpleDikeOverflow()
 _risk = SimpleRiskCalculator(physics=_physics)
 _optimizers = {
     "brute_force": BruteForceOptimizer(risk=_risk),
     "pyomo": PyomoOptimizer(risk=_risk),
 }
+
+# Module-level in-memory singleton (fallback als DATABASE_URL niet ingesteld)
+_memory_repos = MemoryRepositories()
+
+
+# ---------------------------------------------------------------------------
+# Dependency: repositories
+# ---------------------------------------------------------------------------
+
+
+def get_repositories() -> Generator[Repositories, None, None]:
+    """Geeft de juiste repository-implementatie terug.
+
+    Als DATABASE_URL is ingesteld wordt een SQLAlchemy-sessie aangemaakt
+    en na het request automatisch gesloten.
+    """
+    url = get_default_url()
+    if url:
+        session = make_session(url)
+        try:
+            yield PostgresRepositories(session)
+        finally:
+            session.close()
+    else:
+        yield _memory_repos  # type: ignore[misc]
+
+
+Repos = Annotated[Repositories, Depends(get_repositories)]
 
 
 # ---------------------------------------------------------------------------
@@ -49,15 +88,15 @@ _optimizers = {
 
 
 @app.post("/scenarios", status_code=201, response_model=Scenario)
-def create_scenario(scenario: Scenario) -> Scenario:
+def create_scenario(scenario: Scenario, repos: Repos) -> Scenario:
     """Sla een hydraulisch scenario op."""
-    store._scenarios[scenario.id] = scenario
+    repos.save_scenario(scenario)
     return scenario
 
 
 @app.get("/scenarios/{scenario_id}", response_model=Scenario)
-def get_scenario(scenario_id: str) -> Scenario:
-    scenario = store._scenarios.get(scenario_id)
+def get_scenario(scenario_id: str, repos: Repos) -> Scenario:
+    scenario = repos.get_scenario(scenario_id)
     if scenario is None:
         raise HTTPException(404, detail=f"Scenario '{scenario_id}' niet gevonden")
     return scenario
@@ -69,15 +108,15 @@ def get_scenario(scenario_id: str) -> Scenario:
 
 
 @app.post("/trajectories", status_code=201, response_model=Trajectory)
-def create_trajectory(trajectory: Trajectory) -> Trajectory:
+def create_trajectory(trajectory: Trajectory, repos: Repos) -> Trajectory:
     """Sla een dijktraject op. Maatregelen worden via /optimize meegegeven."""
-    store._trajectories[trajectory.id] = trajectory
+    repos.save_trajectory(trajectory)
     return trajectory
 
 
 @app.get("/trajectories/{trajectory_id}", response_model=Trajectory)
-def get_trajectory(trajectory_id: str) -> Trajectory:
-    trajectory = store._trajectories.get(trajectory_id)
+def get_trajectory(trajectory_id: str, repos: Repos) -> Trajectory:
+    trajectory = repos.get_trajectory(trajectory_id)
     if trajectory is None:
         raise HTTPException(404, detail=f"Traject '{trajectory_id}' niet gevonden")
     return trajectory
@@ -89,19 +128,19 @@ def get_trajectory(trajectory_id: str) -> Trajectory:
 
 
 @app.post("/optimize", status_code=201, response_model=OptimizeResponse)
-def optimize(request: OptimizeRequest) -> OptimizeResponse:
+def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
     """Voer een optimalisatie uit en sla het resultaat op.
 
     MVP: synchroon (geen Celery). Status is altijd 'completed'.
     Stap 2.3 voegt async job-queue toe.
     """
-    trajectory = store._trajectories.get(request.trajectory_id)
+    trajectory = repos.get_trajectory(request.trajectory_id)
     if trajectory is None:
         raise HTTPException(
             404, detail=f"Traject '{request.trajectory_id}' niet gevonden"
         )
 
-    scenario = store._scenarios.get(request.scenario_id)
+    scenario = repos.get_scenario(request.scenario_id)
     if scenario is None:
         raise HTTPException(
             404, detail=f"Scenario '{request.scenario_id}' niet gevonden"
@@ -130,7 +169,7 @@ def optimize(request: OptimizeRequest) -> OptimizeResponse:
         investment_npv=result.investment_npv,
         objective_value=result.objective_value,
     )
-    store._results[job_id] = response
+    repos.save_result(response)
     return response
 
 
@@ -140,9 +179,9 @@ def optimize(request: OptimizeRequest) -> OptimizeResponse:
 
 
 @app.get("/results/{job_id}", response_model=OptimizeResponse)
-def get_result(job_id: str) -> OptimizeResponse:
+def get_result(job_id: str, repos: Repos) -> OptimizeResponse:
     """Haal het resultaat van een optimalisatierun op via job_id."""
-    result = store._results.get(job_id)
+    result = repos.get_result(job_id)
     if result is None:
         raise HTTPException(404, detail=f"Resultaat '{job_id}' niet gevonden")
     return result

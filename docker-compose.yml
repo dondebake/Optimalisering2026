@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: floodopt
+      POSTGRES_PASSWORD: floodopt
+      POSTGRES_DB: floodopt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U floodopt"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres_test:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: floodopt
+      POSTGRES_PASSWORD: floodopt
+      POSTGRES_DB: floodopt_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data   # in-memory voor snelle tests
+
+volumes:
+  postgres_data:
