@@ -143,9 +143,9 @@ FloodOpt gebruikt nu uitsluitend klimaat_id=1 (basisscenario, η=0). Uitbreiding
 **183 rijen** (één per Dijkring/DijkringDeel/DijkringTraject combinatie).
 Type: Exponentieel (ID 1) of Kwadratisch (ID 2); parametertype: Zonder overhoogte (ID 1) of Met overhoogte (ID 2).
 
-#### Formule (exponentieel)
+#### Formule (exponentieel) — gecorrigeerd n.a.v. broncode
 
-$$IC(\Delta h) = C \cdot e^{\lambda \Delta h} \cdot \Delta h^{\,b} \quad [\text{M EUR}]$$
+$$IC(\Delta h) = (C + b \cdot \Delta h) \cdot e^{\lambda \Delta h} \quad [\text{M EUR}]$$
 
 Jaarlijkse onderhoudskosten: $\,IC_{\text{onderhoud}} = \Omega \cdot IC(\Delta h)$ per jaar.
 
@@ -153,12 +153,53 @@ Jaarlijkse onderhoudskosten: $\,IC_{\text{onderhoud}} = \Omega \cdot IC(\Delta h
 
 | Kolom | Symbool | Eenheid | Bereik | Beschrijving |
 |---|---|---|---|---|
-| `lambda_exp_per_m` | $\lambda$ | 1/m | 0 – 0,63 | Exponentiële kostenstijging per meter verhoging |
-| `C_exp` | $C$ | M EUR | 0 – 218 | Kostenconstante |
-| `b_exp` | $b$ | — | 0 – 3,12 | Machtsverheffing (curve-vorm) |
-| `Omega` | $\Omega$ | — | 0,002 (constant) | Jaarlijkse onderhoudfractie van investering |
+| `lambda_exp_per_m` | $\lambda$ | 1/m | 0 – 0,63 | Exponentiële schaalparameter (van het segment, zie `Segment.cs`) |
+| `C_exp` | $C$ | M EUR | 0 – 218 | Vaste kosten (`Exp_fixed`) — mobilisatie, ontwerp |
+| `b_exp` | $b$ | M EUR/m | 0 – 3,12 | Variabele lineaire kosten (`Exp_linear`) per meter verhoging |
+| `Omega` | $\Omega$ | — | 0,002 (constant) | Jaarlijkse onderhoudsfractie van investering |
 
-Wanneer $\lambda = 0$: vereenvoudigt naar machtsformule $IC = C \cdot \Delta h^{\,b}$.
+#### Correcte formule (uit broncode)
+
+Uit de C#-broncode (`CostParameters.cs` + `Segment.cs`, AIMMS-module, HKV 2009):
+
+$$IC(\Delta h) = (C + b \cdot \Delta h) \cdot e^{\lambda \Delta h} \quad [\text{M EUR}]$$
+
+| Parameter | Symbool | C# variabele | Eenheid | Rol |
+|---|---|---|---|---|
+| Vaste kosten | $C$ | `Exp_fixed` | M EUR | Mobilisatie, ontwerp, onvoorzien |
+| Variabele kosten | $b$ | `Exp_linear` | M EUR/m | Materiaalkosten proportioneel aan hoogte |
+| Exponentiële schaalparameter | $\lambda$ | `Exp_power` op Segment | 1/m | Disproportionele kostenstijging bij grote verhogingen |
+
+**Let op:** $b$ is een **lineaire** kostenfactor, **geen** machtsverheffing. De eerdere implementatie in FloodOpt (`C · exp(λΔh) · Δh^b`) was onjuist en is gecorrigeerd naar `(C + bΔh) · exp(λΔh)`.
+
+Wanneer $\lambda = 0$: vereenvoudigt naar lineaire formule $IC = C + b \cdot \Delta h$.
+
+#### Kwadratische kostenfunctie
+
+$$IC(\Delta h) = a \cdot \Delta h^2 + b \cdot \Delta h + c \quad [\text{M EUR}]$$
+
+met $a$ = `Q_quad`, $b$ = `Q_linear`, $c$ = `Q_fixed`.
+
+#### Herkomst parameters
+
+- Ontwikkeld door **HKV lijn in water** (Rolf Waterman) voor **Rijkswaterstaat/Waterdienst**
+- Projecten: 1142.50.00 (Batch OptimaliseRing) en 1377.10.00 (OptimalisatieRing)
+- Copyright 2008–2009
+- **Kalibratiebasis**: niet gedocumenteerd in de broncode — vermoedelijk historische HWBP-kostenramingen uit de periode 2005–2010
+
+#### Kandidaatmaatregelen in FloodOpt (huidig)
+
+FloodOpt genereert bij pre-fill automatisch 5 discrete kandidaatmaatregelen met vaste Δh-waarden:
+
+| Aspect | Waarde | Bron |
+|---|---|---|
+| Δh-waarden | 0,25 / 0,50 / 0,75 / 1,00 / 1,50 m | **Arbitrair** — geen databron |
+| Kosten $IC(\Delta h)$ | Kostenfunctie uit `v_kostenfunctie_floodopt` | OptimaliseRing 2011-database |
+| Uitvoeringsjaren | 2028, 2033, 2038, 2043, 2048 | **Arbitrair** — fictieve planning |
+| Maatregel-type | `dike_reinforcement` | Hardcoded |
+| Afhankelijkheden | Altijd leeg | Niet geïmplementeerd |
+
+Voor echte MKBA's moeten de Δh-waarden, kosten en planning uit de **HWBP-projectenlijst** komen (stap 5.4).
 
 ---
 

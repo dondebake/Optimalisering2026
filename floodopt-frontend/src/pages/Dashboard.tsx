@@ -48,13 +48,15 @@ function MapLegendPanel() {
 
 // ── Optimize modal ────────────────────────────────────────────────────────────
 
+// IC(Dh) = (C + b * Dh) * exp(lambda * Dh)  [M EUR → EUR]
+// C = vaste kosten, b = lineaire kostenfactor [M EUR/m], lambda = exponentiële schaalparameter [1/m]
 function buildCandidates(t: ValTrajectory) {
   const dhs = [0.25, 0.5, 0.75, 1.0, 1.5]
-  const C = t.C_exp ?? 0, lam = t.lambda_exp_per_m ?? 0, b = t.b_exp ?? 1
+  const C = t.C_exp ?? 0, lam = t.lambda_exp_per_m ?? 0, b = t.b_exp ?? 0
   return dhs.map((dh, i) => ({
     id: `M${String(i + 1).padStart(2, '0')}`,
     type: 'dike_reinforcement' as const,
-    cost: Math.round((C > 0 ? C * Math.exp(lam * dh) * Math.pow(dh, b) : dh * 5) * 1_000_000),
+    cost: Math.round((C > 0 ? (C + b * dh) * Math.exp(lam * dh) : dh * 5) * 1_000_000),
     year: 2028 + i * 5,
     effect: dh,
     location: `vak-${i + 1}`,

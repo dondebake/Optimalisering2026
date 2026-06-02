@@ -12,12 +12,14 @@ function fmtSci(n: number) {
   return n.toExponential(2)
 }
 
-// IC(Dh) = C_exp * exp(lambda * Dh) * Dh^b  [M EUR]  — OptimaliseRing 2.3.2
+// IC(Dh) = (C + b * Dh) * exp(lambda * Dh)  [M EUR]
+// C = vaste kosten (Exp_fixed), b = variabele kosten per m (Exp_linear), lambda = schaalparameter
+// Bron: Segment.cs + CostParameters.cs, OptimaliseRing AIMMS-module (HKV, 2009)
 function costEur(t: ValTrajectory, dh: number): number {
   if (t.C_exp == null) return dh * 5_000_000
   const lambda = t.lambda_exp_per_m ?? 0
-  const b = t.b_exp ?? 1
-  return t.C_exp * Math.exp(lambda * dh) * Math.pow(dh, b) * 1_000_000
+  const b = t.b_exp ?? 0
+  return (t.C_exp + b * dh) * Math.exp(lambda * dh) * 1_000_000
 }
 
 function buildCandidates(t: ValTrajectory) {
