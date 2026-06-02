@@ -186,8 +186,8 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
 | 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | 🚧 In uitvoering | 4.1–4.5 ✅ · 4.6 dijkring-niveau |
-| D — Data-actualisatie 2026 | ⏳ Gepland | NBPW WFS, WBI2023, KNMI 2023, HWBP, SSM2 |
+| 4 — Frontend | 🚧 In uitvoering | 4.1–4.6 ✅ · 4.7 dijkring-niveau |
+| 5 — Data-actualisatie 2026 | ⏳ Gepland | NBPW WFS, WBI2023, KNMI 2023, HWBP, SSM2 |
 
 ---
 
@@ -312,66 +312,49 @@ Worker slaat `p_series` op na elke optimalisatie.
 `GET /geo/trajectories?year=2050` voegt `p_year` toe; kaart kleurt trajecten per
 OptimaliseRing-klasse-indeling (< 1/113.000 t/m > 1/800).
 
-#### Stap 4.x ⏳ — Jobs verwijderen
+#### Stap 4.5 ✅ — Jobs verwijderen
 
-- `DELETE /results/{job_id}` endpoint
+- `DELETE /results/{job_id}` endpoint (204/404)
 - `delete_result()` in Protocol + beide implementaties
-- Verwijder-knop in `JobList` (met bevestiging), cache-invalidatie
+- Verwijder-knop (✕) in `JobList` met bevestiging + cache-invalidatie
 
-#### Stap 4.5 ⏳ — Validatie-dashboard
+#### Stap 4.6 ✅ — Validatie-dashboard
 
-Laad de 176 trajecten uit `tests/validation/optimalise_ring_2011.sqlite`, run FloodOpt erop en vergelijk de uitkomsten met de OptimaliseRing-referentieresultaten.
+- `GET /validation/dijkringen` + `GET /validation/trajectories` (readonly, 2011-testbed)
+- `ValidationDashboard` — dropdown dijkringen, trajectentabel, "Optimaliseer →" per rij
+- Navigeert naar `OptimizeForm` met pre-fill; P₀ altijd bewerkbaar vóór berekening
 
-- `GET /validation/trajectories` — readonly verbinding met referentie-SQLite
-- `ValidationDashboard` pagina — tabel van alle 176 trajecten (dijkring, norm, p0, α, lengte)
-- "Optimaliseer" knop per traject → POST /optimize → Results-pagina
-- Vergelijkingstabel: FloodOpt vs OptimaliseRing (afhankelijk van beschikbare referentieresultaten in SQLite)
-
----
-
-### Fase D — Data-actualisatie 2011 → 2026
-
-De 2011-data (OptimaliseRing SQLite) is uitsluitend een testbed. Productiedata volgt via onderstaande stappen.
-
-**Terminologiewijziging:** dijkringen/dijkringdelen zijn vervallen. In 2026 zijn er **normtrajecten** (ook: dijktrajecten) — elk met eigen norm, geometrie en parameters. Dit vereenvoudigt het FloodOpt-datamodel.
-
-#### Stap D1 ⏳ — Normtrajecten laden (NBPW WFS)
-Geometrie, ID's en normen via WFS:
-```
-https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs
-```
-Script: `scripts/load_nbpw_trajectories.py` (GeoPandas + owslib)
-
-#### Stap D2 ⏳ — P₀ en α kalibreren
-P₀ uit geaggregeerde WBI2023-beoordelingsresultaten (Nationaal Georegister, alle waterschappen + RWS).
-α uit HYDRA-NL of geschaald van 2011-waarden.
-
-> **Let op:** WBI2023-kansen staan ter discussie (conservatisme). FloodOpt vereist daarom altijd de mogelijkheid om P₀ per traject handmatig te overschrijven.
-
-#### Stap D3 ⏳ — KNMI 2023 klimaatscenario's (η)
-Vier scenario's (W / W+ / WH / WH+). Zeespiegelstijging per regio per scenario.
-
-#### Stap D4 ⏳ — Maatregelen (HWBP)
-HWBP-projectenlijst: maatregel-type, effect Δh [m], kostenraming, planningsjaar per normtraject.
-
-#### Stap D5 ⏳ — Economische parameters
-Discontovoet 2,25% reëel (Rijksbegroting 2022). Schade V₀ uit SSM2/WaterSchadeSchatter. Economische groei γ uit CPB 2024.
-
-#### Stap D6 ⏳ — Validatie 2026
-Vergelijk FloodOpt-resultaten met HWBP-prioritering en WBI2023-beoordelingsresultaten op 5–10 trajecten.
-
----
-
-#### Stap 4.6 ⏳ — Dijkring-niveau
-
-Een dijkring is een verzameling trajecten. Optimaliseer alle trajecten van een dijkring en toon het gecombineerde resultaat op de kaart.
+#### Stap 4.7 ⏳ — Normtraject-bundel (vroeger: dijkring-niveau)
 
 - `DijkRing` model: id, name, `trajectory_ids: list[str]`
 - `POST /dijkringen`, `GET /dijkringen`, `POST /optimize-dijkring`
-- Worker dispatcht één taak per traject; `GET /dijkring-results/{id}` aggregeert status
-- `DijkRingForm` + `DijkRingResults` pagina's
-- Kaart toont alle trajecten van een dijkring gekleurd per P(2050)-klasse
-- MVP: trajectory-level optimizer per traject (onafhankelijk); gezamenlijke MILP is Fase 3
+- Worker dispatcht één taak per traject; `GET /dijkring-results/{id}` aggregeert
+- Kaart toont alle trajecten van een bundel gekleurd per P(2050)-klasse
+
+---
+
+### Fase 5 — Data-actualisatie 2026 ⏳
+
+De 2011-data is uitsluitend testbed. Productiedata via:
+
+#### Stap 5.1 ⏳ — Normtrajecten laden (NBPW WFS)
+Geometrie, ID's en normen via `https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs`
+
+#### Stap 5.2 ⏳ — P₀ en α kalibreren
+WBI2023-beoordelingsresultaten (Nationaal Georegister, alle waterschappen + RWS).
+P₀ altijd handmatig overschrijfbaar — WBI2023-kansen staan ter discussie.
+
+#### Stap 5.3 ⏳ — KNMI 2023 klimaatscenario's (η)
+Vier scenario's: W / W+ / WH / WH+. Zeespiegelstijging per regio.
+
+#### Stap 5.4 ⏳ — Maatregelen (HWBP)
+HWBP-projectenlijst: type, effect Δh [m], kostenraming, planningsjaar per normtraject.
+
+#### Stap 5.5 ⏳ — Economische parameters
+Discontovoet 2,25% reëel (Rijksbegroting 2022). Schade V₀ uit SSM2. Groei γ uit CPB 2024.
+
+#### Stap 5.6 ⏳ — Validatie 2026
+Vergelijk FloodOpt-resultaten met HWBP-prioritering op 5–10 trajecten.
 
 ---
 

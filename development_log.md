@@ -1,39 +1,35 @@
 # Development Log
 
-## Data-context: 2011 vs 2026
+## Architectuurkeuzes en context
 
-### Terminologiewijziging
-
-| 2011 (OptimaliseRing) | 2026 (NBPW / WBI2023) | Toelichting |
-|---|---|---|
-| Dijkring | — | Begrip vervallen als beheereenheid |
-| DijkringDeel | — | Begrip vervallen |
-| DijkringTraject | **Normtraject** (of dijktraject) | 1-op-1 overeenkomst; plattere structuur |
-| Terugkeertijd [jaar] | Norm [1/jaar] | Omgekeerd; 1/4000 jaar = 1/4000 per jaar |
-
-In 2026 is elk **normtraject** een zelfstandige optimaliseringseenheid met eigen norm — er is geen hiërarchie dijkring → deel → traject meer. Dit vereenvoudigt het FloodOpt-datamodel.
-
-### Rol van de 2011-data in FloodOpt
-
-De OptimaliseRing 2011 SQLite (`tests/validation/optimalise_ring_2011.sqlite`) wordt uitsluitend gebruikt als **testbed** om te verifiëren dat de rekenkern en de UI correct werken. Zodra de 2026-data beschikbaar is, vervangt die de referentiedata.
-
----
-
-## Actuele architectuurkeuzes
+### Actuele technologiekeuzes
 
 | Component | Keuze | Reden |
 |---|---|---|
 | Database | **SQLite** (standaard, ingebouwd) | Nul installatie; geen Docker vereist |
 | DB upgrade pad | PostgreSQL optioneel via `DATABASE_URL` | `init_schema()` werkt met beide |
-| Geo-verwerking | **GeoPandas** + GeoJSON | Python-only, geen PostGIS nodig voor MVP |
+| Geometrie | GeoJSON als JSON-kolom in SQLite | Geen PostGIS/GeoPandas nodig voor MVP |
 | Frontend kaarten | **Leaflet** (React + Vite) | Leest GeoJSON direct van de API |
 | Optimizer | Pyomo + HiGHS (MILP) | Open-source, exact voor MIN_COST/MAX_RR |
+| Queue | Redis + Celery | Async optimalisaties zonder HTTP-timeout |
+| Grafiek | Recharts | P(t)-tijdreeks in de browser |
 
-**PostgreSQL / PostGIS** wordt pas ingezet zodra meerdere Celery-workers concurrent schrijven (stap 2.3) of ruimtelijke DB-queries nodig zijn.
+### Data-context: 2011 vs 2026
+
+| 2011 (OptimaliseRing) | 2026 (NBPW / WBI2023) | Toelichting |
+|---|---|---|
+| Dijkring | — | Begrip vervallen als beheereenheid |
+| DijkringDeel | — | Begrip vervallen |
+| DijkringTraject | **Normtraject** (of dijktraject) | 1-op-1; plattere structuur |
+| Terugkeertijd [jaar] | Norm [1/jaar] | Omgekeerd: 1/4000 jaar = 1/4000 per jaar |
+
+In 2026 is elk **normtraject** een zelfstandige optimaliseringseenheid met eigen norm. De OptimaliseRing 2011 SQLite (`tests/validation/optimalise_ring_2011.sqlite`) dient uitsluitend als **testbed** voor de rekenkern en UI — geen productiedata.
 
 ---
 
-## 2026-06-01 — Stap 0.1: Repository & package layout ✓
+## Fase 0 — Projectstructuur & tooling
+
+### Stap 0.1 — Repository & package layout ✓ (2026-06-01)
 
 - Mapstructuur aangemaakt, tooling geïnstalleerd (`pytest`, `ruff`, `mypy`, `pre-commit`)
 - `floodopt-core` als editable package geïnstalleerd
@@ -41,7 +37,7 @@ De OptimaliseRing 2011 SQLite (`tests/validation/optimalise_ring_2011.sqlite`) w
 
 ---
 
-## 2026-06-01 — Stap 0.2: Data model ✓
+### Stap 0.2 — Data model ✓ (2026-06-01)
 
 Pydantic v2 models in `floodopt_core/io/`:
 
@@ -49,14 +45,16 @@ Pydantic v2 models in `floodopt_core/io/`:
 |---|---|
 | `Measure` | id, type, cost, year, **effect [m]**, location, dependencies |
 | `Scenario` | id, climate, q_design, h_design, **eta [m/jaar]** |
-| `Trajectory` | id, norm, length, **p0 [1/jaar]**, **alpha [1/m]**, **base_year** |
+| `Trajectory` | id, norm, length, **p0 [1/jaar]**, **alpha [1/m]**, **base_year**, geometry |
 
-Eenheden direct gebaseerd op analyse OptimaliseRing 2.3.2 (HKV, 2013).
+Eenheden gebaseerd op OptimaliseRing 2.3.2 (HKV, 2013).
 **Verificatie:** 16/16 tests, mypy schoon, JSON round-trip ✓
 
 ---
 
-## 2026-06-01 — Stap 1.1: Physics Layer ✓
+## Fase 1 — MVP rekenkernel
+
+### Stap 1.1 — Physics Layer ✓ (2026-06-01)
 
 $$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$$
 
@@ -64,50 +62,40 @@ $$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$$
 - Formule identiek aan OptimaliseRing 2.3.2
 - `PhysicsResult` frozen dataclass
 
-**Verificatie:** 23/23 tests, 3 handmatige cases rel_tol=1e-9, geen optimizer-logica in physics ✓
+**Verificatie:** 23/23 tests, 3 handmatige cases rel_tol=1e-9 ✓
 
 Zie: `docs/stap1.1_physics_formula.png`
 
 ---
 
-## 2026-06-01 — Stap 1.2: Risk Layer ✓
+### Stap 1.2 — Risk Layer ✓ (2026-06-01)
 
 $$\text{NCW} = \sum_{s=0}^{T-1} P(s) \cdot V_0 \cdot e^{(\gamma - \delta)\,s}$$
 
 - `SimpleRiskCalculator` achter `RiskCalculator` Protocol
 - Discrete jaarlijkse sommatie; aparte discontovoeten voor schade (γ) en investering (δ)
 
-**Verificatie:** 33/33 tests, handmatige NCW rel_tol=1e-9, NCW daalt bij meer maatregelen ✓
+**Verificatie:** 33/33 tests, handmatige NCW rel_tol=1e-9 ✓
 
 Zie: `docs/stap1.2_risk_ncw.png`
 
 ---
 
-## 2026-06-01 — Stap 1.3: Optimization Layer ✓
+### Stap 1.3 — Optimization Layer ✓ (2026-06-01)
 
 | Objective | Formulering | Solver | Exact? |
 |---|---|---|---|
 | `MIN_COST` | $\min \sum c_i x_i \;\text{s.t.}\; \sum h_i x_i \geq h_{\min}$ | HiGHS MILP | Ja |
-| `MAX_RISK_REDUCTION` | $\max \sum h_i x_i \;\text{s.t.}\; \sum c_i x_i \leq B$ | HiGHS MILP (knapsack) | Ja |
-| `MIN_NCW` | $\min \sum (c_i - C\alpha h_i)\,x_i$ | HiGHS MILP | Lineaire benadering $\alpha h_i < 0.5$ |
+| `MAX_RISK_REDUCTION` | $\max \sum h_i x_i \;\text{s.t.}\; \sum c_i x_i \leq B$ | HiGHS MILP | Ja |
+| `MIN_NCW` | $\min \sum (c_i - C\alpha h_i)\,x_i$ | HiGHS MILP | Lineaire benadering |
 
-**Verificatie (kritiek):** 13/13 tests, `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 6 testcases ✓
+**Verificatie:** 13/13 tests, `BruteForce.solve() == PyomoOptimizer.solve()` voor alle 6 testcases ✓
 
 Zie: `docs/stap1.3_optimization.png`
 
 ---
 
-## 2026-06-01 — OptimaliseRing broncode & validatiedata geïmporteerd ✓
-
-- Broncode OptimaliseRing v2.3.2 (C#, HKV 2013) als referentie toegevoegd
-- `Database OptimaliseRing 2011_04_07.mdb` → `tests/validation/optimalise_ring_2011.sqlite`
-- Script: `scripts/convert_mdb_to_sqlite.py`
-- 4 FloodOpt-views met eenheidsconversie (α×100 [1/cm→1/m], η÷100 [cm/j→m/j])
-- 103 dijkringen, 176 trajecten, 3348 klimaatrecords beschikbaar voor validatie
-
----
-
-## 2026-06-01 — Stap 1.4: Integratie smoke test (CLI) ✓
+### Stap 1.4 — Integratie smoke test (CLI) ✓ (2026-06-01)
 
 ```bash
 python scripts/run_smoke_test.py
@@ -117,11 +105,13 @@ Testcase: Rijnmond-achtig traject ($P_0 = 1/200$, norm $= 1/1000$, 5 kandidaatma
 
 | Objective | Optimum | Waarde | BF = Pyomo |
 |---|---|---|---|
-| `MIN_COST` | {M02, M04} | € 1,089,224 | ✓ |
+| `MIN_COST` | {M02, M04} | € 1.089.224 | ✓ |
 | `MAX_RISK_REDUCTION` | {M02, M03, M04} | Δh = 0.80 m | ✓ |
-| `MIN_NCW` | {alle 5} | NCW = € 9,020,808 | ✓ |
+| `MIN_NCW` | {alle 5} | NCW = € 9.020.808 | ✓ |
 
 Rekentijd: BruteForce 21 ms — Pyomo 248 ms (N=5, T=100).
+
+**Referentiedata geïmporteerd:** `Database OptimaliseRing 2011_04_07.mdb` → `tests/validation/optimalise_ring_2011.sqlite` via `scripts/convert_mdb_to_sqlite.py`. 4 FloodOpt-views, 103 dijkringen, 176 trajecten, 3348 klimaatrecords.
 
 **Verificatie:** 58/58 tests, exitcode 0 ✓ — **Fase 1 volledig afgerond.**
 
@@ -129,492 +119,290 @@ Zie: `docs/stap1.4_smoke_test.png`
 
 ---
 
-## 2026-06-01 — Stap 2.1: FastAPI service ✓
+## Fase 2 — Backend & API
+
+### Stap 2.1 — FastAPI service ✓ (2026-06-01)
 
 | Method | Endpoint | Status |
 |---|---|---|
 | POST | `/scenarios` | 201 |
 | POST | `/trajectories` | 201 |
-| POST | `/optimize` | 201 — `solver: "brute_force" \| "pyomo"` |
+| POST | `/optimize` | 202 — `job_id` + `status: pending` |
+| GET | `/results` | 200 — lijst alle jobs |
 | GET | `/results/{job_id}` | 200/404 |
+| DELETE | `/results/{job_id}` | 204/404 |
+| GET | `/geo/trajectories` | 200 — GeoJSON FeatureCollection |
+| GET | `/validation/dijkringen` | 200 — referentiedata |
+| GET | `/validation/trajectories` | 200 — referentiedata |
 | GET | `/docs` | 200 — Swagger UI |
 
-Geen business logic in API-laag. Status altijd `"completed"` (async queue volgt stap 2.3).
+Geen business logic in de API-laag.
 
-**Verificatie:** 78/78 tests, Swagger UI bereikbaar, resultaten identiek aan stap 1.4 ✓
+**Verificatie:** 90/90 tests, Swagger UI bereikbaar ✓
 
 Zie: `docs/stap2.1_api.png`
 
 ---
 
-## 2026-06-01 — Stap 2.2: Database (SQLite + repository-pattern) ✓
+### Stap 2.2 — Database (SQLite + repository-pattern) ✓ (2026-06-01)
 
 **Keuze:** SQLite als standaard — geen Docker, geen installatie.
 
-### Opstarten
-
 ```bash
-# Standaard (SQLite, geen configuratie nodig):
-uvicorn floodopt_api.main:app --reload
-# schrijft naar floodopt.db naast de projectroot
-
-# Optioneel PostgreSQL:
-DATABASE_URL=postgresql://user:pw@host/db uvicorn floodopt_api.main:app --reload
-python scripts/init_db.py   # maakt tabellen aan (idempotent)
+uvicorn floodopt_api.main:app --reload   # schrijft naar floodopt.db
+DATABASE_URL=postgresql://...            # optioneel PostgreSQL
 ```
-
-### Repository-pattern
 
 | Klasse | Backend | Wanneer |
 |---|---|---|
-| `MemoryRepositories` | in-memory dict | Altijd in tests (FastAPI dependency override) |
-| `OrmRepositories` | SQLAlchemy + SQLite of PostgreSQL | `get_repositories()` in productie |
+| `MemoryRepositories` | in-memory dict | Tests (FastAPI dependency override) |
+| `OrmRepositories` | SQLAlchemy + SQLite/PostgreSQL | Productie |
 
-`DATABASE_URL` env-var bepaalt welke SQLAlchemy-URL gebruikt wordt; standaard `sqlite:///floodopt.db`.
-
-### Schema
+**Schema (actueel):**
 
 ```
 scenarios              (id, climate, q_design, h_design, eta)
-trajectories           (id, norm, length, p0, alpha, base_year)
-optimization_results   (job_id, trajectory_id, scenario_id, objective,
-                        solver, selected_measure_ids JSON, ncw-velden)
+trajectories           (id, norm, length, p0, alpha, base_year, geometry JSON)
+optimization_results   (job_id, trajectory_id, scenario_id, objective, status,
+                        solver, selected_measure_ids JSON, ncw-velden, p_series JSON)
 ```
 
-### Verificatie
+Nieuwe kolommen worden automatisch toegevoegd via `init_schema()` (idempotent ALTER TABLE).
 
-- **84/84 tests geslaagd** (geen Docker vereist) ✓
-- 6 DB round-trip tests op `sqlite:///:memory:` (StaticPool) ✓
-- Scenario/traject opslaan → ophalen → identiek ✓
-- Resultaat persistent na `session.expire_all()` ✓
+**Verificatie:** 90/90 tests (geen Docker vereist) ✓
 
 Zie: `docs/stap2.2_database.png`
 
 ---
 
-## 2026-06-01 — Documentatie: diagrammen herontworpen ✓
+### Stap 2.3 — Async queue (Celery + Redis) ✓ (2026-06-01)
 
-Aanleiding: overlappende tekst en frames in alle PNG-diagrammen.
+#### Waarom asynchroon?
 
-**Oplossing:** `scripts/generate_docs.py` volledig herschreven (1983 → ~470 regels).
+Synchroon `POST /optimize` blokkeert de HTTP-verbinding. Bij 10–50 maatregelen per traject kan Pyomo/HiGHS minuten draaien — dan zijn er drie breekpunten: timeout, geblokkeerde thread, geen crash-herstel.
 
-Nieuwe ontwerpregels:
-- `ax.table()` voor alle tabellen — geen handmatige tekstlussen meer
-- Elk formulepaneel = eigen subplot (geen gedeelde assen)
-- `ax.annotate()` met expliciete `xytext`-offset voor data-annotaties
-- `fig.tight_layout(rect=[0,0,1,0.95])` op elke figuur
-
-9 PNGs gegenereerd in `docs/`:
-
-| Bestand | Inhoud |
-|---|---|
-| `architecture.png` | Volledige stack: Frontend → API → SQLite/Geo → Core |
-| `stap1.1_physics_formula.png` | $P(t)$-grafiek + formule |
-| `stap1.2_risk_ncw.png` | $S(s)$-grafiek + NCW-tabel + formule |
-| `stap1.3_optimization.png` | 3 objectieve formules + NCW-grafiek + verificatietabel |
-| `stap1.4_smoke_test.png` | Rekentijden + testresultaten |
-| `stap2.1_api.png` | Request-flow + endpoints |
-| `stap2.2_database.png` | Repository-pattern + schema |
-| `geo_stack.png` | GeoPandas → GeoJSON → Leaflet |
-| `database_mapping.png` | OptimaliseRing MDB → FloodOpt datamodel |
-
----
-
----
-
-## 2026-06-01 — Stap 2.3: Ontwerpbeslissing — Async queue (Celery + Redis)
-
-### Aanleiding
-
-Het synchrone `POST /optimize` blokkeert de HTTP-verbinding totdat de optimizer klaar is. Voor N=5 maatregelen duurt dat 21–248 ms — geen probleem. Maar bij dijkring- of systeemniveau (10–50 maatregelen per traject, meerdere klimaatscenario's) kan Pyomo/HiGHS minuten draaien. Dan zijn er drie breekpunten:
-
-| Probleem | Gevolg |
-|---|---|
-| HTTP-verbinding time-out (30–60 sec) | Client krijgt fout; resultaat gaat verloren |
-| FastAPI-thread geblokkeerd | Andere requests wachten achter de berekening |
-| Geen herstelbaarheid bij crash | Hele job verloren |
-
-### Oplossing: Celery + Redis
-
-```
-POST /optimize  →  job_id opslaan (status: pending)  →  task.delay()  →  202 Accepted
-                                                              ↓
-                                                   Redis wachtrij
-                                                              ↓
-                                                   Celery worker
-                                                   status: running
-                                                   optimizer.solve()
-                                                   status: done + resultaten
-```
-
-### Architectuurkeuzes
+#### Architectuurkeuzes
 
 | Keuze | Motivatie |
 |---|---|
 | Redis als broker | Standaard voor Celery; in-memory, snel |
-| SQLite bij één worker | Concurrent schrijven niet nodig; nul installatie |
-| PostgreSQL bij meerdere workers | SQLite ondersteunt geen concurrent schrijven vanuit meerdere processen |
-| `task_always_eager=True` in tests | Tests draaien zonder Redis; Celery voert taken synchroon uit |
-| Bestaande `status`-kolom in ORM | `OptimizationResultORM.status` was er al — geen schemamigrate nodig |
+| SQLite bij één worker | Concurrent schrijven niet nodig |
+| PostgreSQL bij meerdere workers | SQLite ondersteunt geen concurrent writes |
+| `task_always_eager=True` in tests | Tests draaien zonder Redis |
 
-### Wat verandert in de API
-
-| | Voor 2.3 | Na 2.3 |
-|---|---|---|
-| `POST /optimize` status | 201 + `status: completed` | 202 + `status: pending` |
-| Berekening | In de API-request handler | In Celery worker |
-| `GET /results/{job_id}` | Altijd `completed` | `pending` / `running` / `done` |
-
-### Implementatievolgorde
-
-1. `floodopt-worker/` — Celery app + `run_optimization` task
-2. `floodopt-api/` — `POST /optimize` geeft 202 terug, dispatch naar worker
-3. ORM + repository — `update_result_status()` voor worker
-4. Tests — API-tests mocken task dispatch; worker-tests gebruiken `always_eager`
-5. `docker-compose.yml` — Redis service
-
----
-
-## 2026-06-01 — Stap 2.3: Async queue (Redis + Celery) ✓
-
-### Wat is gebouwd
-
-| Component | Bestand | Inhoud |
-|---|---|---|
-| Celery-app | `floodopt_api/celery_app.py` | Broker + backend via `REDIS_URL` |
-| Worker-taak | `floodopt_worker/tasks.py` | `run_optimization`: pending→running→done/failed |
-| Worker-package | `floodopt-worker/` | `pyproject.toml`, eigen editable install |
-| Broker | `docker-compose.yml` | Redis 7-alpine op poort 6379 |
-
-### API-wijzigingen
-
-| | Voor 2.3 | Na 2.3 |
-|---|---|---|
-| `POST /optimize` status code | 201 | 202 |
-| Directe response status | `"completed"` + resultaten | `"pending"` + lege resultaatvelden |
-| Berekening | In API-request handler | In Celery worker |
-| `GET /results/{job_id}` | Altijd `completed` | `pending` / `running` / `done` / `failed` |
-
-### Status-flow
+#### Status-flow
 
 ```
-POST /optimize  →  save(status=pending)  →  send_task()  →  202 + job_id
-                                                 ↓
-                                          Redis wachtrij
-                                                 ↓
-                                          Celery worker
-                                          update_status(running)
-                                          optimizer.solve()
-                                          save_result(status=done)
+POST /optimize → save(pending) → send_task() → 202 + job_id
+                                      ↓
+                               Redis wachtrij
+                                      ↓
+                               Celery worker
+                               update_status(running)
+                               optimizer.solve()
+                               compute_p_series()
+                               save_result(status=done, p_series=[...])
 ```
 
-### Opstarten (lokaal)
+#### Componenten
 
-```bash
-# 1. Redis starten
-docker compose up -d redis
-
-# 2. API starten
-uvicorn floodopt_api.main:app --reload
-
-# 3. Worker starten (apart terminal)
-celery -A floodopt_worker.tasks worker --loglevel=info
-
-# 4. Optimalisatie uitvoeren
-curl -X POST http://localhost:8000/optimize -H "Content-Type: application/json" -d '{...}'
-# → {"job_id": "...", "status": "pending", ...}
-
-curl http://localhost:8000/results/{job_id}
-# → {"status": "done", "selected_measure_ids": [...], ...}
-```
-
-### Verificatie
-
-- **90/90 tests geslaagd** (geen Redis vereist voor pytest) ✓
-- 19 API-tests: 202, pending, Celery send_task mock ✓
-- 7 worker-tests: pending→done, MIN_COST/MAX_RR/MIN_NCW vs stap 1.4, BF==Pyomo, failed-status ✓
-- 6 DB round-trip tests: pending opslaan + ophalen ✓
-
-Zie: `docs/stap2.3_worker.png` *(toe te voegen)*
-
----
-
----
-
-## 2026-06-01 — Stap 2.3: Lokaal opstarten via start.bat ✓
-
-Docker geïnstalleerd. `start.bat` opent drie terminals automatisch:
-
-| Terminal | Proces | Poort |
+| Bestand | Package | Inhoud |
 |---|---|---|
-| 1 | Redis 7-alpine (Docker) | 6379 |
-| 2 | FastAPI + uvicorn | 8000 |
+| `celery_app.py` | `floodopt-api` | Celery-instantie + REDIS_URL |
+| `tasks.py` | `floodopt-worker` | `run_optimization`: pending→running→done/failed + p_series |
+| `docker-compose.yml` | project root | Redis 7-alpine op poort 6379 |
+| `start.bat` | project root | Redis + FastAPI + Worker + Frontend in 4 terminals |
+
+#### Opstarten
+
+```bat
+start.bat
+```
+
+| Terminal | Proces | URL |
+|---|---|---|
+| 1 | Redis 7-alpine (Docker) | localhost:6379 |
+| 2 | FastAPI + uvicorn | http://localhost:8000/docs |
 | 3 | Celery worker (`--pool=solo`) | — |
+| 4 | Vite dev server | http://localhost:5173 |
 
-90/90 tests groen. Volledige async pipeline operationeel.
+**Verificatie:** 90/90 tests (geen Redis vereist voor pytest) ✓
 
----
-
-## 2026-06-02 — Stap 4.1: Frontend setup ✓
-
-Beslissing: **Fase 4 (frontend) vóór Fase 3** (rekenkernel uitbreidingen).
-
-Reden: FORM/Monte Carlo, lengte-effecten en rivierverruiming zitten **niet** in het oorspronkelijke OptimaliseRing 2.3.2 model — het is origineel onderzoekswerk. Frontend maakt het systeem eerst bruikbaar.
-
-### Tech stack
-
-| Component | Keuze | Reden |
-|---|---|---|
-| Build tool | Vite + React + TypeScript | Standaard, snel, goede DX |
-| Styling | Tailwind CSS (v4, Vite-plugin) | Utility-first, geen losse CSS-bestanden |
-| API state | TanStack Query | Polling, caching, loading-states ingebouwd |
-| Kaarten | Leaflet + react-leaflet | Leest GeoJSON direct van API (stap 4.2) |
-| Dev proxy | Vite proxy `/api → localhost:8000` | Geen CORS-issue in development |
-
-### Wat is gebouwd
-
-| Bestand | Inhoud |
-|---|---|
-| `src/types/index.ts` | TypeScript interfaces — `Measure`, `Scenario`, `Trajectory`, `OptimizeRequest/Response`, `JobStatus` |
-| `src/api/client.ts` | Typed fetch-wrapper — `postScenario`, `postTrajectory`, `postOptimize`, `getResult`, `submitOptimization` |
-| `src/pages/OptimizeForm.tsx` | Formulier: traject + scenario + kandidaatmaatregelen + doelfunctie |
-| `src/pages/Results.tsx` | Polling via TanStack Query (2 s interval) — pending/running/done/failed weergave + financiële samenvatting |
-| `src/pages/Dashboard.tsx` | Startpagina met link naar OptimizeForm en stack-status |
-| `src/components/StatusBadge.tsx` | Kleurgecodeerde badge per `JobStatus` |
-| `src/components/MeasureList.tsx` | Herbruikbare maatregel-editor |
-
-### API-kant
-
-- `CORSMiddleware` in `floodopt_api/main.py` — `allow_origins=["http://localhost:5173"]`
-- `start.bat` uitgebreid met terminal 4: `cd floodopt-frontend && npm run dev`
-
-### Verificatie
-
-- Frontend bereikbaar op `http://localhost:5173` ✓
-- Optimalisatieformulier → 202 → polling → done ✓
-- Alle vier terminals starten via `start.bat` ✓
+Zie: `docs/stap2.3_worker.png`, `docs/celery_flow.png`
 
 ---
 
-## 2026-06-02 — Stap 4.2: Kaartviewer (GeoJSON + Leaflet) ✓
+## Fase 4 — Frontend
 
-### Wat is gebouwd
+*Beslissing: Fase 4 vóór Fase 3. FORM/Monte Carlo en rivierverruiming zijn origineel onderzoekswerk; de frontend maakt het systeem eerst bruikbaar.*
 
-| Component | Inhoud |
+### Stap 4.1 — Frontend scaffold ✓ (2026-06-02)
+
+| Component | Keuze |
 |---|---|
-| `Trajectory.geometry` | Optioneel `dict \| None` veld (GeoJSON geometry, bijv. LineString) |
-| `TrajectoryORM.geometry` | JSON-kolom in SQLite; `init_schema()` migreert bestaande DB |
-| `GET /geo/trajectories` | GeoJSON FeatureCollection van alle opgeslagen trajecten |
-| `MapView.tsx` | React-Leaflet kaart gecentreerd op Nederland; rendert trajecten als blauwe lijnen |
-| Dashboard | "Laad Rijnmond-voorbeeld" knop — POST-et een traject met Nieuwe Waterweg LineString |
+| Build tool | Vite + React + TypeScript |
+| Styling | Tailwind CSS v4 (Vite-plugin) |
+| API state | TanStack Query (polling, caching) |
+| Kaarten | Leaflet + react-leaflet |
+| Grafiek | Recharts |
+| Dev proxy | `/api → localhost:8000` (geen CORS-issue) |
 
-### Aanpak
+Pagina's: `Dashboard`, `OptimizeForm`, `Results`, `ValidationDashboard`.
+Components: `MapView`, `PSeriesChart`, `JobList`, `StatusBadge`.
 
-Geen GeoPandas (geen installatie nodig): geometrie wordt als GeoJSON-dict opgeslagen in SQLite.
-De API serveert de FeatureCollection direct; Leaflet rendert het in de browser.
-
-### Verificatie
-
-- Kaart toont Rijnmond-traject na laden voorbeelddata ✓
-- `GET /geo/trajectories` retourneert valide GeoJSON ✓
-- 90/90 tests groen ✓
+**Verificatie:** frontend bereikbaar op http://localhost:5173, formulier → 202 → polling → done ✓
 
 ---
 
-## 2026-06-02 — Stap 4.3: Job-overzicht op Dashboard ✓
+### Stap 4.2 — Kaartviewer (GeoJSON + Leaflet) ✓ (2026-06-02)
 
-### Wat is gebouwd
+- `Trajectory.geometry` — optioneel GeoJSON-veld, opgeslagen als JSON-kolom in SQLite
+- `GET /geo/trajectories?year=2050` — GeoJSON FeatureCollection; `p_year` per feature voor kleurcodering
+- `MapView.tsx` — Leaflet-kaart met OptimaliseRing-klasse-indeling (9 klassen, cyaan t/m donkergroen)
+- Dashboard: "Laad Rijnmond-voorbeeld" knop POST-et een traject met Nieuwe Waterweg LineString
 
-| Component | Inhoud |
-|---|---|
-| `GET /results` | Lijst van alle optimalisatieresultaten, nieuwste eerst |
-| `get_all_results()` | Toegevoegd aan Protocol + `MemoryRepositories` + `OrmRepositories` |
-| `_row_to_response()` | Helper geëxtraheerd in `OrmRepositories` om duplicatie te vermijden |
-| `JobList.tsx` | Tabel: job-id (afgekapt), traject, doelfunctie, resultaat (€), status-badge, link |
-| Polling | 2 s bij pending/running jobs, 15 s bij rust |
+**Verificatie:** Rijnmond-traject zichtbaar op kaart ✓
 
-### Verificatie
-
-- Dashboard toont alle jobs na starten optimalisatie ✓
-- Status-badge ververst automatisch bij running → done ✓
-- 90/90 tests groen ✓
+Zie: `docs/geo_stack.png`
 
 ---
 
-## 2026-06-02 — Stap 4.4: P(t)-grafiek conform OptimaliseRing ✓
+### Stap 4.3 — Job-overzicht op Dashboard ✓ (2026-06-02)
 
-### Aanleiding
+- `GET /results` — lijst alle jobs, nieuwste eerst
+- `JobList.tsx` — tabel met job-id, traject, doelfunctie, resultaat (€), status-badge, link, verwijder-knop
+- Polling: 2 s bij actieve jobs, 15 s bij rust
 
-De twee kernvisualisaties van OptimaliseRing ontbraken nog in de UI:
-1. P(t)-zaagrandgrafiek — overstromingskans als functie van de tijd
-2. Kaart gekleurd per overstromingskansklasse
+---
 
-### Wat is gebouwd
+### Stap 4.4 — P(t)-grafiek conform OptimaliseRing ✓ (2026-06-02)
 
-| Component | Inhoud |
-|---|---|
-| `floodopt_core/physics/p_series.py` | `compute_p_series()` — P(t) en Pmidden per maatregelinterval |
-| `OptimizeResponse.p_series` | Lijst `[{year, p, p_mid}, …]` opgeslagen na elke optimalisatie |
-| `OptimizationResultORM.p_series` | JSON-kolom; `init_schema()` migreert bestaande DB |
-| Worker | Berekent p_series na optimalisatie, vóór opslaan |
-| `PSeriesChart.tsx` | Recharts lijndiagram: P (groen), Pmidden (blauw gestippeld), Pwet (zwart) |
-| Results-pagina | Toont P(t)-grafiek zodra job `done` is; haalt trajectory op voor norm |
-| `GET /geo/trajectories?year=` | `p_year` toegevoegd per feature (P uit tijdreeks voor opgegeven jaar) |
-| `MapView.tsx` | Kleurt trajecten per OptimaliseRing-klasse-indeling op basis van P(2050) |
-
-### Pmidden-berekening
-
-Per maatregelinterval (epoch):
+`compute_p_series()` in `floodopt_core/physics/p_series.py`:
 
 $$P_{\text{midden}} = \sqrt{P_{\text{start}} \cdot P_{\text{eind}}}$$
 
-Identiek aan OptimaliseRing 2.3.2. Geeft stapsgewijs dalende blauwe lijn in de grafiek.
+Pmidden is de geometrische mean per maatregelinterval — identiek aan OptimaliseRing 2.3.2.
 
-### Klasse-indeling kaart (conform OptimaliseRing)
+- Worker slaat `p_series` op na elke optimalisatie
+- `PSeriesChart.tsx` (Recharts): P groen, Pmidden blauw gestippeld, Pwet zwarte referentielijn
+- Results-pagina toont grafiek zodra job `done` is
 
-| Klasse | Kleur |
-|---|---|
-| < 1/113.000 | Cyaan |
-| 1/113.000–1/57.000 | Blauw |
-| 1/57.000–1/28.000 | Paars |
-| 1/28.000–1/14.000 | Roze |
-| 1/14.000–1/6.300 | Rood |
-| 1/6.300–1/2.800 | Oranje |
-| 1/2.800–1/1.600 | Geel |
-| 1/1.600–1/800 | Lichtgroen |
-| > 1/800 | Donkergroen |
+**Verificatie:** P(t)-zaagrandgrafiek zichtbaar, kaart kleurt mee op P(2050) ✓
 
-### Verificatie
-
-- P(t)-grafiek zichtbaar op Results-pagina na voltooide optimalisatie ✓
-- Pmidden toont stapsgewijs dalende lijn per maatregelinterval ✓
-- Kaart kleurt Rijnmond-traject na optimalisatie ✓
-- 90/90 tests groen ✓
+Zie: `docs/stap4_frontend.png`
 
 ---
 
-## 2026-06-02 — Stap 4.x: Jobs verwijderen ✓
+### Stap 4.5 — Jobs verwijderen ✓ (2026-06-02)
 
-- `DELETE /results/{job_id}` endpoint (204 No Content / 404)
+- `DELETE /results/{job_id}` (204/404)
 - `delete_result()` in Protocol + `MemoryRepositories` + `OrmRepositories`
-- Verwijder-knop (✕) in `JobList` met `window.confirm` + TanStack Query cache-invalidatie
+- Verwijder-knop (✕) in `JobList` met bevestiging + cache-invalidatie
 
 ---
 
-## 2026-06-02 — Stap 4.5: Validatie-dashboard ✓
+### Stap 4.6 — Validatie-dashboard ✓ (2026-06-02)
 
-- `floodopt_api/validation.py`: readonly SQLite-lezer voor `optimalise_ring_2011.sqlite`
-- `GET /validation/dijkringen`: 103 dijkringen met naam, norm, aantal trajecten
-- `GET /validation/trajectories?dijkring=`: 176 trajecten (klimaat_id=1, basisscenario)
-- `POST /validation/optimize/{dijkring}/{deel}/{traject}`: start FloodOpt-job met 3 standaard maatregelen (Δh 0.5/1.0/1.5 m, MIN_COST, brute_force)
-- `ValidationDashboard.tsx`: dropdown dijkringen, trajectentabel (P₀, α, η, norm), Optimaliseer-knop per rij → navigeert naar Results
+- `floodopt_api/validation.py` — readonly lezer voor `optimalise_ring_2011.sqlite`
+- `GET /validation/dijkringen` — 103 dijkringen met naam, norm, aantal trajecten
+- `GET /validation/trajectories?dijkring=` — 176 trajecten (klimaat_id=1)
+- `ValidationDashboard.tsx` — dropdown dijkringen, trajectentabel (P₀, α, η, norm)
+- "Optimaliseer →" navigeert naar `OptimizeForm` met referentieparameters als pre-fill state — **P₀ is altijd bewerkbaar** vóór de berekening
+- Amber-banner in `OptimizeForm` waarschuwt dat P₀ gecontroleerd moet worden (WBI2023-kansen staan ter discussie)
 
-**Scope van de 2011-data:** uitsluitend testbed. Zie het plan hieronder voor de 2026-data.
+**Scope van de 2011-data:** uitsluitend testbed. Zie Fase 5 voor de 2026-data.
 
 ---
 
-## Plan: Data-actualisatie 2011 → 2026
+### Stap 4.7 — Dijkring-niveau ⏳ (gepland)
+
+Een normtraject-bundel (vroeger: dijkring) = verzameling trajecten met gedeelde optimalisatie.
+
+- `DijkRing` model: id, name, `trajectory_ids: list[str]`
+- `POST /dijkringen`, `GET /dijkringen`, `POST /optimize-dijkring`
+- Worker dispatcht één taak per traject; `GET /dijkring-results/{id}` aggregeert
+- Kaart toont alle trajecten van een bundel gekleurd per P(2050)
+- MVP: trajectory-level optimizer per traject (onafhankelijk)
+
+---
+
+## Fase 5 — Data-actualisatie 2026 (gepland)
 
 ### Aanleiding
 
-De structuur en inhoud van de waterveiligheidsdatabase zijn in 2026 fundamenteel anders dan in 2011:
+De 2011-database is het testbed. Productiedata vereist actualisatie op zes fronten:
 
-- De dijkringen/dijkringdelen-hiërarchie is vervallen. Er zijn nu **normtrajecten** (ook: dijktrajecten), elk met een eigen wettelijke norm.
-- De normen zijn herzien in het kader van WBI2023.
-- Klimaatscenario's zijn gebaseerd op KNMI 2023 (W, W+, WH, WH+) i.p.v. KNMI 2006.
-- De discontovoet is gewijzigd (Rijksbegroting 2022: 2,25% reëel).
-- Het HWBP bevat actuele maatregelen met kosten en planningen.
-
-### Bron: NBPW WFS
-
-Normtrajecten inclusief geometrie, ID's en normen zijn beschikbaar via:
-
-```
-https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs?
-  version=1.1.0&request=GetCapabilities&Service=WFS
-```
-
-De WFS bevat de officiële NBPW-trajecten (Nationaal Basisprogramma Waterveiligheid).
+- Dijkringen/dijkringdelen vervallen → normtrajecten
+- Normen herzien (WBI2023)
+- Klimaatscenario's: KNMI 2023 i.p.v. KNMI 2006
+- Discontovoet gewijzigd (Rijksbegroting 2022: 2,25% reëel)
+- Maatregelen: HWBP-projectenlijst 2024
+- Schade: SSM2 i.p.v. SSM1/VNK1
 
 ### Datavelden per normtraject (2026)
 
-| Veld | Bron | Eenheid | Toelichting |
-|---|---|---|---|
-| ID (trajectcode) | NBPW WFS | — | bijv. "15-1", "24-3" |
-| Geometrie (LineString) | NBPW WFS | WGS84 | dijkcruin-lijn |
-| Norm | NBPW WFS / wettelijk | 1/jaar | wettelijke overstromingskanseis |
-| P₀ | Beoordelingsresultaten (WSBD) | 1/jaar | huidige overstromingskans |
-| α | Hydraulische analyse (HYDRA-NL) | 1/m | schaalparameter faalkansmodel |
-| η | KNMI 2023 per scenario | m/jaar | zeespiegel-/grondwaterstijging |
-| Lengte | NBPW WFS / berekend | km | trajectlengte |
+| Veld | Bron | Eenheid |
+|---|---|---|
+| ID (trajectcode) | NBPW WFS | — |
+| Geometrie (LineString) | NBPW WFS | WGS84 |
+| Norm | NBPW / wettelijk | 1/jaar |
+| P₀ | WBI2023-beoordelingsresultaten (NGR) | 1/jaar |
+| α | HYDRA-NL of geschaald van 2011 | 1/m |
+| η | KNMI 2023 per scenario | m/jaar |
+| Lengte | NBPW WFS / berekend | km |
 
-### Stap D1 — Normtrajecten laden (NBPW WFS)
+---
 
-**Wat:**
-- Python WFS-client (GeoPandas + owslib) om trajecten op te halen
-- Geometrie opslaan als GeoJSON in FloodOpt `trajectories.geometry`
+### Stap 5.1 — Normtrajecten laden (NBPW WFS) ⏳
+
+- Python WFS-client (GeoPandas + owslib)
+- Geometrie opslaan als GeoJSON in `trajectories.geometry`
 - Norm, ID en lengte uit WFS-attributen
 
-**Output:** `scripts/load_nbpw_trajectories.py` → laadt alle normtrajecten in FloodOpt DB
+**Bron:** `https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs`
 
-**Afhankelijkheden:** GeoPandas, owslib, requests
+**Output:** `scripts/load_nbpw_trajectories.py`
 
 ---
 
-### Stap D2 — Overstromingskansen kalibreren (P₀ en α)
+### Stap 5.2 — Overstromingskansen (P₀ en α) ⏳
 
-**Wat:**
-- P₀ per traject uit de geaggregeerde beoordelingsresultaten WBI2023
-- α afleiden uit overstromingskansberekeningen (HYDRA-NL) of als startpunt de 2011-waarden schalen
+- P₀ uit geaggregeerde WBI2023-beoordelingsresultaten (alle waterschappen + RWS)
 
-**Bron (correct):**
-Nationaal Georegister — geaggregeerde beoordelingsresultaten van alle waterschappen + RWS:
+**Bron:** Nationaal Georegister:
 `https://www.nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/bf447383-f2ae-47b0-b124-6c4db12ce689`
 
-**Belangrijk voorbehoud:**
-De gepubliceerde WBI2023-kansen staan ter discussie. In de lopende beoordelingsronde moeten de kansen voor veel trajecten aanzienlijk omlaag (conservatisme eruit). De gepubliceerde waarden zijn dus waarschijnlijk overschattingen.
+**Voorbehoud:** WBI2023-kansen staan ter discussie. In de lopende beoordelingsronde moeten kansen voor veel trajecten aanzienlijk omlaag (conservatisme eruit). FloodOpt vereist daarom dat P₀ **altijd handmatig overschrijfbaar** is — dit is geïmplementeerd via het bewerkbare `p0`-veld in `OptimizeForm` en de pre-fill vanuit het validatie-dashboard.
 
-**Kerneis — P₀ override:**
-FloodOpt moet altijd toestaan dat een gebruiker de overstromingskans van elk traject handmatig invoert of overschrijft, ongeacht de officiële gepubliceerde waarde. Dit is geen optie maar een vereiste:
-- Het `Trajectory.p0`-veld is al vrij instelbaar in het datamodel ✓
-- De OptimizeForm toont p0 als bewerkbaar veld ✓
-- Het validatie-dashboard moet P₀ tonen én bewerkbaar maken vóór de optimalisatie
-- Eventueel: apart veld `p0_official` (gepubliceerd) vs `p0` (gebruikersinvoer)
-
-**Output:** CSV of JSON met P₀-referentiewaarden per trajectcode + script om te importeren
+**Output:** CSV met P₀-referentiewaarden per trajectcode + importscript
 
 ---
 
-### Stap D3 — Klimaatscenario's (η)
+### Stap 5.3 — Klimaatscenario's (η, KNMI 2023) ⏳
 
-**Wat:**
-- KNMI 2023: vier scenario's (W, W+, WH, WH+)
-- η = zeespiegelstijging of grondwaterstandstijging per scenario per regio
-- Grofweg: W ≈ 0.002 m/jr, W+ ≈ 0.003 m/jr, WH ≈ 0.005 m/jr, WH+ ≈ 0.008 m/jr (globaal, kust)
+- Vier scenario's: W, W+, WH, WH+
+- η = zeespiegelstijging per scenario per regio (kust vs. rivieren)
+- Globaal: W ≈ 0,002 m/jr · W+ ≈ 0,003 · WH ≈ 0,005 · WH+ ≈ 0,008 m/jr
 
 **Output:** `Scenario`-objecten per KNMI-scenario, koppelbaar aan elk normtraject
 
 ---
 
-### Stap D4 — Maatregelen en effecten (HWBP)
+### Stap 5.4 — Maatregelen en effecten (HWBP) ⏳
 
-**Wat:**
 - HWBP-projectenlijst (openbaar, Rijkswaterstaat)
-- Per project: trajectcode, maatregel-type, verwacht effect Δh [m], kostenraming, planningsjaar
-- Aanvullen met expert-schattingen voor trajecten buiten HWBP
+- Per project: trajectcode, type, effect Δh [m], kostenraming, planningsjaar
+- Expert-schattingen voor trajecten buiten HWBP
 
-**Maatregel-types:**
-- Dijkversterking (dijkverzwaring, verbreding, geosystemen)
-- Ruimte voor Rivier (bypass, retentie, uiterwaardverlaging)
-- Overig (pompen, keringen, etc.)
+**Maatregel-types:** dijkversterking, ruimte voor rivier, overig
 
 **Output:** kandidaatmaatregelen per normtraject als `Measure`-objecten
 
 ---
 
-### Stap D5 — Economische parameters actualiseren
+### Stap 5.5 — Economische parameters ⏳
 
-| Parameter | 2011 (OptimaliseRing) | 2026 | Bron |
+| Parameter | 2011 | 2026 | Bron |
 |---|---|---|---|
 | Discontovoet δ | 5,5% nominaal | 2,25% reëel | Rijksbegroting 2022 |
 | Economische groei γ | 2% | 1,5–2% | CPB 2024 |
@@ -625,28 +413,10 @@ FloodOpt moet altijd toestaan dat een gebruiker de overstromingskans van elk tra
 
 ---
 
-### Stap D6 — Validatie en verificatie 2026
+### Stap 5.6 — Validatie 2026 ⏳
 
-**Wat:**
-- Vergelijk FloodOpt 2026-resultaten met HWBP-prioritering
-- Vergelijk P(t)-grafieken met beschikbare beoordelingsresultaten
+- Vergelijk FloodOpt-resultaten met HWBP-prioritering
 - Spot-check op 5–10 trajecten met bekende beoordelingsuitkomsten
+- Criterium: FloodOpt-optimum moet de richting van HWBP-beslissingen bevestigen
 
-**Criterium:** FloodOpt-optimum moet overeenkomen met de richting van HWBP-beslissingen (volgorde, kosten-effectiviteit).
-
----
-
-### Volgorde
-
-```
-Nu:       Stap 4.5 ✓ — validatie met 2011-data (testbed)
-          Stap 4.6    — dijkring/normtraject-niveau (bouwt op 4.5)
-Daarna:   D1 — NBPW WFS: normtrajecten + geometrie laden
-          D2 — P₀ en α kalibreren (beoordelingsresultaten)
-          D3 — KNMI 2023 klimaatscenario's
-          D4 — HWBP maatregelen en effecten
-          D5 — Economische parameters actualiseren
-          D6 — Validatie en vergelijking HWBP
-```
-
-**Let op:** D1–D6 vereisen toegang tot datasets die deels achter portals zitten (WSBD, HWBP-projectenportal). Externe dataverzameling loopt parallel aan de softwareontwikkeling.
+**Let op:** stappen 5.1–5.6 vereisen toegang tot datasets die deels achter portals zitten. Dataverzameling loopt parallel aan de softwareontwikkeling.
