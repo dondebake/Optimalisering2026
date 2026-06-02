@@ -108,6 +108,12 @@ function OptimizeModal({
           gamma: selG.gamma,
           time_horizon: 100,
         },
+        cost_function: traj.C_exp != null ? {
+          C: traj.C_exp,
+          b: traj.b_exp ?? 0,
+          lam: traj.lambda_exp_per_m ?? 0,
+          omega: traj.Omega ?? 0.002,
+        } : null,
       },
     })
   }

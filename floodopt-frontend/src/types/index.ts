@@ -139,5 +139,6 @@ export interface InputPayload {
   risk_params: RiskParams
   objective: ObjectiveType
   budget: number | null
-  solver: 'brute_force' | 'pyomo'
+  solver: 'brute_force' | 'pyomo' | 'continuous'
+  cost_function?: CostFunctionParams | null
 }
