@@ -167,7 +167,7 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
 | 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | 🚧 In uitvoering | 4.1–4.4 ✅ — kaart, job-overzicht, P(t)-grafiek |
+| 4 — Frontend | 🚧 In uitvoering | 4.1–4.4 ✅ · 4.x jobs verwijderen · 4.5 validatie · 4.6 dijkring-niveau |
 
 ---
 
@@ -292,10 +292,31 @@ Worker slaat `p_series` op na elke optimalisatie.
 `GET /geo/trajectories?year=2050` voegt `p_year` toe; kaart kleurt trajecten per
 OptimaliseRing-klasse-indeling (< 1/113.000 t/m > 1/800).
 
-#### Stap 4.5 ⏳ — Geplande uitbreidingen
-- Dijkring-niveau: meerdere trajecten tegelijk optimaliseren
-- Validatie-dashboard: vergelijking met OptimaliseRing-referentiedata
-- GeoJSON importeren / tekenen op kaart
+#### Stap 4.x ⏳ — Jobs verwijderen
+
+- `DELETE /results/{job_id}` endpoint
+- `delete_result()` in Protocol + beide implementaties
+- Verwijder-knop in `JobList` (met bevestiging), cache-invalidatie
+
+#### Stap 4.5 ⏳ — Validatie-dashboard
+
+Laad de 176 trajecten uit `tests/validation/optimalise_ring_2011.sqlite`, run FloodOpt erop en vergelijk de uitkomsten met de OptimaliseRing-referentieresultaten.
+
+- `GET /validation/trajectories` — readonly verbinding met referentie-SQLite
+- `ValidationDashboard` pagina — tabel van alle 176 trajecten (dijkring, norm, p0, α, lengte)
+- "Optimaliseer" knop per traject → POST /optimize → Results-pagina
+- Vergelijkingstabel: FloodOpt vs OptimaliseRing (afhankelijk van beschikbare referentieresultaten in SQLite)
+
+#### Stap 4.6 ⏳ — Dijkring-niveau
+
+Een dijkring is een verzameling trajecten. Optimaliseer alle trajecten van een dijkring en toon het gecombineerde resultaat op de kaart.
+
+- `DijkRing` model: id, name, `trajectory_ids: list[str]`
+- `POST /dijkringen`, `GET /dijkringen`, `POST /optimize-dijkring`
+- Worker dispatcht één taak per traject; `GET /dijkring-results/{id}` aggregeert status
+- `DijkRingForm` + `DijkRingResults` pagina's
+- Kaart toont alle trajecten van een dijkring gekleurd per P(2050)-klasse
+- MVP: trajectory-level optimizer per traject (onafhankelijk); gezamenlijke MILP is Fase 3
 
 ---
 
