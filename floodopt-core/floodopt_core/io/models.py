@@ -44,3 +44,7 @@ class Trajectory(BaseModel):
     alpha: float = Field(gt=0, description="Schaalparameter faalkansmodel [1/m]")
     base_year: int = Field(ge=1900, le=2200, description="Jaar waarvoor p0 geldt")
     measures: list[Measure] = Field(default_factory=list)
+    geometry: dict | None = Field(
+        default=None,
+        description="GeoJSON geometry (bijv. LineString langs de dijkcruin)",
+    )

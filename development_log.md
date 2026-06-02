@@ -336,13 +336,13 @@ Docker geïnstalleerd. `start.bat` opent drie terminals automatisch:
 
 ---
 
-## 2026-06-01 — Stap 4.1: Frontend setup gestart 🚧
+## 2026-06-02 — Stap 4.1: Frontend setup ✓
 
 Beslissing: **Fase 4 (frontend) vóór Fase 3** (rekenkernel uitbreidingen).
 
 Reden: FORM/Monte Carlo, lengte-effecten en rivierverruiming zitten **niet** in het oorspronkelijke OptimaliseRing 2.3.2 model — het is origineel onderzoekswerk. Frontend maakt het systeem eerst bruikbaar.
 
-### Tech stack keuzes
+### Tech stack
 
 | Component | Keuze | Reden |
 |---|---|---|
@@ -352,14 +352,25 @@ Reden: FORM/Monte Carlo, lengte-effecten en rivierverruiming zitten **niet** in 
 | Kaarten | Leaflet + react-leaflet | Leest GeoJSON direct van API (stap 4.2) |
 | Dev proxy | Vite proxy `/api → localhost:8000` | Geen CORS-issue in development |
 
-### Implementatievolgorde
+### Wat is gebouwd
 
-1. Documentatie + README bijwerken ✓
-2. CORS middleware in FastAPI (voor productie)
-3. Vite scaffold + Tailwind + dependencies
-4. Typed API client + TypeScript interfaces
-5. OptimizeForm pagina (traject + scenario + maatregelen)
-6. Results pagina met polling (pending → running → done)
-7. Dashboard (overzicht recente jobs)
+| Bestand | Inhoud |
+|---|---|
+| `src/types/index.ts` | TypeScript interfaces — `Measure`, `Scenario`, `Trajectory`, `OptimizeRequest/Response`, `JobStatus` |
+| `src/api/client.ts` | Typed fetch-wrapper — `postScenario`, `postTrajectory`, `postOptimize`, `getResult`, `submitOptimization` |
+| `src/pages/OptimizeForm.tsx` | Formulier: traject + scenario + kandidaatmaatregelen + doelfunctie |
+| `src/pages/Results.tsx` | Polling via TanStack Query (2 s interval) — pending/running/done/failed weergave + financiële samenvatting |
+| `src/pages/Dashboard.tsx` | Startpagina met link naar OptimizeForm en stack-status |
+| `src/components/StatusBadge.tsx` | Kleurgecodeerde badge per `JobStatus` |
+| `src/components/MeasureList.tsx` | Herbruikbare maatregel-editor |
 
-Zie: `docs/stap2.3_worker.png` *(toe te voegen)* en `docs/architecture.png` (bijgewerkt)
+### API-kant
+
+- `CORSMiddleware` in `floodopt_api/main.py` — `allow_origins=["http://localhost:5173"]`
+- `start.bat` uitgebreid met terminal 4: `cd floodopt-frontend && npm run dev`
+
+### Verificatie
+
+- Frontend bereikbaar op `http://localhost:5173` ✓
+- Optimalisatieformulier → 202 → polling → done ✓
+- Alle vier terminals starten via `start.bat` ✓

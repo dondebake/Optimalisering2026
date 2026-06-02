@@ -24,6 +24,7 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
     from floodopt_core.optimization.brute_force import BruteForceOptimizer
     from floodopt_core.optimization.protocols import ObjectiveType
     from floodopt_core.optimization.pyomo_optimizer import PyomoOptimizer
+    from floodopt_core.physics.p_series import compute_p_series
     from floodopt_core.physics.simple_dike_overflow import SimpleDikeOverflow
     from floodopt_core.risk.protocols import RiskParams
     from floodopt_core.risk.simple_risk_calculator import SimpleRiskCalculator
@@ -52,6 +53,11 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
             trajectory, scenario, candidates, risk_params, objective, budget
         )
 
+        selected_measures = [m for m in candidates if m.id in result.selected_ids]
+        p_series = compute_p_series(
+            trajectory, scenario, selected_measures, risk_params.time_horizon
+        )
+
         repos.save_result(
             OptimizeResponse(
                 job_id=job_id,
@@ -65,6 +71,7 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
                 risk_ncw=result.risk_ncw,
                 investment_npv=result.investment_npv,
                 objective_value=result.objective_value,
+                p_series=p_series,
             )
         )
     except Exception:

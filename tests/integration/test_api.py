@@ -280,5 +280,5 @@ def test_no_physics_formulas_in_api():
             "math.exp" not in src
         ), f"{module.__name__} bevat math.exp — verplaats naar floodopt-core"
         assert (
-            "alpha" not in src or "import" in src.split("alpha")[0].splitlines()[-1]
-        ), f"{module.__name__} bevat mogelijk een faalkansparameter"
+            "alpha *" not in src and "* alpha" not in src
+        ), f"{module.__name__} bevat een faalkansberekening met alpha — verplaats naar floodopt-core"

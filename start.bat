@@ -13,8 +13,12 @@ start "FloodOpt API" cmd /k ".venv\Scripts\activate && uvicorn floodopt_api.main
 echo [3/3] Worker starten...
 start "FloodOpt Worker" cmd /k ".venv\Scripts\activate && celery -A floodopt_worker.tasks worker --pool=solo --loglevel=info"
 
+echo [4/4] Frontend starten...
+start "FloodOpt Frontend" cmd /k "cd /d %~dp0floodopt-frontend && npm run dev"
+
 echo.
-echo Klaar. Drie vensters geopend.
-echo API:    http://localhost:8000/docs
+echo Klaar. Vier vensters geopend.
+echo API:      http://localhost:8000/docs
+echo Frontend: http://localhost:5173
 echo.
 pause

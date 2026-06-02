@@ -171,8 +171,64 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
 
 
 # ---------------------------------------------------------------------------
+# GET /geo/trajectories
+# ---------------------------------------------------------------------------
+
+
+@app.get("/geo/trajectories")
+def geo_trajectories(repos: Repos, year: int = 2050) -> dict:
+    """Retourneer alle opgeslagen trajecten als GeoJSON FeatureCollection.
+
+    Query-parameter `year` (standaard 2050) bepaalt welke P-waarde uit de
+    tijdreeks als `p_year` in de feature-properties wordt opgenomen. Deze
+    waarde wordt door de kaart gebruikt voor de kleurcodering.
+    """
+    trajectories = repos.get_all_trajectories()
+
+    # Meest recente resultaat per traject (voor kleurcodering)
+    all_results = repos.get_all_results()
+    latest_by_traj: dict[str, object] = {}
+    for r in reversed(all_results):  # get_all_results geeft nieuwste eerst
+        if r.trajectory_id not in latest_by_traj:
+            latest_by_traj[r.trajectory_id] = r
+
+    features = []
+    for t in trajectories:
+        p_year: float | None = None
+        result = latest_by_traj.get(t.id)
+        if result is not None and result.p_series:  # type: ignore[union-attr]
+            for point in result.p_series:  # type: ignore[union-attr]
+                if int(point["year"]) == year:
+                    p_year = point["p"]
+                    break
+
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": t.geometry,
+                "properties": {
+                    "id": t.id,
+                    "norm": t.norm,
+                    "length": t.length,
+                    "p0": t.p0,
+                    "base_year": t.base_year,
+                    "p_year": p_year,
+                    "year": year,
+                },
+            }
+        )
+    return {"type": "FeatureCollection", "features": features}
+
+
+# ---------------------------------------------------------------------------
 # GET /results/{job_id}
 # ---------------------------------------------------------------------------
+
+
+@app.get("/results", response_model=list[OptimizeResponse])
+def list_results(repos: Repos) -> list[OptimizeResponse]:
+    """Retourneer alle optimalisatieresultaten, nieuwste eerst."""
+    return repos.get_all_results()
 
 
 @app.get("/results/{job_id}", response_model=OptimizeResponse)

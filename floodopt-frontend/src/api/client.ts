@@ -38,6 +38,14 @@ export function getResult(jobId: string): Promise<OptimizeResponse> {
   return request(`/results/${jobId}`)
 }
 
+export function getTrajectoriesGeoJSON(): Promise<GeoJSON.FeatureCollection> {
+  return request('/geo/trajectories')
+}
+
+export function getAllResults(): Promise<OptimizeResponse[]> {
+  return request('/results')
+}
+
 export async function submitOptimization(
   scenario: Scenario,
   trajectory: Trajectory,

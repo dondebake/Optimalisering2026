@@ -55,3 +55,7 @@ class OptimizeResponse(BaseModel):
     objective_value: float | None = Field(
         default=None, description="Waarde van de geoptimaliseerde doelfunctie"
     )
+    p_series: list[dict] | None = Field(
+        default=None,
+        description="P(t)-tijdreeks: [{year, p, p_mid}, …] voor elk jaar in de horizon",
+    )

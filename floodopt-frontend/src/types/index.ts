@@ -26,6 +26,7 @@ export interface Trajectory {
   alpha: number
   base_year: number
   measures: Measure[]
+  geometry?: object | null
 }
 
 export interface RiskParams {
@@ -49,6 +50,12 @@ export interface OptimizeRequest {
 
 export type JobStatus = 'pending' | 'running' | 'done' | 'failed'
 
+export interface PSeriesPoint {
+  year: number
+  p: number
+  p_mid: number
+}
+
 export interface OptimizeResponse {
   job_id: string
   status: JobStatus
@@ -61,4 +68,5 @@ export interface OptimizeResponse {
   risk_ncw: number | null
   investment_npv: number | null
   objective_value: number | null
+  p_series: PSeriesPoint[] | null
 }

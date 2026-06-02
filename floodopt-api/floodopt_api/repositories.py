@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from floodopt_api.database import (
@@ -33,9 +34,11 @@ class Repositories(Protocol):
 
     def save_trajectory(self, t: Trajectory) -> None: ...
     def get_trajectory(self, id: str) -> Trajectory | None: ...
+    def get_all_trajectories(self) -> list[Trajectory]: ...
 
     def save_result(self, r: OptimizeResponse) -> None: ...
     def get_result(self, job_id: str) -> OptimizeResponse | None: ...
+    def get_all_results(self) -> list[OptimizeResponse]: ...
     def update_status(self, job_id: str, status: str) -> None: ...
 
 
@@ -66,11 +69,17 @@ class MemoryRepositories:
     def get_trajectory(self, id: str) -> Trajectory | None:
         return self._trajectories.get(id)
 
+    def get_all_trajectories(self) -> list[Trajectory]:
+        return list(self._trajectories.values())
+
     def save_result(self, r: OptimizeResponse) -> None:
         self._results[r.job_id] = r
 
     def get_result(self, job_id: str) -> OptimizeResponse | None:
         return self._results.get(job_id)
+
+    def get_all_results(self) -> list[OptimizeResponse]:
+        return list(reversed(list(self._results.values())))
 
     def update_status(self, job_id: str, status: str) -> None:
         if job_id in self._results:
@@ -126,6 +135,7 @@ class OrmRepositories:
             p0=t.p0,
             alpha=t.alpha,
             base_year=t.base_year,
+            geometry=t.geometry,
         )
         self._s.merge(orm)
         self._s.commit()
@@ -141,7 +151,23 @@ class OrmRepositories:
             p0=row.p0,
             alpha=row.alpha,
             base_year=row.base_year,
+            geometry=row.geometry,
         )
+
+    def get_all_trajectories(self) -> list[Trajectory]:
+        rows = self._s.execute(select(TrajectoryORM)).scalars().all()
+        return [
+            Trajectory(
+                id=row.id,
+                norm=row.norm,
+                length=row.length,
+                p0=row.p0,
+                alpha=row.alpha,
+                base_year=row.base_year,
+                geometry=row.geometry,
+            )
+            for row in rows
+        ]
 
     def save_result(self, r: OptimizeResponse) -> None:
         orm = OptimizationResultORM(
@@ -156,14 +182,20 @@ class OrmRepositories:
             risk_ncw=r.risk_ncw,
             investment_npv=r.investment_npv,
             objective_value=r.objective_value,
+            p_series=r.p_series,
         )
         self._s.merge(orm)
         self._s.commit()
 
     def get_result(self, job_id: str) -> OptimizeResponse | None:
         row = self._s.get(OptimizationResultORM, job_id)
-        if row is None:
-            return None
+        return self._row_to_response(row) if row else None
+
+    def get_all_results(self) -> list[OptimizeResponse]:
+        rows = self._s.execute(select(OptimizationResultORM)).scalars().all()
+        return list(reversed([self._row_to_response(r) for r in rows]))
+
+    def _row_to_response(self, row: OptimizationResultORM) -> OptimizeResponse:
         return OptimizeResponse(
             job_id=row.job_id,
             trajectory_id=row.trajectory_id,
@@ -176,6 +208,7 @@ class OrmRepositories:
             risk_ncw=row.risk_ncw,
             investment_npv=row.investment_npv,
             objective_value=row.objective_value,
+            p_series=row.p_series,
         )
 
     def update_status(self, job_id: str, status: str) -> None:

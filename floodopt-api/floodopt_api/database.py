@@ -14,7 +14,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from sqlalchemy import Float, Integer, JSON, String, create_engine
+from sqlalchemy import Float, Integer, JSON, String, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, MappedColumn, Session, mapped_column
 
 _DEFAULT_SQLITE = (Path(__file__).parent.parent.parent / "floodopt.db").resolve()
@@ -44,6 +44,7 @@ class TrajectoryORM(Base):
     p0: MappedColumn[float] = mapped_column(Float, nullable=False)
     alpha: MappedColumn[float] = mapped_column(Float, nullable=False)
     base_year: MappedColumn[int] = mapped_column(Integer, nullable=False)
+    geometry: MappedColumn[dict | None] = mapped_column(JSON, nullable=True)
 
 
 class OptimizationResultORM(Base):
@@ -63,6 +64,7 @@ class OptimizationResultORM(Base):
     risk_ncw: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     investment_npv: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     objective_value: MappedColumn[float | None] = mapped_column(Float, nullable=True)
+    p_series: MappedColumn[list | None] = mapped_column(JSON, nullable=True)
 
 
 def create_engine_from_url(url: str):  # type: ignore[no-untyped-def]
@@ -78,6 +80,33 @@ def init_schema(url: str) -> None:
     """Maak het schema aan (idempotent via CREATE TABLE IF NOT EXISTS)."""
     engine = create_engine_from_url(url)
     Base.metadata.create_all(engine)
+    _migrate_geometry_column(engine)
+
+
+def _migrate_geometry_column(engine) -> None:  # type: ignore[no-untyped-def]
+    """Voeg ontbrekende kolommen toe aan bestaande tabellen (idempotent)."""
+    migrations = [
+        ("trajectories", "geometry", "JSON"),
+        ("optimization_results", "p_series", "JSON"),
+    ]
+    with engine.connect() as conn:
+        is_sqlite = "sqlite" in str(engine.url)
+        for table, column, col_type in migrations:
+            if is_sqlite:
+                try:
+                    conn.execute(
+                        text(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+                    )
+                    conn.commit()
+                except Exception:
+                    pass  # kolom bestaat al
+            else:
+                conn.execute(
+                    text(
+                        f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {col_type}B"
+                    )
+                )
+                conn.commit()
 
 
 def get_effective_url() -> str:
