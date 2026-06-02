@@ -101,16 +101,18 @@ export default function Results() {
   })
 
   function handleOpnieuw(withChanges = false) {
-    if (!data?.input_payload) return
-    const p = data.input_payload as InputPayload
+    const p = data?.input_payload as InputPayload | null
     navigate('/optimize', {
       state: {
-        trajectory: p.trajectory,
-        scenario: p.scenario,
-        candidates: p.candidates,
-        risk_params: p.risk_params,
-        // bij 'met aanpassingen' laten we alle velden open, anders dezelfde instellingen
-        _opnieuw: withChanges,
+        trajectory: p?.trajectory ?? (trajectory ? {
+          id: trajectory.id, norm: trajectory.norm, length: trajectory.length,
+          p0: trajectory.p0, alpha: trajectory.alpha, base_year: trajectory.base_year,
+          measures: [],
+        } : undefined),
+        scenario: p?.scenario,
+        candidates: p?.candidates,
+        risk_params: p?.risk_params,
+        _withChanges: withChanges,
       },
     })
   }
@@ -142,22 +144,20 @@ export default function Results() {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge status={data.status} />
-          {data.input_payload && (
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleOpnieuw(false)}
-                className="text-sm px-3 py-1.5 rounded border border-gray-300 hover:border-blue-400 hover:text-blue-700 transition-colors"
-              >
-                Opnieuw (zelfde instellingen)
-              </button>
-              <button
-                onClick={() => handleOpnieuw(true)}
-                className="text-sm px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              >
-                Opnieuw met aanpassingen →
-              </button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleOpnieuw(false)}
+              className="text-sm px-3 py-1.5 rounded border border-gray-300 hover:border-blue-400 hover:text-blue-700 transition-colors"
+            >
+              Opnieuw ↺
+            </button>
+            <button
+              onClick={() => handleOpnieuw(true)}
+              className="text-sm px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              Opnieuw met aanpassingen →
+            </button>
+          </div>
         </div>
       </div>
 
