@@ -59,3 +59,7 @@ class OptimizeResponse(BaseModel):
         default=None,
         description="P(t)-tijdreeks: [{year, p, p_mid}, …] voor elk jaar in de horizon",
     )
+    input_payload: dict | None = Field(
+        default=None,
+        description="Volledige invoer van de berekening (trajectory, scenario, candidates, risk_params)",
+    )

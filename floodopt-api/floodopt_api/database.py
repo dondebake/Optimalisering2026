@@ -65,6 +65,7 @@ class OptimizationResultORM(Base):
     investment_npv: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     objective_value: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     p_series: MappedColumn[list | None] = mapped_column(JSON, nullable=True)
+    input_payload: MappedColumn[dict | None] = mapped_column(JSON, nullable=True)
 
 
 def create_engine_from_url(url: str):  # type: ignore[no-untyped-def]
@@ -88,6 +89,7 @@ def _migrate_geometry_column(engine) -> None:  # type: ignore[no-untyped-def]
     migrations = [
         ("trajectories", "geometry", "JSON"),
         ("optimization_results", "p_series", "JSON"),
+        ("optimization_results", "input_payload", "JSON"),
     ]
     with engine.connect() as conn:
         is_sqlite = "sqlite" in str(engine.url)

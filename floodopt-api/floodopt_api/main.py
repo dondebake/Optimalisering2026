@@ -146,16 +146,6 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
         )
 
     job_id = str(uuid.uuid4())
-    pending = OptimizeResponse(
-        job_id=job_id,
-        status="pending",
-        trajectory_id=request.trajectory_id,
-        scenario_id=request.scenario_id,
-        objective=request.objective,
-        solver=request.solver,
-    )
-    repos.save_result(pending)
-
     payload = {
         "trajectory": trajectory.model_dump(),
         "scenario": scenario.model_dump(),
@@ -165,6 +155,18 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
         "budget": request.budget,
         "solver": request.solver,
     }
+
+    pending = OptimizeResponse(
+        job_id=job_id,
+        status="pending",
+        trajectory_id=request.trajectory_id,
+        scenario_id=request.scenario_id,
+        objective=request.objective,
+        solver=request.solver,
+        input_payload=payload,
+    )
+    repos.save_result(pending)
+
     celery_app.send_task(
         "floodopt_worker.tasks.run_optimization", args=[job_id, payload]
     )

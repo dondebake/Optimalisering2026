@@ -111,4 +111,15 @@ export interface OptimizeResponse {
   investment_npv: number | null
   objective_value: number | null
   p_series: PSeriesPoint[] | null
+  input_payload: InputPayload | null
+}
+
+export interface InputPayload {
+  trajectory: Trajectory
+  scenario: Scenario
+  candidates: Measure[]
+  risk_params: RiskParams
+  objective: ObjectiveType
+  budget: number | null
+  solver: 'brute_force' | 'pyomo'
 }

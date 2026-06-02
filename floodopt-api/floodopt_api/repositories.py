@@ -190,6 +190,7 @@ class OrmRepositories:
             investment_npv=r.investment_npv,
             objective_value=r.objective_value,
             p_series=r.p_series,
+            input_payload=r.input_payload,
         )
         self._s.merge(orm)
         self._s.commit()
@@ -224,6 +225,7 @@ class OrmRepositories:
             investment_npv=row.investment_npv,
             objective_value=row.objective_value,
             p_series=row.p_series,
+            input_payload=row.input_payload,
         )
 
     def update_status(self, job_id: str, status: str) -> None:

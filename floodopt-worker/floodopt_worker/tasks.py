@@ -72,6 +72,7 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
                 investment_npv=result.investment_npv,
                 objective_value=result.objective_value,
                 p_series=p_series,
+                input_payload=payload,
             )
         )
     except Exception:
