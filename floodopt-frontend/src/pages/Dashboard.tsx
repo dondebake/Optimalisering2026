@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { OptimizeResponse } from '../types'
 import MapView, { P_CLASSES, pColor } from '../components/MapView'
 import { StatusBadge } from '../components/StatusBadge'
 import { getAllResults, getValTrajectories, getValReferenceData, deleteResult } from '../api/client'
@@ -186,6 +187,28 @@ function TrajectoryPanel({
   onClose: () => void
 }) {
   const qc = useQueryClient()
+  const navigate = useNavigate()
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteResult,
+    onMutate: async (jobId) => {
+      await qc.cancelQueries({ queryKey: ['all-results'] })
+      const prev = qc.getQueryData<OptimizeResponse[]>(['all-results'])
+      qc.setQueryData<OptimizeResponse[]>(['all-results'],
+        old => old?.filter(j => j.job_id !== jobId) ?? [])
+      return { prev }
+    },
+    onError: (_e, _id, ctx) => {
+      qc.setQueryData(['all-results'], ctx?.prev)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ['all-results'] }),
+  })
+
+  function handleDeleteRun(jobId: string) {
+    if (!window.confirm('Run verwijderen?')) return
+    deleteMutation.mutate(jobId)
+  }
+
   const dijkringNr = props.dijkringnummer as string | null
   const dijkringDeel = props.dijkringdeel as number | null
   const naam = (props.naam ?? '') as string
@@ -218,12 +241,6 @@ function TrajectoryPanel({
   const dijkringRuns = (allRuns ?? []).filter(j =>
     dijkringNr && j.trajectory_id.includes(`-${dijkringNr}-`)
   )
-
-  async function handleDeleteRun(jobId: string) {
-    if (!window.confirm('Run verwijderen?')) return
-    await deleteResult(jobId)
-    qc.invalidateQueries({ queryKey: ['all-results'] })
-  }
 
   async function handleNewRun(t: ValTrajectory) {
     setLoadingModal(true)

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getAllResults, deleteResult } from '../api/client'
 import { StatusBadge } from '../components/StatusBadge'
+import type { OptimizeResponse } from '../types'
 
 const OBJ: Record<string, string> = {
   min_cost: 'MIN_COST',
@@ -26,10 +27,26 @@ export default function RunsPage() {
     },
   })
 
-  async function handleDelete(jobId: string) {
+  const deleteMutation = useMutation({
+    mutationFn: deleteResult,
+    onMutate: async (jobId) => {
+      await qc.cancelQueries({ queryKey: ['all-results'] })
+      const prev = qc.getQueryData<OptimizeResponse[]>(['all-results'])
+      qc.setQueryData<OptimizeResponse[]>(['all-results'],
+        old => old?.filter(j => j.job_id !== jobId) ?? [])
+      return { prev }
+    },
+    onError: (_e, _id, ctx) => {
+      qc.setQueryData(['all-results'], ctx?.prev)
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['all-results'] })
+    },
+  })
+
+  function handleDelete(jobId: string) {
     if (!window.confirm('Run verwijderen?')) return
-    await deleteResult(jobId)
-    qc.invalidateQueries({ queryKey: ['all-results'] })
+    deleteMutation.mutate(jobId)
   }
 
   return (
