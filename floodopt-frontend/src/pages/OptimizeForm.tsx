@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { submitOptimization } from '../api/client'
-import type { Measure, MeasureType, ObjectiveType, RiskParams, Scenario, Trajectory } from '../types'
+import type { CostFunctionParams, Measure, MeasureType, ObjectiveType, RiskParams, Scenario, Trajectory } from '../types'
 
 const DEFAULT_SCENARIO: Scenario = {
   id: 'sc-demo',
@@ -58,6 +58,7 @@ export default function OptimizeForm() {
     scenario?: Partial<Scenario>
     candidates?: Measure[]
     risk_params?: Partial<RiskParams>
+    cost_function?: Partial<CostFunctionParams>
   } | null
 
   const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO, ...prefill?.scenario })
@@ -69,8 +70,16 @@ export default function OptimizeForm() {
       { ...EMPTY_MEASURE, id: 'M02', effect: 0.5, cost: 400_000, location: 'vak-2' },
     ]
   )
+  const [costFn, setCostFn] = useState<CostFunctionParams>({
+    C: prefill?.cost_function?.C ?? 5.0,
+    b: prefill?.cost_function?.b ?? 0.1,
+    lam: prefill?.cost_function?.lam ?? 0.2,
+    omega: prefill?.cost_function?.omega ?? 0.002,
+  })
   const [objective, setObjective] = useState<ObjectiveType>('min_cost')
-  const [solver, setSolver] = useState<'brute_force' | 'pyomo' | 'continuous'>('brute_force')
+  const [solver, setSolver] = useState<'brute_force' | 'pyomo' | 'continuous'>(
+    prefill?.cost_function ? 'continuous' : 'brute_force'
+  )
   const [budget, setBudget] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -94,22 +103,34 @@ export default function OptimizeForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    if (candidates.length === 0) {
+
+    if (solver !== 'continuous' && candidates.length === 0) {
       setError('Voeg minimaal één kandidaatmaatregel toe.')
+      return
+    }
+    if (solver === 'continuous' && (!costFn.C || costFn.C <= 0)) {
+      setError('Vaste kosten C moeten groter dan 0 zijn.')
       return
     }
     if (objective === 'max_risk_reduction' && !budget) {
       setError('Budget is verplicht voor MAX_RISK_REDUCTION.')
       return
     }
+
     setLoading(true)
     try {
-      const job = await submitOptimization(scenario, trajectory, candidates, {
-        risk_params: risk,
-        objective,
-        solver,
-        budget: budget ? parseFloat(budget) : null,
-      })
+      const job = await submitOptimization(
+        scenario,
+        trajectory,
+        solver === 'continuous' ? [] : candidates,
+        {
+          risk_params: risk,
+          objective: solver === 'continuous' ? 'min_ncw' : objective,
+          solver,
+          budget: budget ? parseFloat(budget) : null,
+          cost_function: solver === 'continuous' ? costFn : null,
+        }
+      )
       navigate(`/results/${job.job_id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Onbekende fout')
@@ -215,7 +236,46 @@ export default function OptimizeForm() {
           </div>
         </section>
 
-        {/* Kandidaatmaatregelen */}
+        {/* Kostenfunctie-parameters (alleen bij continue optimizer) */}
+        {solver === 'continuous' && (
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800 border-b pb-1">Kostenfunctie</h2>
+              <p className="text-xs text-gray-500 mt-1">
+                IC(Δh, W) = (C + b·Δh) · e<sup>λ(Δh+W)</sup> · (1 + Ω/δ) &nbsp;[M EUR]
+                &nbsp;—&nbsp; W = cumulatieve eerdere verhoging [m]
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="C — vaste kosten [M EUR]">
+                <input className={INPUT} type="number" step="any" value={costFn.C}
+                  onChange={(e) => setCostFn(f => ({ ...f, C: parseFloat(e.target.value) }))} required />
+              </Field>
+              <Field label="b — variabele kosten [M EUR/m]">
+                <input className={INPUT} type="number" step="any" value={costFn.b}
+                  onChange={(e) => setCostFn(f => ({ ...f, b: parseFloat(e.target.value) }))} required />
+              </Field>
+              <Field label="λ — schaalparameter [1/m]">
+                <input className={INPUT} type="number" step="any" value={costFn.lam}
+                  onChange={(e) => setCostFn(f => ({ ...f, lam: parseFloat(e.target.value) }))} required />
+              </Field>
+              <Field label="Ω — onderhoudsfractie (bijv. 0.002)">
+                <input className={INPUT} type="number" step="any" value={costFn.omega}
+                  onChange={(e) => setCostFn(f => ({ ...f, omega: parseFloat(e.target.value) }))} required />
+              </Field>
+            </div>
+            <div className="bg-blue-50 rounded p-3 text-xs text-blue-700">
+              Voorbeeld bij Δh=0,5m, W=0: IC = ({costFn.C.toFixed(2)} + {costFn.b.toFixed(3)}×0,5) × e<sup>{costFn.lam.toFixed(3)}×0,5</sup>
+              {' = '}
+              <strong>
+                {((costFn.C + costFn.b * 0.5) * Math.exp(costFn.lam * 0.5)).toFixed(2)} M EUR
+              </strong>
+            </div>
+          </section>
+        )}
+
+        {/* Kandidaatmaatregelen (alleen bij discrete solvers) */}
+        {solver !== 'continuous' && (
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-gray-800 border-b pb-1">
             Kandidaatmaatregelen ({candidates.length})
@@ -262,18 +322,25 @@ export default function OptimizeForm() {
           <button type="button" onClick={addMeasure}
             className="text-sm text-blue-600 hover:underline">+ Maatregel toevoegen</button>
         </section>
+        )}
 
         {/* Optimalisatie-instellingen */}
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-800 border-b pb-1">Optimalisatie</h2>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Doelfunctie">
-              <select className={SELECT} value={objective}
-                onChange={(e) => setObjective(e.target.value as ObjectiveType)}>
-                <option value="min_cost">MIN_COST — minimale investering</option>
-                <option value="min_ncw">MIN_NCW — minimale totale NCW</option>
-                <option value="max_risk_reduction">MAX_RISK_REDUCTION — maximale risicoreductie</option>
-              </select>
+              {solver === 'continuous' ? (
+                <div className={`${INPUT} bg-gray-50 text-gray-500`}>
+                  MIN_NCW — minimale totale NCW (enige optie bij continue optimizer)
+                </div>
+              ) : (
+                <select className={SELECT} value={objective}
+                  onChange={(e) => setObjective(e.target.value as ObjectiveType)}>
+                  <option value="min_cost">MIN_COST — minimale investering</option>
+                  <option value="min_ncw">MIN_NCW — minimale totale NCW</option>
+                  <option value="max_risk_reduction">MAX_RISK_REDUCTION — maximale risicoreductie</option>
+                </select>
+              )}
             </Field>
             <Field label="Solver">
               <select className={SELECT} value={solver}

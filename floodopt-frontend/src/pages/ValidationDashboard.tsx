@@ -254,6 +254,12 @@ export default function ValidationDashboard() {
           gamma,
           time_horizon: 100,
         },
+        cost_function: pendingTraj.C_exp != null ? {
+          C: pendingTraj.C_exp,
+          b: pendingTraj.b_exp ?? 0,
+          lam: pendingTraj.lambda_exp_per_m ?? 0,
+          omega: pendingTraj.Omega ?? 0.002,
+        } : null,
       },
     })
     setPendingTraj(null)
