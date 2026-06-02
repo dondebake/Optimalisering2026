@@ -10,7 +10,9 @@ Uitvoer in docs/:
   stap1.4_smoke_test.png        Smoke-test resultaten
   stap2.1_api.png               FastAPI endpoints + request-flow
   stap2.2_database.png          Repository-pattern + schema
-  geo_stack.png                 GeoPandas + Leaflet flow
+  stap2.3_worker.png            Celery + Redis async queue
+  geo_stack.png                 GeoJSON + Leaflet flow (stap 4.2)
+  stap4_frontend.png            Frontend overzicht stap 4.1-4.4
 
 Gebruik:
     python scripts/generate_docs.py
@@ -118,31 +120,35 @@ def make_architecture() -> None:
     rows = [
         [
             "Frontend",
-            "React + Vite + Tailwind + Leaflet  (stap 4.1 in uitvoering)",
-            "Stap 4 (in uitvoering)",
+            "React + Vite + Tailwind + Leaflet + Recharts",
+            "Stap 4.1-4.4 (klaar)",
         ],
         [
             "FastAPI",
-            "POST /optimize -> 202 + job_id  |  GET /results/{id}",
+            "POST /optimize -> 202  |  GET /results  |  GET /geo/trajectories",
             "Stap 2.1 (klaar)",
         ],
         [
             "Async Queue",
-            "Redis (broker) + Celery (worker)  pending->running->done",
+            "Redis (broker) + Celery worker  pending->running->done + p_series",
             "Stap 2.3 (klaar)",
         ],
         [
             "Database",
-            "SQLite (dev) -- PostgreSQL optioneel (multi-worker)",
+            "SQLite: scenarios, trajectories (geometry), optimization_results (p_series)",
             "Stap 2.2 (klaar)",
         ],
-        ["GeoPandas", "WKT -> GeoJSON voor Leaflet", "Stap 4.2 (gepland)"],
+        [
+            "Geometrie",
+            "GeoJSON in SQLite JSON-kolom  |  GET /geo/trajectories?year=2050",
+            "Stap 4.2 (klaar)",
+        ],
         ["Optimization Layer", "BruteForce + Pyomo/HiGHS", "Stap 1.3 (klaar)"],
         ["Risk Layer", "NCW = Sum P(s)*V0*e^((gamma-delta)*s)", "Stap 1.2 (klaar)"],
         [
             "Physics Layer",
-            "P(t) = P0 * e^(alpha*eta*t) * e^(-alpha*Dh)",
-            "Stap 1.1 (klaar)",
+            "P(t) = P0*e^(alpha*eta*t)*e^(-alpha*Dh)  +  compute_p_series()",
+            "Stap 1.1 + 4.4 (klaar)",
         ],
     ]
 
@@ -187,7 +193,8 @@ def make_architecture() -> None:
     ax_txt.text(
         0.5,
         0.15,
-        "Fase 1+2 volledig geimplementeerd en getest (90/90).  start.bat: Redis + FastAPI + Celery worker.  Stap 4 (Frontend) in uitvoering.",
+        "Fase 1+2+4 (stap 4.1-4.4) klaar -- 90/90 tests.  "
+        "start.bat: Redis + FastAPI + Celery + Vite (4 terminals).",
         ha="center",
         va="center",
         fontsize=9,
@@ -835,7 +842,7 @@ def make_api() -> None:
     fig = plt.figure(figsize=(13, 8), facecolor=BG)
 
     fig.suptitle(
-        "Stap 2.1 -- FastAPI  (78/78 tests geslaagd)",
+        "Stap 2.1 -- FastAPI  (90/90 tests geslaagd)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
@@ -883,12 +890,12 @@ def make_api() -> None:
 
     endpoint_rows = [
         ["POST", "/scenarios", "201", "roundtrip OK"],
-        ["GET", "/scenarios/{id}", "200/404", "404 test OK"],
         ["POST", "/trajectories", "201", "roundtrip OK"],
-        ["GET", "/trajectories/{id}", "200/404", "404 test OK"],
-        ["POST", "/optimize", "201", "= stap 1.4 OK"],
-        ["GET", "/results/{job_id}", "200/404", "= POST resp OK"],
-        ["GET", "/docs", "200", "Swagger UI OK"],
+        ["POST", "/optimize", "202", "async + job_id OK"],
+        ["GET", "/results", "200", "lijst jobs OK"],
+        ["GET", "/results/{job_id}", "200/404", "polling OK"],
+        ["DELETE", "/results/{job_id}", "204/404", "stap 4.x"],
+        ["GET", "/geo/trajectories", "200", "GeoJSON + p_year OK"],
     ]
 
     tbl_r = ax_r.table(
@@ -903,6 +910,7 @@ def make_api() -> None:
     method_colors = {
         "POST": ("#d4edda", "#155724"),
         "GET": ("#cce5ff", "#004085"),
+        "DELETE": ("#f8d7da", "#721c24"),
     }
     for row_idx in range(1, len(endpoint_rows) + 1):
         method = endpoint_rows[row_idx - 1][0]
@@ -919,7 +927,7 @@ def make_api() -> None:
     ax_foot.text(
         0.5,
         0.5,
-        "78/78 tests geslaagd  |  Swagger /docs  OK  |  DATABASE_URL bepaalt backend",
+        "90/90 tests geslaagd  |  Swagger /docs OK  |  DATABASE_URL bepaalt backend",
         ha="center",
         va="center",
         fontsize=10,
@@ -1007,10 +1015,10 @@ def make_database() -> None:
 
     schema_rows = [
         ["scenarios", "id, climate, q_design, h_design, eta"],
-        ["trajectories", "id, norm, length, p0, alpha, base_year"],
+        ["trajectories", "id, norm, length, p0, alpha, base_year, geometry (JSON)"],
         [
             "optimization_results",
-            "job_id, trajectory_id, objective, selected_ids (JSON)",
+            "job_id, trajectory_id, objective, status, selected_ids, p_series (JSON)",
         ],
     ]
 
@@ -1121,9 +1129,10 @@ def make_worker() -> None:
         ["3", "FastAPI", "celery_app.send_task()  ->  202 + job_id"],
         ["4", "Redis", "Taak in wachtrij  (broker)"],
         ["5", "Celery worker", "update_status('running')"],
-        ["6", "Celery worker", "optimizer.solve()  ->  save_result()"],
-        ["7", "Celery worker", "update_status('done')  of  'failed'"],
-        ["8", "Client", "GET /results/{job_id}  ->  status + resultaat"],
+        ["6", "Celery worker", "optimizer.solve()  ->  selected_measures"],
+        ["7", "Celery worker", "compute_p_series()  ->  P(t) + Pmidden per jaar"],
+        ["8", "Celery worker", "save_result(status='done', p_series=[...])"],
+        ["9", "Client", "GET /results/{job_id}  ->  status + p_series + NCW"],
     ]
 
     tbl_l = ax_l.table(
@@ -1148,7 +1157,7 @@ def make_worker() -> None:
             "run_optimization: pending->running->done/failed",
         ],
         ["docker-compose.yml", "project root", "Redis 7-alpine op poort 6379"],
-        ["start.bat", "project root", "Redis + API + Worker in 3 terminals"],
+        ["start.bat", "project root", "Redis + API + Worker + Frontend in 4 terminals"],
         ["DATABASE_URL", "env-var", "SQLite (1 worker) of PostgreSQL (multi)"],
         ["REDIS_URL", "env-var", "redis://localhost:6379/0 (standaard)"],
     ]
@@ -1189,11 +1198,11 @@ def make_worker() -> None:
 
 
 def make_geo_stack() -> None:
-    """GeoPandas + Leaflet flow + vergelijking met PostGIS."""
+    """GeoJSON in SQLite + Leaflet kleurcodering (stap 4.2)."""
     fig = plt.figure(figsize=(13, 7), facecolor=BG)
 
     fig.suptitle(
-        "Geo Stack  --  GeoPandas + Leaflet  (Stap 4)",
+        "Stap 4.2 -- Geo Stack  (GeoJSON + Leaflet)",
         fontsize=14,
         fontweight="bold",
         color=DARK,
@@ -1217,12 +1226,12 @@ def make_geo_stack() -> None:
     ax_l.set_title("GeoJSON-flow", fontsize=11, fontweight="bold", color=DARK, pad=8)
 
     flow_rows = [
-        ["1", "Brondata", "shapefiles, WKT in SQLite"],
-        ["2", "GeoPandas", "gpd.read_file() of read_wkt()"],
-        ["3", "GeoPandas", "gdf.to_json() -> GeoJSON dict"],
-        ["4", "FastAPI endpoint", "GET /trajectories/{id}/geojson"],
-        ["5", "Leaflet (React)", "Laad GeoJSON, render op kaart"],
-        ["6", "Leaflet", "Kleurgradiënt op P(t) of NCW"],
+        ["1", "POST /trajectories", "Traject + geometry (GeoJSON dict) opslaan"],
+        ["2", "SQLite", "geometry opgeslagen als JSON-kolom"],
+        ["3", "GET /geo/trajectories", "FeatureCollection van alle trajecten"],
+        ["4", "?year=2050", "p_year per feature uit p_series van laatste job"],
+        ["5", "Leaflet (React)", "GeoJSON renderen op kaart"],
+        ["6", "Kleurcodering", "P-klasse 1/113000 t/m >1/800 (conform OptimaliseRing)"],
     ]
 
     tbl_l = ax_l.table(
@@ -1233,30 +1242,33 @@ def make_geo_stack() -> None:
     )
     _style_table(tbl_l, n_cols=3)
 
-    # --- Right: comparison table ---
+    # --- Right: P-klasse tabel ---
     ax_r = fig.add_subplot(gs[0, 1])
     ax_r.axis("off")
     ax_r.set_facecolor(BG)
     ax_r.set_title(
-        "GeoPandas + Leaflet  vs  PostGIS",
+        "Klasse-indeling kaart (conform OptimaliseRing)",
         fontsize=11,
         fontweight="bold",
         color=DARK,
         pad=8,
     )
 
-    cmp_rows = [
-        ["Installatie", "pip install geopandas", "Docker / server"],
-        ["Dijkvak geometrie", "WKT in SQLite", "native geometry kolom"],
-        ["GeoJSON voor Leaflet", "gdf.to_json()", "ST_AsGeoJSON()"],
-        ["Ruimtelijke DB-queries", "Python-code", "SQL spatial functions"],
-        ["Concurrent queries", "Prima (read-only geo)", "Prima"],
-        ["Upgrade pad", "DATABASE_URL=postgresql://", "altijd beschikbaar"],
+    klasse_rows = [
+        ["< 1/113.000", "Cyaan", "Zeer veilig"],
+        ["1/113.000 - 1/57.000", "Blauw", ""],
+        ["1/57.000 - 1/28.000", "Paars", ""],
+        ["1/28.000 - 1/14.000", "Roze", ""],
+        ["1/14.000 - 1/6.300", "Rood", "Aandacht"],
+        ["1/6.300 - 1/2.800", "Oranje", ""],
+        ["1/2.800 - 1/1.600", "Geel", ""],
+        ["1/1.600 - 1/800", "Lichtgroen", ""],
+        ["> 1/800", "Donkergroen", "Urgent"],
     ]
 
     tbl_r = ax_r.table(
-        cellText=cmp_rows,
-        colLabels=["Aspect", "GeoPandas + Leaflet", "PostGIS"],
+        cellText=klasse_rows,
+        colLabels=["Overstromingskans", "Kaartkleur", "Prioriteit"],
         loc="center",
         cellLoc="left",
     )
@@ -1269,8 +1281,8 @@ def make_geo_stack() -> None:
     ax_foot.text(
         0.5,
         0.5,
-        "PostGIS beschikbaar via upgrade -- "
-        "docker-compose.yml + init_schema() staan klaar",
+        "Geen GeoPandas/PostGIS nodig voor MVP -- "
+        "GeoJSON als JSON-kolom in SQLite | Leaflet rendert direct",
         ha="center",
         va="center",
         fontsize=10,
@@ -1282,6 +1294,107 @@ def make_geo_stack() -> None:
     fig.savefig(OUT / "geo_stack.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print("  geo_stack.png")
+
+
+# ---------------------------------------------------------------------------
+# 11. Frontend (stap 4.1-4.4)
+# ---------------------------------------------------------------------------
+
+
+def make_frontend() -> None:
+    """Frontend overzicht: componenten, paginas en features (stap 4.1-4.4)."""
+    fig = plt.figure(figsize=(14, 8), facecolor=BG)
+
+    fig.suptitle(
+        "Stap 4.1-4.4 -- Frontend  (React + Vite + Leaflet + Recharts)",
+        fontsize=14,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+
+    gs = gridspec.GridSpec(
+        2,
+        2,
+        figure=fig,
+        width_ratios=[1, 1],
+        height_ratios=[11, 1],
+        hspace=0.2,
+        wspace=0.35,
+    )
+
+    # --- Left: paginas en componenten ---
+    ax_l = fig.add_subplot(gs[0, 0])
+    ax_l.axis("off")
+    ax_l.set_facecolor(BG)
+    ax_l.set_title(
+        "Paginas en componenten", fontsize=11, fontweight="bold", color=DARK, pad=8
+    )
+
+    comp_rows = [
+        ["Dashboard", "Kaart + JobList + Rijnmond-voorbeeld knop"],
+        ["OptimizeForm", "Traject, scenario, maatregelen, doelfunctie"],
+        ["Results", "StatusBadge + PSeriesChart + financiele samenvatting"],
+        ["MapView", "react-leaflet kaart, P-klasse kleurcodering"],
+        ["PSeriesChart", "Recharts: P (groen), Pmidden (blauw), Pwet (zwart)"],
+        ["JobList", "Tabel alle jobs, polling 2 s actief / 15 s idle"],
+        ["StatusBadge", "Kleurgecodeerde badge: pending/running/done/failed"],
+    ]
+
+    tbl_l = ax_l.table(
+        cellText=comp_rows,
+        colLabels=["Component", "Inhoud"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_l, n_cols=2)
+
+    # --- Right: stap-tabel ---
+    ax_r = fig.add_subplot(gs[0, 1])
+    ax_r.axis("off")
+    ax_r.set_facecolor(BG)
+    ax_r.set_title(
+        "Stappen en features", fontsize=11, fontweight="bold", color=DARK, pad=8
+    )
+
+    stap_rows = [
+        ["4.1", "Scaffold", "Vite + React + Tailwind + TanStack Query + CORS"],
+        ["4.1", "OptimizeForm", "POST /optimize + Results-pagina met polling"],
+        ["4.2", "Kaart", "GeoJSON in SQLite, GET /geo/trajectories, Leaflet"],
+        ["4.2", "Geometrie", "Trajectory.geometry veld, Rijnmond-voorbeeld"],
+        ["4.3", "Job-overzicht", "GET /results lijst, JobList + auto-polling"],
+        ["4.4", "P(t)-grafiek", "compute_p_series: P + Pmidden per epoch"],
+        ["4.4", "Kleurkaart", "P(2050)-klasse conform OptimaliseRing"],
+    ]
+
+    tbl_r = ax_r.table(
+        cellText=stap_rows,
+        colLabels=["Stap", "Onderdeel", "Wat is gebouwd"],
+        loc="center",
+        cellLoc="left",
+    )
+    _style_table(tbl_r, n_cols=3)
+
+    # --- Footer ---
+    ax_foot = fig.add_subplot(gs[1, :])
+    ax_foot.axis("off")
+    ax_foot.set_facecolor(BG)
+    ax_foot.text(
+        0.5,
+        0.5,
+        "Tech: Vite 8 + React 19 + TypeScript + Tailwind v4 + "
+        "TanStack Query + react-leaflet + Recharts  |  Dev proxy: /api -> localhost:8000",
+        ha="center",
+        va="center",
+        fontsize=9,
+        color=GREY,
+        transform=ax_foot.transAxes,
+    )
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(OUT / "stap4_frontend.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print("  stap4_frontend.png")
 
 
 # ---------------------------------------------------------------------------
@@ -1300,4 +1413,5 @@ if __name__ == "__main__":
     make_database()
     make_worker()
     make_geo_stack()
+    make_frontend()
     print(f"\nKlaar -- alle PNG's opgeslagen in {OUT}/")
