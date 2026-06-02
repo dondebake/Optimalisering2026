@@ -11,38 +11,43 @@ Toekomstige toepassingen: HWBP-analyses, MKBA, asset management, klimaatstresste
 ## Architectuur
 
 ```
-┌──────────────────────────────────────────────────────┐
-│  Frontend  React + Vite + Leaflet                    │
-│  Kaarten: GeoJSON van API  |  Resultaten-dashboard   │
-└────────────────────┬─────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  Frontend  React + Vite + Tailwind + Leaflet             │
+│  Dashboard  |  OptimizeForm  |  Results + P(t)-grafiek   │
+│  Kaart: GeoJSON van API, gekleurd per P-klasse (2050)    │
+└────────────────────┬─────────────────────────────────────┘
                      │ HTTP / GeoJSON
-┌────────────────────▼─────────────────────────────────┐
-│  FastAPI  (dunne HTTP-schil, geen business logic)    │
-│  POST /optimize → 202 + job_id  (async)              │
-│  GET  /results/{job_id}  →  status polling           │
-│  GET  /trajectories/{id}/geojson  →  GeoPandas       │
-└──────┬───────────────────────┬────────────────────────┘
+┌────────────────────▼─────────────────────────────────────┐
+│  FastAPI  (dunne HTTP-schil, geen business logic)        │
+│  POST /optimize        → 202 + job_id  (async)           │
+│  GET  /results         → lijst alle jobs                 │
+│  GET  /results/{id}    → status polling                  │
+│  GET  /geo/trajectories→ GeoJSON FeatureCollection       │
+└──────┬───────────────────────┬────────────────────────────┘
        │ SQLAlchemy             │ task.delay()
-┌──────▼──────────┐   ┌────────▼───────────────────────┐
-│  SQLite (dev)   │   │  Redis  (message broker)        │
-│  PostgreSQL     │   │  taakwachtrij + job-status      │
-│  (prod, opt.)   │   └────────┬───────────────────────┘
+┌──────▼──────────┐   ┌────────▼───────────────────────────┐
+│  SQLite (dev)   │   │  Redis  (message broker)            │
+│  PostgreSQL     │   │  taakwachtrij + job-status          │
+│  (prod, opt.)   │   └────────┬───────────────────────────┘
 └─────────────────┘            │ Celery worker
-                      ┌────────▼───────────────────────┐
-                      │  floodopt-worker                │
-                      │  run_optimization task          │
-                      │  pending → running → done       │
-                      └────────┬───────────────────────┘
-                               │ GeoPandas
-┌──────────────────────────────▼───────────────────────┐
-│  floodopt-core  (strikte laagscheiding)              │
-│                                                      │
-│  Optimization Layer  min Σcᵢxᵢ  s.t. Σhᵢxᵢ ≥ h_min │
-│         ↓  roept aan                                 │
-│  Risk Layer      NCW = Σ P(s)·V₀·e^((γ−δ)s)         │
-│         ↓  roept aan                                 │
-│  Physics Layer   P(t) = P₀·e^(αηt)·e^(−αΔh)         │
-└──────────────────────────────────────────────────────┘
+                      ┌────────▼───────────────────────────┐
+                      │  floodopt-worker                    │
+                      │  run_optimization task              │
+                      │  pending → running → done           │
+                      │  + compute_p_series (P(t), Pmidden) │
+                      └────────┬───────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────┐
+│  floodopt-core  (strikte laagscheiding)                  │
+│                                                          │
+│  Optimization Layer  min Σcᵢxᵢ  s.t. Σhᵢxᵢ ≥ h_min     │
+│         ↓  roept aan                                     │
+│  Risk Layer      NCW = Σ P(s)·V₀·e^((γ−δ)s)             │
+│         ↓  roept aan                                     │
+│  Physics Layer   P(t) = P₀·e^(αηt)·e^(−αΔh)             │
+│         ↓  roept aan                                     │
+│  P-tijdreeks     P(t) + Pmidden per maatregelinterval    │
+└──────────────────────────────────────────────────────────┘
 ```
 
 Zie `docs/architecture.png` voor het volledige architectuurdiagram.
@@ -55,22 +60,11 @@ Zie `docs/architecture.png` voor het volledige architectuurdiagram.
 | Optimizer | Pyomo 6 + HiGHS (MILP) | Open-source, schaalt naar grote N |
 | Backend API | FastAPI | Snel, automatische Swagger UI |
 | Database | **SQLite** (dev) → PostgreSQL optioneel (prod) | Nul installatie voor development |
-| Geo-verwerking | **GeoPandas** + GeoJSON | Server-side geometrie zonder PostGIS |
-| Kaarten (frontend) | **Leaflet** + React + Vite | Leest GeoJSON direct van API |
-| Queue | Redis + Celery *(stap 2.3)* | Async optimalisaties — POST /optimize retourneert direct job_id |
+| Geometrie | GeoJSON in SQLite (JSON-kolom) | Geen PostGIS nodig voor MVP |
+| Kaarten (frontend) | **Leaflet** + react-leaflet | Leest GeoJSON direct van API |
+| Queue | Redis + Celery | Async optimalisaties — POST /optimize retourneert direct job_id |
+| Grafiek | Recharts | P(t)-tijdreeks + Pmidden in de browser |
 | Documentatie | matplotlib (LaTeX-formules) | Reproduceerbaar via `generate_docs.py` |
-
-### Geo-stack: waarom GeoPandas + Leaflet in plaats van PostGIS
-
-| | GeoPandas + Leaflet | PostGIS |
-|---|---|---|
-| Installatie | Nul (Python-package) | Docker of server vereist |
-| Dijkvak-alignementen | ✓ via WKT in SQLite + GeoPandas | ✓ native |
-| GeoJSON naar Leaflet | ✓ GeoPandas → `to_json()` | ✓ ST_AsGeoJSON() |
-| Ruimtelijke DB-queries | ✗ (niet nodig voor MVP) | ✓ |
-| Prod upgrade pad | `DATABASE_URL` → PostgreSQL + PostGIS | direct |
-
-PostGIS is beschikbaar zodra de query-complexiteit het rechtvaardigt — de `docker-compose.yml` en `init_schema()` staan al klaar.
 
 ### Async queue: waarom Celery + Redis in plaats van synchroon
 
@@ -92,8 +86,6 @@ Met de async queue:
 | Crash-herstel | ✗ | ✓ Celery retry-mechanisme |
 | Tests zonder Redis | ✓ | ✓ `task_always_eager=True` |
 
-**Wanneer is Redis verplicht?** Alleen om de worker te draaien. Tests en `pytest` werken zonder Redis via `task_always_eager`.
-
 **SQLite → PostgreSQL bij meerdere workers:** SQLite ondersteunt geen concurrent schrijven vanuit meerdere processen. Bij één worker (dev) werkt SQLite prima; schakel over naar PostgreSQL zodra je meerdere Celery-workers draait.
 
 ## Projectstructuur
@@ -103,24 +95,46 @@ floodopt/
 ├── floodopt-core/           # rekenkernel — geen FastAPI, pure Python
 │   └── floodopt_core/
 │       ├── io/              # Pydantic datamodellen (Measure, Scenario, Trajectory)
-│       ├── physics/         # PhysicsModel Protocol + SimpleDikeOverflow
+│       ├── physics/         # SimpleDikeOverflow + compute_p_series
 │       ├── risk/            # RiskCalculator Protocol + SimpleRiskCalculator
 │       ├── optimization/    # OptimizationStrategy Protocol + BruteForce + Pyomo
 │       └── utils/
 ├── floodopt-api/            # FastAPI backend
 │   └── floodopt_api/
 │       ├── main.py          # endpoints + DI
-│       ├── database.py      # SQLAlchemy ORM (SQLite / PostgreSQL)
-│       └── repositories.py  # Memory + Postgres implementaties
-├── floodopt-worker/         # Celery workers (stap 2.3)
-├── floodopt-frontend/       # React + Vite + Leaflet (stap 4)
+│       ├── database.py      # SQLAlchemy ORM + migraties (SQLite / PostgreSQL)
+│       └── repositories.py  # Memory + ORM implementaties
+├── floodopt-worker/         # Celery worker
+│   └── floodopt_worker/
+│       └── tasks.py         # run_optimization + compute_p_series
+├── floodopt-frontend/       # React + Vite + Leaflet
+│   └── src/
+│       ├── pages/           # Dashboard, OptimizeForm, Results
+│       ├── components/      # MapView, PSeriesChart, JobList, StatusBadge
+│       └── api/             # Typed fetch-client
 ├── tests/
 │   ├── unit/                # 46 tests — alle lagen
-│   ├── integration/         # 38 tests — CLI, API, database
+│   ├── integration/         # 44 tests — CLI, API, database, worker
 │   └── validation/          # optimalise_ring_2011.sqlite (referentiedata)
 ├── docs/                    # PNG-diagrammen (via generate_docs.py) + SVG bronnen
-└── scripts/                 # generate_docs.py, run_smoke_test.py, init_db.py
+├── scripts/                 # generate_docs.py, run_smoke_test.py, init_db.py
+└── start.bat                # Start Redis + API + Worker + Frontend in 4 terminals
 ```
+
+## Opstarten
+
+```bat
+start.bat
+```
+
+Opent vier terminals automatisch:
+
+| Terminal | Proces | URL |
+|---|---|---|
+| 1 | Redis 7-alpine (Docker) | localhost:6379 |
+| 2 | FastAPI + uvicorn | http://localhost:8000/docs |
+| 3 | Celery worker (`--pool=solo`) | — |
+| 4 | Vite dev server | http://localhost:5173 |
 
 ## Ontwikkelprincipes
 
@@ -128,33 +142,7 @@ floodopt/
 - **Modulaire interfaces** — elke laag implementeert een Protocol; implementaties zijn vervangbaar
 - **Dubbele validatie** — elke optimalisatie geverifieerd met brute-force referentie
 - **Installatie-arm** — SQLite + in-memory tests; geen Docker vereist voor development
-- **Stapsgewijze uitbreiding** — MVP eerst, PostGIS / Celery / frontend pas als nodig
-
-## Documentatie
-
-Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
-
-| Diagram | Bestand |
-|---|---|
-| Volledige architectuur (rekenkernel + API + geo + frontend) | `docs/architecture.png` |
-| Physics Layer — $P(t)$ formule + curves | `docs/stap1.1_physics_formula.png` |
-| Risk Layer — NCW berekening | `docs/stap1.2_risk_ncw.png` |
-| Optimization Layer — BruteForce vs Pyomo | `docs/stap1.3_optimization.png` |
-| Smoke test — end-to-end verificatie | `docs/stap1.4_smoke_test.png` |
-| FastAPI service — endpoints + flow | `docs/stap2.1_api.png` |
-| Database — SQLite/PostgreSQL + repository-pattern | `docs/stap2.2_database.png` |
-| Geo-stack — GeoPandas + Leaflet + GeoJSON | `docs/geo_stack.png` |
-| Database mapping MDB → FloodOpt | `docs/database_mapping.png` |
-
-## Fasering
-
-| Fase | Status | Inhoud |
-|---|---|---|
-| 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, pre-commit |
-| 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
-| 2 — Backend & API | ✅ Klaar | FastAPI ✅, SQLite ✅, Celery + Redis ✅ |
-| 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | 🚧 In uitvoering | React + Vite + Tailwind + Leaflet, GeoPandas GeoJSON |
+- **Stapsgewijze uitbreiding** — MVP eerst, complexiteit pas toevoegen als nodig
 
 ## Validatiestrategie
 
@@ -171,13 +159,19 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | Totaal | | ✅ 90/90 |
 | Regressie | CI bij elke commit | ⏳ Gepland |
 
+## Fasering
+
+| Fase | Status | Inhoud |
+|---|---|---|
+| 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, pre-commit |
+| 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
+| 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
+| 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
+| 4 — Frontend | 🚧 In uitvoering | 4.1–4.4 ✅ — kaart, job-overzicht, P(t)-grafiek |
+
 ---
 
 ## Stappenplan
-
-Volgorde: `0.1 → 0.2 → 1.1 → 1.2 → 1.3 → 1.4 → 2.1 → 2.2 → 2.3 → 3.x → 4`
-
-Na elke stap: verificatie en validatie voor er verder wordt gegaan.
 
 ### Fase 0 — Projectstructuur & Tooling
 
@@ -185,7 +179,7 @@ Na elke stap: verificatie en validatie voor er verder wordt gegaan.
 Mapstructuur, tooling (`pytest`, `ruff`, `mypy`, `pre-commit`), editable install.
 
 #### Stap 0.2 ✅ — Data model
-Pydantic v2 models: `Measure` (effect [m]), `Scenario` (eta [m/j]), `Trajectory` (p0, alpha, base_year).
+Pydantic v2 models: `Measure` (effect [m]), `Scenario` (eta [m/j]), `Trajectory` (p0, alpha, base_year, geometry).
 
 ---
 
@@ -225,9 +219,10 @@ python scripts/run_smoke_test.py
 
 #### Stap 2.1 ✅ — FastAPI service
 ```
-POST /scenarios        POST /trajectories
-POST /optimize         GET  /results/{job_id}
-GET  /docs             (Swagger UI)
+POST /scenarios          POST /trajectories
+POST /optimize           GET  /results
+GET  /results/{job_id}   GET  /geo/trajectories
+GET  /docs               (Swagger UI)
 ```
 
 #### Stap 2.2 ✅ — Database
@@ -240,32 +235,19 @@ uvicorn floodopt_api.main:app --reload
 
 **PostgreSQL (productie — optioneel):**
 ```bash
-docker compose up -d postgres && python scripts/init_db.py
-DATABASE_URL=postgresql://floodopt:floodopt@localhost:5432/floodopt \
-  uvicorn floodopt_api.main:app --reload
+DATABASE_URL=postgresql://user:pw@host/db uvicorn floodopt_api.main:app --reload
+python scripts/init_db.py
 ```
 
-Schema: `scenarios`, `trajectories`, `optimization_results`.
-PostGIS-extensie aangemaakt bij PostgreSQL (voor geometrie stap 4.2).
+Schema: `scenarios`, `trajectories` (+ geometry JSON), `optimization_results` (+ p_series JSON).
 
 #### Stap 2.3 ✅ — Async queue (Redis + Celery)
 
 `POST /optimize` geeft direct `job_id` terug (202). Status: `pending → running → done`.
 
-**Lokaal opstarten (één commando):**
 ```bat
-start.bat
+start.bat   ← start Redis + API + Worker + Frontend
 ```
-Start automatisch Redis (Docker), FastAPI en Celery worker in drie aparte terminals.
-
-```bash
-# Handmatig:
-docker compose up -d redis
-uvicorn floodopt_api.main:app --reload
-celery -A floodopt_worker.tasks worker --pool=solo --loglevel=info
-```
-
-SQLite werkt bij één worker. PostgreSQL vereist bij meerdere workers (concurrent schrijven).
 
 ---
 
@@ -281,28 +263,39 @@ Nieuwe implementaties achter bestaande Protocols — optimizer hoeft niet aangep
 
 ---
 
-### Fase 4 — Frontend 🚧
+### Fase 4 — Frontend
 
-**React + Vite + Tailwind CSS + Leaflet**
+**React + Vite + Tailwind CSS + Leaflet + Recharts**
 
-#### Stap 4.1 🚧 — Frontend setup
+#### Stap 4.1 ✅ — Frontend scaffold
 React + Vite + TypeScript + Tailwind CSS. TanStack Query voor API-calls en polling.
-Optimalisatieformulier (traject, scenario, maatregelen) → `POST /optimize` → resultatenweergave.
+OptimizeForm (traject, scenario, maatregelen) → `POST /optimize` → Results-pagina met polling.
 
-#### Stap 4.2 ⏳ — Kaartviewer (GeoPandas + Leaflet)
+#### Stap 4.2 ✅ — Kaartviewer
 
-Dijkvak-geometrie (WKT in SQLite) → GeoPandas → GeoJSON → Leaflet:
+`Trajectory.geometry` (optioneel GeoJSON) opgeslagen in SQLite.
+`GET /geo/trajectories` geeft FeatureCollection terug.
+Leaflet-kaart op Dashboard; "Laad Rijnmond-voorbeeld" knop POST-et een traject met LineString.
 
-```
-API endpoint:  GET /trajectories/{id}/geojson
-Server:        GeoPandas leest WKT, geeft GeoJSON terug
-Frontend:      Leaflet rendert dijkvakken op kaart
-               Kleurgradiënt op basis van P(t) of NCW
-```
+#### Stap 4.3 ✅ — Job-overzicht
 
-#### Stap 4.3 — Scenario-editor & resultaten-dashboard
+`GET /results` lijst-endpoint. `JobList` component op Dashboard met automatische polling
+(2 s bij actieve jobs, 15 s bij rust).
 
-Maatregel-editor, scenario-selectie, NCW-grafieken, vergelijking BruteForce vs Pyomo.
+#### Stap 4.4 ✅ — P(t)-grafiek conform OptimaliseRing
+
+`compute_p_series()` in `floodopt_core/physics/p_series.py` — berekent P(t) en Pmidden
+per maatregelinterval (Pmidden = √(P_start · P_end), conform OptimaliseRing 2.3.2).
+
+Worker slaat `p_series` op na elke optimalisatie.
+`PSeriesChart` (Recharts) toont P (groen), Pmidden (blauw gestippeld) en Pwet (zwarte lijn).
+`GET /geo/trajectories?year=2050` voegt `p_year` toe; kaart kleurt trajecten per
+OptimaliseRing-klasse-indeling (< 1/113.000 t/m > 1/800).
+
+#### Stap 4.5 ⏳ — Geplande uitbreidingen
+- Dijkring-niveau: meerdere trajecten tegelijk optimaliseren
+- Validatie-dashboard: vergelijking met OptimaliseRing-referentiedata
+- GeoJSON importeren / tekenen op kaart
 
 ---
 

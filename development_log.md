@@ -374,3 +374,100 @@ Reden: FORM/Monte Carlo, lengte-effecten en rivierverruiming zitten **niet** in 
 - Frontend bereikbaar op `http://localhost:5173` ✓
 - Optimalisatieformulier → 202 → polling → done ✓
 - Alle vier terminals starten via `start.bat` ✓
+
+---
+
+## 2026-06-02 — Stap 4.2: Kaartviewer (GeoJSON + Leaflet) ✓
+
+### Wat is gebouwd
+
+| Component | Inhoud |
+|---|---|
+| `Trajectory.geometry` | Optioneel `dict \| None` veld (GeoJSON geometry, bijv. LineString) |
+| `TrajectoryORM.geometry` | JSON-kolom in SQLite; `init_schema()` migreert bestaande DB |
+| `GET /geo/trajectories` | GeoJSON FeatureCollection van alle opgeslagen trajecten |
+| `MapView.tsx` | React-Leaflet kaart gecentreerd op Nederland; rendert trajecten als blauwe lijnen |
+| Dashboard | "Laad Rijnmond-voorbeeld" knop — POST-et een traject met Nieuwe Waterweg LineString |
+
+### Aanpak
+
+Geen GeoPandas (geen installatie nodig): geometrie wordt als GeoJSON-dict opgeslagen in SQLite.
+De API serveert de FeatureCollection direct; Leaflet rendert het in de browser.
+
+### Verificatie
+
+- Kaart toont Rijnmond-traject na laden voorbeelddata ✓
+- `GET /geo/trajectories` retourneert valide GeoJSON ✓
+- 90/90 tests groen ✓
+
+---
+
+## 2026-06-02 — Stap 4.3: Job-overzicht op Dashboard ✓
+
+### Wat is gebouwd
+
+| Component | Inhoud |
+|---|---|
+| `GET /results` | Lijst van alle optimalisatieresultaten, nieuwste eerst |
+| `get_all_results()` | Toegevoegd aan Protocol + `MemoryRepositories` + `OrmRepositories` |
+| `_row_to_response()` | Helper geëxtraheerd in `OrmRepositories` om duplicatie te vermijden |
+| `JobList.tsx` | Tabel: job-id (afgekapt), traject, doelfunctie, resultaat (€), status-badge, link |
+| Polling | 2 s bij pending/running jobs, 15 s bij rust |
+
+### Verificatie
+
+- Dashboard toont alle jobs na starten optimalisatie ✓
+- Status-badge ververst automatisch bij running → done ✓
+- 90/90 tests groen ✓
+
+---
+
+## 2026-06-02 — Stap 4.4: P(t)-grafiek conform OptimaliseRing ✓
+
+### Aanleiding
+
+De twee kernvisualisaties van OptimaliseRing ontbraken nog in de UI:
+1. P(t)-zaagrandgrafiek — overstromingskans als functie van de tijd
+2. Kaart gekleurd per overstromingskansklasse
+
+### Wat is gebouwd
+
+| Component | Inhoud |
+|---|---|
+| `floodopt_core/physics/p_series.py` | `compute_p_series()` — P(t) en Pmidden per maatregelinterval |
+| `OptimizeResponse.p_series` | Lijst `[{year, p, p_mid}, …]` opgeslagen na elke optimalisatie |
+| `OptimizationResultORM.p_series` | JSON-kolom; `init_schema()` migreert bestaande DB |
+| Worker | Berekent p_series na optimalisatie, vóór opslaan |
+| `PSeriesChart.tsx` | Recharts lijndiagram: P (groen), Pmidden (blauw gestippeld), Pwet (zwart) |
+| Results-pagina | Toont P(t)-grafiek zodra job `done` is; haalt trajectory op voor norm |
+| `GET /geo/trajectories?year=` | `p_year` toegevoegd per feature (P uit tijdreeks voor opgegeven jaar) |
+| `MapView.tsx` | Kleurt trajecten per OptimaliseRing-klasse-indeling op basis van P(2050) |
+
+### Pmidden-berekening
+
+Per maatregelinterval (epoch):
+
+$$P_{\text{midden}} = \sqrt{P_{\text{start}} \cdot P_{\text{eind}}}$$
+
+Identiek aan OptimaliseRing 2.3.2. Geeft stapsgewijs dalende blauwe lijn in de grafiek.
+
+### Klasse-indeling kaart (conform OptimaliseRing)
+
+| Klasse | Kleur |
+|---|---|
+| < 1/113.000 | Cyaan |
+| 1/113.000–1/57.000 | Blauw |
+| 1/57.000–1/28.000 | Paars |
+| 1/28.000–1/14.000 | Roze |
+| 1/14.000–1/6.300 | Rood |
+| 1/6.300–1/2.800 | Oranje |
+| 1/2.800–1/1.600 | Geel |
+| 1/1.600–1/800 | Lichtgroen |
+| > 1/800 | Donkergroen |
+
+### Verificatie
+
+- P(t)-grafiek zichtbaar op Results-pagina na voltooide optimalisatie ✓
+- Pmidden toont stapsgewijs dalende lijn per maatregelinterval ✓
+- Kaart kleurt Rijnmond-traject na optimalisatie ✓
+- 90/90 tests groen ✓
