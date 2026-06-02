@@ -11,6 +11,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const text = await res.text()
     throw new Error(`${res.status} ${res.statusText}: ${text}`)
   }
+  // 204 No Content (bijv. DELETE) heeft geen body
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return undefined as T
+  }
   return res.json() as Promise<T>
 }
 
