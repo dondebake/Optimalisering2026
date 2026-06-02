@@ -564,15 +564,24 @@ De WFS bevat de officiële NBPW-trajecten (Nationaal Basisprogramma Waterveiligh
 ### Stap D2 — Overstromingskansen kalibreren (P₀ en α)
 
 **Wat:**
-- P₀ per traject uit de beoordelingsresultaten (WBI2023 / WSBD)
-- α afleiden uit overstromingskansberekeningen (HYDRA-NL of vergelijkbare methode)
-- Alternatief voor α: gebruik OptimaliseRing 2011-waarden als startpunt, schaal op basis van nieuwe waterstandstatistiek
+- P₀ per traject uit de geaggregeerde beoordelingsresultaten WBI2023
+- α afleiden uit overstromingskansberekeningen (HYDRA-NL) of als startpunt de 2011-waarden schalen
 
-**Bronnen:**
-- Beoordelingsresultaten waterkeringen (Rijkswaterstaat / waterboards)
-- Hydraulische belastingenmodel (WBI2023)
+**Bron (correct):**
+Nationaal Georegister — geaggregeerde beoordelingsresultaten van alle waterschappen + RWS:
+`https://www.nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/bf447383-f2ae-47b0-b124-6c4db12ce689`
 
-**Output:** CSV of JSON met P₀ en α per trajectcode
+**Belangrijk voorbehoud:**
+De gepubliceerde WBI2023-kansen staan ter discussie. In de lopende beoordelingsronde moeten de kansen voor veel trajecten aanzienlijk omlaag (conservatisme eruit). De gepubliceerde waarden zijn dus waarschijnlijk overschattingen.
+
+**Kerneis — P₀ override:**
+FloodOpt moet altijd toestaan dat een gebruiker de overstromingskans van elk traject handmatig invoert of overschrijft, ongeacht de officiële gepubliceerde waarde. Dit is geen optie maar een vereiste:
+- Het `Trajectory.p0`-veld is al vrij instelbaar in het datamodel ✓
+- De OptimizeForm toont p0 als bewerkbaar veld ✓
+- Het validatie-dashboard moet P₀ tonen én bewerkbaar maken vóór de optimalisatie
+- Eventueel: apart veld `p0_official` (gepubliceerd) vs `p0` (gebruikersinvoer)
+
+**Output:** CSV of JSON met P₀-referentiewaarden per trajectcode + script om te importeren
 
 ---
 

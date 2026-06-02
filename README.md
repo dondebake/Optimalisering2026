@@ -343,7 +343,10 @@ https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs
 Script: `scripts/load_nbpw_trajectories.py` (GeoPandas + owslib)
 
 #### Stap D2 ⏳ — P₀ en α kalibreren
-P₀ uit beoordelingsresultaten (WBI2023 / WSBD). α uit hydraulische analyse (HYDRA-NL) of afgeleid van 2011-waarden.
+P₀ uit geaggregeerde WBI2023-beoordelingsresultaten (Nationaal Georegister, alle waterschappen + RWS).
+α uit HYDRA-NL of geschaald van 2011-waarden.
+
+> **Let op:** WBI2023-kansen staan ter discussie (conservatisme). FloodOpt vereist daarom altijd de mogelijkheid om P₀ per traject handmatig te overschrijven.
 
 #### Stap D3 ⏳ — KNMI 2023 klimaatscenario's (η)
 Vier scenario's (W / W+ / WH / WH+). Zeespiegelstijging per regio per scenario.

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { submitOptimization } from '../api/client'
 import type { Measure, MeasureType, ObjectiveType, RiskParams, Scenario, Trajectory } from '../types'
 
@@ -52,9 +52,11 @@ const SELECT = INPUT
 
 export default function OptimizeForm() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const prefill = location.state as { trajectory?: Partial<Trajectory>; scenario?: Partial<Scenario> } | null
 
-  const [scenario, setScenario] = useState<Scenario>(DEFAULT_SCENARIO)
-  const [trajectory, setTrajectory] = useState<Trajectory>(DEFAULT_TRAJECTORY)
+  const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO, ...prefill?.scenario })
+  const [trajectory, setTrajectory] = useState<Trajectory>({ ...DEFAULT_TRAJECTORY, ...prefill?.trajectory })
   const [risk, setRisk] = useState<RiskParams>(DEFAULT_RISK)
   const [candidates, setCandidates] = useState<Measure[]>([
     { ...EMPTY_MEASURE, id: 'M01', effect: 0.5, cost: 500_000, location: 'vak-1' },
@@ -117,6 +119,12 @@ export default function OptimizeForm() {
           Vul traject, scenario en kandidaatmaatregelen in. De Celery worker voert de berekening asynchroon uit.
         </p>
       </div>
+
+      {prefill && (
+        <div className="bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-800">
+          Parameters ingeladen vanuit de referentiedatabase. Controleer en pas aan waar nodig — met name P₀ kan afwijken van de actuele beoordelingsuitkomst.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Traject */}

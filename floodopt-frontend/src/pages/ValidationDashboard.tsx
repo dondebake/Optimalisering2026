@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getValDijkringen, getValTrajectories, valOptimize } from '../api/client'
+import { getValDijkringen, getValTrajectories } from '../api/client'
 import type { ValTrajectory } from '../types'
 
 function fmtNorm(n: number) {
@@ -13,13 +12,6 @@ function fmtSci(n: number) {
 }
 
 function TrajectRow({ t, onOptimize }: { t: ValTrajectory; onOptimize: (t: ValTrajectory) => void }) {
-  const [loading, setLoading] = useState(false)
-
-  async function handleClick() {
-    setLoading(true)
-    try { await onOptimize(t) } finally { setLoading(false) }
-  }
-
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-3 py-2 font-mono text-xs text-gray-500">{t.Dijkring}-{t.DijkringDeel}-{t.DijkringTraject}</td>
@@ -30,11 +22,10 @@ function TrajectRow({ t, onOptimize }: { t: ValTrajectory; onOptimize: (t: ValTr
       <td className="px-3 py-2 text-sm tabular-nums">{t.eta_m_per_jaar.toFixed(4)}</td>
       <td className="px-3 py-2 text-right">
         <button
-          onClick={handleClick}
-          disabled={loading}
-          className="text-xs px-2.5 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          onClick={() => onOptimize(t)}
+          className="text-xs px-2.5 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
         >
-          {loading ? '…' : 'Optimaliseer'}
+          Optimaliseer →
         </button>
       </td>
     </tr>
@@ -57,9 +48,27 @@ export default function ValidationDashboard() {
     staleTime: Infinity,
   })
 
-  async function handleOptimize(t: ValTrajectory) {
-    const job = await valOptimize(t.Dijkring, t.DijkringDeel, t.DijkringTraject)
-    navigate(`/results/${job.job_id}`)
+  function handleOptimize(t: ValTrajectory) {
+    navigate('/optimize', {
+      state: {
+        trajectory: {
+          id: `ref-${t.Dijkring}-${t.DijkringDeel}-${t.DijkringTraject}`,
+          norm: t.norm_per_jaar,
+          length: 10.0,
+          p0: t.p0_per_jaar,
+          alpha: t.alpha_per_m,
+          base_year: 2023,
+          measures: [],
+        },
+        scenario: {
+          id: `ref-scen-${t.Dijkring}`,
+          climate: 'huidig',
+          q_design: 1000.0,
+          h_design: 5.0,
+          eta: t.eta_m_per_jaar,
+        },
+      },
+    })
   }
 
   return (
@@ -127,10 +136,10 @@ export default function ValidationDashboard() {
         </table>
       </div>
 
-      <p className="text-xs text-gray-400">
-        "Optimaliseer" gebruikt 3 standaard maatregelen (Δh 0.5/1.0/1.5 m) en MIN_COST.
-        Resultaten worden opgeslagen en zijn zichtbaar in de joblijst op het Dashboard.
-      </p>
+      <div className="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800 space-y-1">
+        <div className="font-semibold">Over de referentiewaarden</div>
+        <div>P₀-waarden zijn afkomstig uit de OptimaliseRing 2011-database (testbed). De WBI2023-beoordelingsresultaten staan ter discussie — in de lopende beoordelingsronde moeten kansen voor veel trajecten aanzienlijk omlaag. Klik <strong>Optimaliseer →</strong> om het formulier te openen en P₀ (en alle andere parameters) aan te passen vóór de berekening.</div>
+      </div>
     </div>
   )
 }
