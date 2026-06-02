@@ -81,9 +81,22 @@ function MeasureTable({ measures, selectedIds }: { measures: Measure[]; selected
 }
 
 function NcwTable({ data, inp }: { data: OptimizeResponse; inp: InputPayload }) {
-  const { risk_params, trajectory } = inp
+  const { risk_params, trajectory, scenario } = inp
   const { discount_rate: delta, gamma, base_damage: v0, time_horizon: T } = risk_params
   const baseYear = trajectory.base_year
+
+  // NCW₀ = verwachte schade ZONDER maatregelen
+  // NCW₀ = V₀ · P₀ · Σ exp(β·s)  voor s=0..T-1,  β = α·η + γ − δ
+  const beta = trajectory.alpha * scenario.eta + gamma - delta
+  const geomSum = Math.abs(beta) < 1e-10
+    ? T
+    : (Math.exp(beta * T) - 1) / (Math.exp(beta) - 1)
+  const ncw0 = v0 * trajectory.p0 * geomSum
+
+  const baten = ncw0 - (data.risk_ncw ?? 0)
+  const bcr = (data.investment_npv ?? 0) > 0
+    ? baten / (data.investment_npv ?? 1)
+    : null
 
   const selectedMeasures = inp.candidates.filter(m =>
     data.selected_measure_ids.includes(m.id)
@@ -195,7 +208,7 @@ function NcwTable({ data, inp }: { data: OptimizeResponse; inp: InputPayload }) 
               </td>
               <td className="py-2 text-right tabular-nums font-medium">{fmt(data.investment_npv)}</td>
             </tr>
-            <tr className="bg-blue-50 rounded">
+            <tr className="bg-blue-50">
               <td className="py-2.5 px-2 font-semibold text-gray-800">NCW totaal</td>
               <td className="py-2.5 px-2 text-right tabular-nums font-bold text-blue-700 text-base">
                 {fmt(data.total_ncw)}
@@ -203,6 +216,74 @@ function NcwTable({ data, inp }: { data: OptimizeResponse; inp: InputPayload }) 
             </tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Batenanalyse */}
+      <div className="border-t-2 border-green-100 pt-4">
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+          Batenanalyse — vermeden schade
+        </div>
+        <div className="bg-gray-50 rounded p-3 mb-3 text-xs text-gray-600 space-y-1">
+          <div>
+            <span className="font-mono">NCW₀</span>
+            {' = '}
+            <span className="font-mono">V₀ · P₀ · (e<sup>βT</sup> − 1) / (e<sup>β</sup> − 1)</span>
+            {'  met '}
+            <span className="font-mono">β = α·η + γ − δ = {beta.toFixed(4)}</span>
+          </div>
+        </div>
+        <table className="w-full text-sm">
+          <tbody>
+            <tr className="border-b border-gray-100">
+              <td className="py-2 text-gray-500">
+                NCW₀ — verwachte schade <em>zonder</em> maatregelen
+              </td>
+              <td className="py-2 text-right tabular-nums font-medium text-gray-700">{fmt(ncw0)}</td>
+            </tr>
+            <tr className="border-b border-gray-100">
+              <td className="py-2 text-gray-500">
+                NCW<sub>risico</sub> — verwachte schade <em>met</em> maatregelen
+              </td>
+              <td className="py-2 text-right tabular-nums font-medium">{fmt(data.risk_ncw)}</td>
+            </tr>
+            <tr className="border-b border-green-200 bg-green-50">
+              <td className="py-2.5 px-2 font-semibold text-green-800">
+                Baten (vermeden schade)
+              </td>
+              <td className="py-2.5 px-2 text-right tabular-nums font-bold text-green-700 text-base">
+                {fmt(baten)}
+              </td>
+            </tr>
+            <tr className="border-b border-gray-100">
+              <td className="py-2 text-gray-500">
+                NCW<sub>investering</sub>
+              </td>
+              <td className="py-2 text-right tabular-nums font-medium">{fmt(data.investment_npv)}</td>
+            </tr>
+            {bcr !== null && (
+              <tr className={`font-semibold ${bcr >= 1 ? 'bg-green-50' : 'bg-amber-50'}`}>
+                <td className="py-2.5 px-2 text-gray-800">
+                  BCR — baten-kostenratio
+                  <span className="ml-2 text-xs font-normal text-gray-500">
+                    {bcr >= 1 ? '(investering loont)' : '(investering loont niet)'}
+                  </span>
+                </td>
+                <td className={`py-2.5 px-2 text-right tabular-nums font-bold text-xl ${bcr >= 1 ? 'text-green-700' : 'text-amber-700'}`}>
+                  {bcr.toFixed(2)}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <div className="mt-2 text-xs text-gray-400">
+          V₀ bevat directe schade + gemonetariseerde slachtoffers + getroffenen
+          (conform OptimaliseRing 2011, {
+            inp.risk_params.base_damage >= 1e9
+              ? `scenario ${fmtM(inp.risk_params.base_damage)}`
+              : fmtM(inp.risk_params.base_damage)
+          }).
+          Actualisatie via LDO ROR 2025 is voorzien in stap 5.5.
+        </div>
       </div>
     </div>
   )
