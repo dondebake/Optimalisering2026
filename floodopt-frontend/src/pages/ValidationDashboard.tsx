@@ -1,7 +1,30 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getValDijkringen, getValTrajectories } from '../api/client'
 import type { ValTrajectory } from '../types'
+
+// IC(Dh) = C_exp * exp(lambda * Dh) * Dh^b  [M EUR]  — OptimaliseRing 2.3.2
+function costEur(t: ValTrajectory, dh: number): number {
+  if (t.C_exp == null) return dh * 5_000_000  // fallback als kostenfunctie ontbreekt
+  const lambda = t.lambda_exp_per_m ?? 0
+  const b = t.b_exp ?? 1
+  return t.C_exp * Math.exp(lambda * dh) * Math.pow(dh, b) * 1_000_000
+}
+
+function buildCandidates(t: ValTrajectory) {
+  const dhs = [0.25, 0.5, 0.75, 1.0, 1.5]
+  const baseYear = 2023
+  return dhs.map((dh, i) => ({
+    id: `M${String(i + 1).padStart(2, '0')}`,
+    type: 'dike_reinforcement' as const,
+    cost: Math.round(costEur(t, dh)),
+    year: baseYear + 5 + i * 5,
+    effect: dh,
+    location: `vak-${i + 1}`,
+    dependencies: [],
+  }))
+}
 
 function fmtNorm(n: number) {
   return `1/${Math.round(1 / n).toLocaleString('nl-NL')}`
@@ -67,6 +90,7 @@ export default function ValidationDashboard() {
           h_design: 5.0,
           eta: t.eta_m_per_jaar,
         },
+        candidates: buildCandidates(t),
       },
     })
   }
@@ -114,7 +138,7 @@ export default function ValidationDashboard() {
               <th className="text-left px-3 py-2.5">Norm</th>
               <th className="text-left px-3 py-2.5">P₀ [1/jr]</th>
               <th className="text-left px-3 py-2.5">α [1/m]</th>
-              <th className="text-left px-3 py-2.5">η [m/jr]</th>
+              <th className="text-left px-3 py-2.5">eta [m/jr]</th>
               <th className="px-3 py-2.5" />
             </tr>
           </thead>

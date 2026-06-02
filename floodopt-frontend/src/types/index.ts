@@ -66,6 +66,11 @@ export interface ValTrajectory {
   p0_per_jaar: number
   eta_m_per_jaar: number
   norm_per_jaar: number
+  // kostenfunctie: IC(Dh) = C_exp * exp(lambda_exp_per_m * Dh) * Dh^b_exp  [M EUR]
+  lambda_exp_per_m: number | null
+  C_exp: number | null
+  b_exp: number | null
+  Omega: number | null
 }
 
 export interface PSeriesPoint {

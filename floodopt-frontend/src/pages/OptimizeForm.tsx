@@ -53,15 +53,17 @@ const SELECT = INPUT
 export default function OptimizeForm() {
   const navigate = useNavigate()
   const location = useLocation()
-  const prefill = location.state as { trajectory?: Partial<Trajectory>; scenario?: Partial<Scenario> } | null
+  const prefill = location.state as { trajectory?: Partial<Trajectory>; scenario?: Partial<Scenario>; candidates?: Measure[] } | null
 
   const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO, ...prefill?.scenario })
   const [trajectory, setTrajectory] = useState<Trajectory>({ ...DEFAULT_TRAJECTORY, ...prefill?.trajectory })
   const [risk, setRisk] = useState<RiskParams>(DEFAULT_RISK)
-  const [candidates, setCandidates] = useState<Measure[]>([
-    { ...EMPTY_MEASURE, id: 'M01', effect: 0.5, cost: 500_000, location: 'vak-1' },
-    { ...EMPTY_MEASURE, id: 'M02', effect: 0.5, cost: 400_000, location: 'vak-2' },
-  ])
+  const [candidates, setCandidates] = useState<Measure[]>(
+    prefill?.candidates ?? [
+      { ...EMPTY_MEASURE, id: 'M01', effect: 0.5, cost: 500_000, location: 'vak-1' },
+      { ...EMPTY_MEASURE, id: 'M02', effect: 0.5, cost: 400_000, location: 'vak-2' },
+    ]
+  )
   const [objective, setObjective] = useState<ObjectiveType>('min_cost')
   const [solver, setSolver] = useState<'brute_force' | 'pyomo'>('brute_force')
   const [budget, setBudget] = useState<string>('')
