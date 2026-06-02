@@ -163,6 +163,34 @@ Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
 | Frontend stap 4.1–4.4 — componenten en features | `docs/stap4_frontend.png` |
 | Database mapping MDB → FloodOpt | `docs/database_mapping.png` |
 
+## Implementatiestatus 2011-referentiedata
+
+De OptimaliseRing 2011 SQLite is het testbed. Onderstaande tabel geeft aan wat al in FloodOpt is verwerkt en wat nog ontbreekt.
+
+### Geïmplementeerd
+
+| Data | Gebruik |
+|---|---|
+| Dijkringnamen + normen (`v_dijkringen_floodopt`) | Validatie-dashboard dropdown |
+| P₀, α, η basisscenario (`v_trajecten_floodopt`, klimaat_id=1) | Physics, kaartkleur, formulier pre-fill |
+| Kostenfunctie λ, C, b (`v_kostenfunctie_floodopt`) | Kandidaatmaatregelen genereren bij pre-fill |
+| Dijkringdelen geometrie (`dijkringdelen.shp` → WGS84) | Kaart — gekleurde lijnen op P₀ |
+
+### Niet geïmplementeerd
+
+| Prioriteit | Data | Impact |
+|---|---|---|
+| 🔴 | Schadeparameters Zeta/Nu/Psi (`v_schade_floodopt`) | V₀ hardcoded €1 mrd — **NCW incorrect** |
+| 🔴 | Economische groei γ (`EconomischScenarioData`) | γ hardcoded 2 % — **NCW incorrect** |
+| 🟡 | 18 klimaatscenario's (η per scenario) | Gebruiker voert η handmatig in |
+| 🟡 | Omega (onderhoudsfactor) in NCW | Jaarlijkse onderhoudskosten ontbreken |
+| 🟢 | BeginJaar 2015 vs hardcoded 2023 | Klein tijdsverschil |
+| 🟢 | 57 dijkringdelen zonder P₀-koppeling (letters in ID) | Grijs op kaart, geen rekeneffect |
+
+Zie `development_log.md` voor technische details per ontbrekend onderdeel.
+
+---
+
 ## Validatiestrategie
 
 Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid van OptimaliseRing v2.3.2 (HKV, 2013), 103 dijkringen, 176 trajecten.

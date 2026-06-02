@@ -14,6 +14,42 @@
 | Queue | Redis + Celery | Async optimalisaties zonder HTTP-timeout |
 | Grafiek | Recharts | P(t)-tijdreeks in de browser |
 
+### Implementatiestatus 2011-referentiedata
+
+#### Geïmplementeerd
+
+| Data | Tabel/View | Gebruik | Status |
+|---|---|---|---|
+| Dijkringnamen + normen | `v_dijkringen_floodopt` | Validatie-dashboard dropdown | ✅ |
+| P₀, α, η (basisscenario) | `v_trajecten_floodopt` (klimaat_id=1) | Physics, kaartkleur, formulier pre-fill | ✅ |
+| Kostenfunctie λ, C, b | `v_kostenfunctie_floodopt` | Kandidaatmaatregelen bij pre-fill | ✅ |
+| Geometrie dijkringdelen | `dijkringdelen.shp` (RD New → WGS84) | Kaart — gekleurde lijnen op P₀ | ✅ |
+
+#### Nog niet geïmplementeerd (prioriteit)
+
+| Prioriteit | Data | Tabel | Probleem |
+|---|---|---|---|
+| 🔴 | Schadeparameters (Zeta, Nu, Psi, Inwoners) | `v_schade_floodopt` | V₀ hardcoded €1 mrd — NCW incorrect |
+| 🔴 | Economische groei γ per dijkringdeel | `EconomischScenarioData` | γ hardcoded 2 % — NCW incorrect |
+| 🟡 | Klimaatscenario-keuze in UI | `v_trajecten_floodopt` (id 1–18) | Gebruiker voert η handmatig in |
+| 🟡 | Omega (onderhoudsfactor) in NCW | `v_kostenfunctie_floodopt` | Jaarlijkse onderhoudskosten ontbreken |
+| 🟢 | BeginJaar (2015 vs hardcoded 2023) | `BeginJaar` | Klein tijdsverschil |
+| 🟢 | 57 grijze dijkringdelen op kaart | shapefile DIJKRINGNU met letters | Visueel, geen rekeneffect |
+
+**Technische details ontbrekende data:**
+
+- **V₀**: moet berekend worden als `Zeta * oppervlak * Psi + Nu * bebouwingswaarde` per dijkringdeel.
+  `v_schade_floodopt` bevat Zeta (€/ha), Nu, Psi, Inwoners per dijkring/scenariocombinatie.
+- **γ**: `EconomischScenarioData` geeft γ per dijkringdeel voor 6 economische groeiscenario's (0,4 %–2,6 %).
+  In OptimaliseRing 2011 werd het scenario gekozen door de gebruiker; nu hardcoded 2 %.
+- **Klimaatscenario's**: 18 scenario's in de DB; id=1–2 hebben η=0 (geen zeespiegelstijging),
+  id=3–18 hebben η ≈ 0,002 m/jr. Gebruiker kan nu alleen handmatig η invullen in het formulier.
+- **Omega**: `IC_jaarlijks = Omega × IC_investering`. Niet meegenomen in huidige NCW-integratie.
+- **Grijze dijkringdelen**: DIJKRINGNU-waarden als `"34-a"`, `"13-a"` (buitendijkse compartimenten)
+  matchen niet op numerieke Dijkring-ID. Oplossing: expliciete mappingtabel.
+
+---
+
 ### Data-context: 2011 vs 2026
 
 | 2011 (OptimaliseRing) | 2026 (NBPW / WBI2023) | Toelichting |
@@ -301,7 +337,7 @@ Zie: `docs/stap4_frontend.png`
 
 ---
 
-### Stap 4.6 — Validatie-dashboard ✓ (2026-06-02)
+### Stap 4.6 — Validatie-dashboard + kaartlayout ✓ (2026-06-02)
 
 - `floodopt_api/validation.py` — readonly lezer voor `optimalise_ring_2011.sqlite`
 - `GET /validation/dijkringen` — 103 dijkringen met naam, norm, aantal trajecten
@@ -311,6 +347,14 @@ Zie: `docs/stap4_frontend.png`
 - Amber-banner in `OptimizeForm` waarschuwt dat P₀ gecontroleerd moet worden (WBI2023-kansen staan ter discussie)
 
 **Scope van de 2011-data:** uitsluitend testbed. Zie Fase 5 voor de 2026-data.
+
+**Kaartlayout herontworpen (2026-06-02):**
+- `App.tsx`: flex-col h-screen, main flex-1 min-h-0 overflow-auto
+- Dashboard: drie kolommen — links (legenda, navigatie) | kaart (flex-1) | rechts (trajectory-details bij klik)
+- `scripts/convert_dijkringdelen.py`: converteert `dijkringdelen.shp` (RD New) naar WGS84 GeoJSON,
+  koppelt P₀ vanuit validatie-SQLite — 127 dijkringdelen, 70 met P₀-data
+- `GET /geo/dijkringdelen`: serveert `tests/validation/dijkringdelen.geojson`
+- MapView toont 2011-dijkringdelen als gekleurde lijnen; klik opent rechts paneel met details
 
 ---
 
