@@ -50,6 +50,211 @@
 
 ---
 
+---
+
+## Databasedocumentatie — OptimaliseRing 2011 SQLite
+
+Bestand: `tests/validation/optimalise_ring_2011.sqlite`
+Afgeleid van: `Database OptimaliseRing 2011_04_07.mdb` (HKV, 2013)
+Conversie: `scripts/convert_mdb_to_sqlite.py` (eenheidsconversie α en η)
+
+---
+
+### 1. Dijkringen — `v_dijkringen_floodopt`
+
+**103 dijkringen** met naam en wettelijke norm.
+
+| Kolom | Type | Eenheid | Beschrijving |
+|---|---|---|---|
+| `Dijkring` | tekst | — | Dijkring-ID (numeriek als string) |
+| `Naam` | tekst | — | Naam dijkring |
+| `norm_per_jaar` | getal | 1/jaar | Wettelijke overstromingsnorm |
+| `Terugkeertijd` | getal | jaar | $= 1/\text{norm}$ |
+
+**Unieke normen in de dataset:**
+
+| norm [1/jaar] | Terugkeertijd [jaar] |
+|---|---|
+| 1/10.000 | 10.000 |
+| 1/4.000 | 4.000 |
+| 1/2.000 | 2.000 |
+| 1/1.250 | 1.250 |
+| 1/500 | 500 |
+| 1/250 | 250 |
+
+---
+
+### 2. Faalkansmodel — `v_trajecten_floodopt`
+
+**176 trajecten** (klimaat_id=1), elke combinatie van Dijkring / DijkringDeel / DijkringTraject.
+Dezelfde 176 trajecten zijn herhaald voor elk van de **18 klimaatscenario's** (totaal 3.168 rijen).
+
+#### Formule
+
+$$P(t) = P_0 \cdot e^{\alpha \eta t} \cdot e^{-\alpha \Delta h}$$
+
+waarbij $t$ het aantal jaren na het basisjaar is en $\Delta h$ de cumulatieve kruinhoogteverhoging [m].
+
+#### Kolommen
+
+| Kolom | Eenheid | Waardebereik | Beschrijving |
+|---|---|---|---|
+| `Dijkring` | — | 1 – 60+ | Dijkring-ID |
+| `DijkringDeel` | — | 1 – 4 | Deel van de dijkring |
+| `DijkringTraject` | — | 1 – 7 | Traject binnen een deel |
+| `Naam` | — | — | Naam van het traject |
+| `p0_per_jaar` ($P_0$) | 1/jaar | $10^{-4}$ – $8 \times 10^{-4}$ | Faalkans in basisjaar |
+| `alpha_per_m` ($\alpha$) | 1/m | 0,76 – 11,41 | Schaalparameter faalkansmodel |
+| `eta_m_per_jaar` ($\eta$) | m/jaar | 0 – 0,00201 | Klimaatstijging waterstand |
+| `klimaat_id` | — | 1 – 18 | Klimaatscenario (zie §3) |
+| `h0_m` | m | 0 (alle rijen) | Initiële kruinhoogteoffset — niet ingevuld |
+| `Factor` | — | 1 (alle rijen) | Schalingsfactor — niet ingevuld |
+
+**BeginJaar:** $t_0 = 2015$ (zowel planningsjaar als rekenjaar)
+
+---
+
+### 3. Klimaatscenario's — `Klimaat_AftoppenAfvoer`
+
+18 scenario's: combinaties van KNMI 2006-klimaatklasse en aftopping van rivierafvoer.
+Klimaat_id 1–2 (basisscenario's) geven η=0; id 3–18 geven η ≈ 0,002 m/jr.
+
+| ID | Naam | η |
+|---|---|---|
+| 1 | Zonder aftoppen | 0 |
+| 2 | Met aftoppen | 0 |
+| 3 | Gemiddeld zonder aftoppen | 0,00201 m/jr |
+| 4 | Gemiddeld met hoog aftoppen | 0,00201 m/jr |
+| 5 | Gemiddeld met gemiddeld aftoppen | 0,00201 m/jr |
+| 6 | Gemiddeld met laag aftoppen | 0,00201 m/jr |
+| 7 | Gemiddeld+ zonder aftoppen | 0,00201 m/jr |
+| 8–10 | Gemiddeld+ met hoog/gemiddeld/laag aftoppen | 0,00201 m/jr |
+| 11 | Warm zonder aftoppen | 0,00201 m/jr |
+| 12–14 | Warm met hoog/gemiddeld/laag aftoppen | 0,00201 m/jr |
+| 15 | Warm+ zonder aftoppen | 0,00201 m/jr |
+| 16–18 | Warm+ met hoog/gemiddeld/laag aftoppen | 0,00201 m/jr |
+
+FloodOpt gebruikt nu uitsluitend klimaat_id=1 (basisscenario, η=0). Uitbreiding naar meerdere scenario's is gepland (stap 5.3).
+
+---
+
+### 4. Kostenfunctie — `v_kostenfunctie_floodopt`
+
+**183 rijen** (één per Dijkring/DijkringDeel/DijkringTraject combinatie).
+Type: Exponentieel (ID 1) of Kwadratisch (ID 2); parametertype: Zonder overhoogte (ID 1) of Met overhoogte (ID 2).
+
+#### Formule (exponentieel)
+
+$$IC(\Delta h) = C \cdot e^{\lambda \Delta h} \cdot \Delta h^{\,b} \quad [\text{M EUR}]$$
+
+Jaarlijkse onderhoudskosten: $\,IC_{\text{onderhoud}} = \Omega \cdot IC(\Delta h)$ per jaar.
+
+#### Kolommen
+
+| Kolom | Symbool | Eenheid | Bereik | Beschrijving |
+|---|---|---|---|---|
+| `lambda_exp_per_m` | $\lambda$ | 1/m | 0 – 0,63 | Exponentiële kostenstijging per meter verhoging |
+| `C_exp` | $C$ | M EUR | 0 – 218 | Kostenconstante |
+| `b_exp` | $b$ | — | 0 – 3,12 | Machtsverheffing (curve-vorm) |
+| `Omega` | $\Omega$ | — | 0,002 (constant) | Jaarlijkse onderhoudfractie van investering |
+
+Wanneer $\lambda = 0$: vereenvoudigt naar machtsformule $IC = C \cdot \Delta h^{\,b}$.
+
+---
+
+### 5. Schadeparameters — `v_schade_floodopt`
+
+**372 rijen** (103 dijkringen × ≤3 SchadeFunctieIds × DijkringDelen).
+
+| SchadeFunctieId | Naam |
+|---|---|
+| 1 | Onafhankelijk van waterstand |
+| 2 | Afhankelijk van waterstand |
+| 3 | Zeta en Nu gelijk aan nul (referentie) |
+
+| Kolom | Symbool | Eenheid | Bereik | Beschrijving |
+|---|---|---|---|---|
+| `Zeta` | $\zeta$ | — | 0 – 0,00432 | Directe schadedichtheid |
+| `Nu` | $\nu$ | — | 0 (alle rijen) | Schade-aandeel gebouwen — niet ingevuld |
+| `Psi` | $\psi$ | — | 0,01 (constant) | Indirecte schadeverhouding |
+| `Inwoners` | — | personen | 0 – 1.200.842 | Bevolking dijkring |
+| `Slachtoffers` | — | personen/overstroming | 0 – 250 | Verwacht aantal slachtoffers |
+| `Getroffenen` | — | — | 0 (alle rijen) | Getroffen personen — niet ingevuld |
+
+**Opmerking:** Zeta=0 voor grote dijkringen (waaronder Rijnmond). V₀ is daarom niet te berekenen uit Zeta+Inwoners. Gebruik in plaats daarvan `ScenarioVoorHoeveelheidSchadeData` (§6).
+
+---
+
+### 6. Voorberekende schadewaarden — `ScenarioVoorHoeveelheidSchadeData`
+
+**Pre-computed V₀** per dijkring/deel, schade-scenario en schadefunctie-type.
+Dit is de primaire bron voor $V_0$ in de NCW-berekening.
+
+| ScenarioId | Naam | Schade min [M EUR] | Schade max [M EUR] | Schade gem. [M EUR] |
+|---|---|---|---|---|
+| 1 | Laag | 7 | 14.056 | 1.833 |
+| 2 | Verwacht | 9 | 27.984 | 4.607 |
+| 3 | Hoog | 17 | 30.400 | 7.408 |
+
+Voorbeeld dijkring 14 (Rijnmond), deel 1:
+
+| Scenario | $V_0$ [M EUR] | $V_0$ [EUR] |
+|---|---|---|
+| Laag | 128 | € 128.000.000 |
+| Verwacht | 8.564 | € 8.564.000.000 |
+| Hoog | 17.034 | € 17.034.000.000 |
+
+FloodOpt gebruikt `SchadeFunctieId=1` (waterstandsonafhankelijk) als standaard.
+
+---
+
+### 7. Economische groei — `EconomischScenarioData`
+
+**868 rijen** (103 dijkringen × ≤ dijkringdelen × 7 scenario's).
+Gebaseerd op CPB WLO-scenario's (Welvaart en Leefomgeving, 2006).
+
+#### NCW-formule
+
+$$\text{NCW} = \sum_{s=0}^{T-1} P(s) \cdot V_0 \cdot e^{(\gamma - \delta)\,s} + \sum_{i \in S} \frac{IC(\Delta h_i)}{(1+\delta)^{t_i - t_0}}$$
+
+waarbij:
+- $\gamma$ = economische groeivoet [1/jaar] — uit `EconomischScenarioData`
+- $\delta$ = discontovoet [1/jaar] — niet in de database; in 2011: 5,5 % nominaal
+- $T$ = planningshorizon [jaar] — typisch 100 jaar
+
+#### Scenario's
+
+| ID | Naam (NL) | $\gamma$ bereik |
+|---|---|---|
+| 1 | Regional Communities (RC) | 0,7 – 1,0 % |
+| 2 | Strong Europe (SE) | 1,0 – 1,6 % |
+| 3 | Transatlantic Market (TM) | 1,0 – 1,9 % |
+| 4 | Global Economy (GE) | 1,0 – 2,6 % |
+| 5 | Geen | 0 – 1,0 % |
+| 6 | TM minus 1,5 % | 0,4 % (constant) |
+| 7 | GE minus 1,5 % | 1,1 % (constant) |
+
+γ varieert per dijkring/deel omdat economisch actieve gebieden hogere groeiverwachtingen kennen.
+
+---
+
+### 8. Geometrie — `dijkringdelen.shp`
+
+Bestand in de OptimaliseRing-broncode (`DijkringDelen/dijkringdelen.shp`).
+Geconverteerd naar WGS84 GeoJSON via `scripts/convert_dijkringdelen.py`.
+
+| Kolom | Beschrijving |
+|---|---|
+| `DIJKRING` | Dijkringnaam (tekst) |
+| `DIJKRINGDE` | Dijkringdeelnummer |
+| `DIJKRINGNU` | Dijkringnummer (numeriek als tekst, soms met letter: "13-a") |
+| `NAAM_WATER` | Naam waterlichaam |
+| Geometrie | LineString / MultiLineString (dijkcruinlijn) |
+
+**127 features**, 70 met P₀-koppeling. 57 zonder koppeling (DIJKRINGNU bevat letters zoals "13-a", "34-a" voor buitendijkse compartimenten).
+
+---
+
 ### Data-context: 2011 vs 2026
 
 | 2011 (OptimaliseRing) | 2026 (NBPW / WBI2023) | Toelichting |
