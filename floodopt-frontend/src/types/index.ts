@@ -128,6 +128,7 @@ export interface OptimizeResponse {
   investment_npv: number | null
   objective_value: number | null
   p_series: PSeriesPoint[] | null
+  error_message: string | null
   investments: InvestmentRow[] | null
   input_payload: InputPayload | null
 }

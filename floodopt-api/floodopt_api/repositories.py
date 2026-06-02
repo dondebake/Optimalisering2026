@@ -40,7 +40,7 @@ class Repositories(Protocol):
     def get_result(self, job_id: str) -> OptimizeResponse | None: ...
     def get_all_results(self) -> list[OptimizeResponse]: ...
     def delete_result(self, job_id: str) -> bool: ...
-    def update_status(self, job_id: str, status: str) -> None: ...
+    def update_status(self, job_id: str, status: str, error_message: str | None = None) -> None: ...
 
 
 # ---------------------------------------------------------------------------
@@ -88,11 +88,12 @@ class MemoryRepositories:
             return True
         return False
 
-    def update_status(self, job_id: str, status: str) -> None:
+    def update_status(self, job_id: str, status: str, error_message: str | None = None) -> None:
         if job_id in self._results:
-            self._results[job_id] = self._results[job_id].model_copy(
-                update={"status": status}
-            )
+            patch: dict = {"status": status}
+            if error_message is not None:
+                patch["error_message"] = error_message
+            self._results[job_id] = self._results[job_id].model_copy(update=patch)
 
     def clear(self) -> None:
         self._scenarios.clear()
@@ -226,12 +227,15 @@ class OrmRepositories:
             investment_npv=row.investment_npv,
             objective_value=row.objective_value,
             p_series=row.p_series,
+            error_message=row.error_message,
             investments=row.investments,
             input_payload=row.input_payload,
         )
 
-    def update_status(self, job_id: str, status: str) -> None:
+    def update_status(self, job_id: str, status: str, error_message: str | None = None) -> None:
         row = self._s.get(OptimizationResultORM, job_id)
         if row is not None:
             row.status = status
+            if error_message is not None:
+                row.error_message = error_message
             self._s.commit()

@@ -71,6 +71,10 @@ class OptimizeResponse(BaseModel):
         default=None,
         description="P(t)-tijdreeks: [{year, p, p_mid}, …] voor elk jaar in de horizon",
     )
+    error_message: str | None = Field(
+        default=None,
+        description="Foutmelding als status='failed'",
+    )
     investments: list[dict] | None = Field(
         default=None,
         description="Investeringsschema van de continue optimizer [{year, delta_h, W, cost_meur, ...}]",

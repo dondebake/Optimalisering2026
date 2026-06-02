@@ -377,8 +377,16 @@ export default function Results() {
         </div>
       )}
       {data.status === 'failed' && (
-        <div className="bg-red-50 border border-red-200 rounded p-4 text-sm text-red-700">
-          De optimalisatie is mislukt. Controleer de worker-logs.
+        <div className="bg-red-50 border border-red-200 rounded p-4 text-sm text-red-700 space-y-2">
+          <div className="font-semibold">De optimalisatie is mislukt.</div>
+          {data.error_message && (
+            <pre className="text-xs bg-red-100 rounded p-3 overflow-x-auto whitespace-pre-wrap max-h-48">
+              {data.error_message}
+            </pre>
+          )}
+          {!data.error_message && (
+            <div className="text-xs text-red-500">Herstart de Celery worker (terminal 3) en probeer opnieuw.</div>
+          )}
         </div>
       )}
 

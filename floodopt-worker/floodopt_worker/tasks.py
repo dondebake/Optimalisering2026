@@ -132,8 +132,10 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
                     input_payload=payload,
                 )
             )
-    except Exception:
-        repos.update_status(job_id, "failed")
+    except Exception as exc:
+        import traceback
+        msg = f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}"
+        repos.update_status(job_id, "failed", error_message=msg)
         raise
     finally:
         session.close()
