@@ -72,6 +72,54 @@ def get_trajectories(dijkring_id: str | None = None) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def get_reference_data(dijkring: str, deel: float) -> dict:
+    """Alle schade- en economische scenario's voor een dijkring/deel combinatie.
+
+    Schade in M EUR (ScenarioVoorHoeveelheidSchadeData, SchadeFunctieId=1):
+      scenario 1 = Laag, 2 = Verwacht, 3 = Hoog.
+
+    Gamma per CPB-scenario (EconomischScenarioData):
+      1=RC 0.7%, 2=SE 1.6%, 3=TM 1.9%, 4=GE 2.6%, 5=Geen, 6=TM-1.5%, 7=GE-1.5%.
+    """
+    with _conn() as con:
+        # Schade scenarios
+        schade_rows = con.execute(
+            """
+            SELECT svhsd.ScenarioVoorHoeveelheidSchadeId AS scenario_id,
+                   svhs.Naam AS scenario_naam,
+                   svhsd.Schade AS schade_meur
+            FROM ScenarioVoorHoeveelheidSchadeData svhsd
+            JOIN ScenarioVoorHoeveelheidSchade svhs
+              ON svhs.Id = svhsd.ScenarioVoorHoeveelheidSchadeId
+            WHERE svhsd.Dijkring = ? AND svhsd.DijkringDeel = ?
+              AND svhsd.SchadeFunctieId = 1
+            ORDER BY svhsd.ScenarioVoorHoeveelheidSchadeId
+            """,
+            (dijkring, deel),
+        ).fetchall()
+
+        # Economische scenario's
+        gamma_rows = con.execute(
+            """
+            SELECT esd.EconomischScenarioID AS scenario_id,
+                   es.Naam AS scenario_naam,
+                   esd.Gamma AS gamma
+            FROM EconomischScenarioData esd
+            JOIN EconomischScenario es ON es.ID = esd.EconomischScenarioID
+            WHERE esd.Dijkring = ? AND esd.DijkringDeel = ?
+            ORDER BY esd.EconomischScenarioID
+            """,
+            (dijkring, deel),
+        ).fetchall()
+
+    return {
+        "dijkring": dijkring,
+        "dijkringdeel": deel,
+        "schade_scenarios": [dict(r) for r in schade_rows],
+        "gamma_scenarios": [dict(r) for r in gamma_rows],
+    }
+
+
 def get_trajectory(dijkring: str, deel: float, traject: float) -> dict | None:
     with _conn() as con:
         row = con.execute(

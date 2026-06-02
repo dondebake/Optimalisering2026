@@ -1,4 +1,4 @@
-import type { Measure, OptimizeRequest, OptimizeResponse, Scenario, Trajectory, ValDijkring, ValTrajectory } from '../types'
+import type { Measure, OptimizeRequest, OptimizeResponse, Scenario, Trajectory, ValDijkring, ValTrajectory, ValReferenceData } from '../types'
 
 const BASE = '/api'
 
@@ -56,6 +56,10 @@ export function deleteResult(jobId: string): Promise<void> {
 
 export function getValDijkringen(): Promise<ValDijkring[]> {
   return request('/validation/dijkringen')
+}
+
+export function getValReferenceData(dijkring: string, deel: number): Promise<ValReferenceData> {
+  return request(`/validation/reference/${dijkring}/${deel}`)
 }
 
 export function getValTrajectories(dijkringId?: string): Promise<ValTrajectory[]> {

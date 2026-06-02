@@ -53,11 +53,16 @@ const SELECT = INPUT
 export default function OptimizeForm() {
   const navigate = useNavigate()
   const location = useLocation()
-  const prefill = location.state as { trajectory?: Partial<Trajectory>; scenario?: Partial<Scenario>; candidates?: Measure[] } | null
+  const prefill = location.state as {
+    trajectory?: Partial<Trajectory>
+    scenario?: Partial<Scenario>
+    candidates?: Measure[]
+    risk_params?: Partial<RiskParams>
+  } | null
 
   const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO, ...prefill?.scenario })
   const [trajectory, setTrajectory] = useState<Trajectory>({ ...DEFAULT_TRAJECTORY, ...prefill?.trajectory })
-  const [risk, setRisk] = useState<RiskParams>(DEFAULT_RISK)
+  const [risk, setRisk] = useState<RiskParams>({ ...DEFAULT_RISK, ...prefill?.risk_params })
   const [candidates, setCandidates] = useState<Measure[]>(
     prefill?.candidates ?? [
       { ...EMPTY_MEASURE, id: 'M01', effect: 0.5, cost: 500_000, location: 'vak-1' },

@@ -278,6 +278,19 @@ def validation_dijkringen() -> list[dict]:
     return get_dijkringen()
 
 
+@app.get("/validation/reference/{dijkring}/{deel}")
+def validation_reference(dijkring: str, deel: float) -> dict:
+    """Alle schade- en economische scenario's voor een dijkring/deel combinatie.
+
+    Retourneert:
+    - schade_scenarios: Laag / Verwacht / Hoog in M EUR (V₀)
+    - gamma_scenarios: alle CPB-groeiscenario's (γ)
+    """
+    from floodopt_api.validation import get_reference_data
+
+    return get_reference_data(dijkring, deel)
+
+
 @app.get("/validation/trajectories")
 def validation_trajectories(dijkring: str | None = None) -> list[dict]:
     """Trajecten (klimaat_id=1) uit de referentiedatabase, optioneel gefilterd op dijkring."""

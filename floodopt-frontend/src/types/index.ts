@@ -57,6 +57,25 @@ export interface ValDijkring {
   n_trajecten: number
 }
 
+export interface SchadeScenario {
+  scenario_id: number
+  scenario_naam: string   // 'Laag' | 'Verwacht' | 'Hoog'
+  schade_meur: number     // V0 in M EUR
+}
+
+export interface GammaScenario {
+  scenario_id: number
+  scenario_naam: string   // bijv. 'Transatlantic Market (TM)'
+  gamma: number           // economische groeivoet [1/jaar]
+}
+
+export interface ValReferenceData {
+  dijkring: string
+  dijkringdeel: number
+  schade_scenarios: SchadeScenario[]
+  gamma_scenarios: GammaScenario[]
+}
+
 export interface ValTrajectory {
   Dijkring: string
   DijkringDeel: number
