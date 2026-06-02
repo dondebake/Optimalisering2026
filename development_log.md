@@ -1,5 +1,24 @@
 # Development Log
 
+## Data-context: 2011 vs 2026
+
+### Terminologiewijziging
+
+| 2011 (OptimaliseRing) | 2026 (NBPW / WBI2023) | Toelichting |
+|---|---|---|
+| Dijkring | — | Begrip vervallen als beheereenheid |
+| DijkringDeel | — | Begrip vervallen |
+| DijkringTraject | **Normtraject** (of dijktraject) | 1-op-1 overeenkomst; plattere structuur |
+| Terugkeertijd [jaar] | Norm [1/jaar] | Omgekeerd; 1/4000 jaar = 1/4000 per jaar |
+
+In 2026 is elk **normtraject** een zelfstandige optimaliseringseenheid met eigen norm — er is geen hiërarchie dijkring → deel → traject meer. Dit vereenvoudigt het FloodOpt-datamodel.
+
+### Rol van de 2011-data in FloodOpt
+
+De OptimaliseRing 2011 SQLite (`tests/validation/optimalise_ring_2011.sqlite`) wordt uitsluitend gebruikt als **testbed** om te verifiëren dat de rekenkern en de UI correct werken. Zodra de 2026-data beschikbaar is, vervangt die de referentiedata.
+
+---
+
 ## Actuele architectuurkeuzes
 
 | Component | Keuze | Reden |
@@ -471,3 +490,154 @@ Identiek aan OptimaliseRing 2.3.2. Geeft stapsgewijs dalende blauwe lijn in de g
 - Pmidden toont stapsgewijs dalende lijn per maatregelinterval ✓
 - Kaart kleurt Rijnmond-traject na optimalisatie ✓
 - 90/90 tests groen ✓
+
+---
+
+## 2026-06-02 — Stap 4.x: Jobs verwijderen ✓
+
+- `DELETE /results/{job_id}` endpoint (204 No Content / 404)
+- `delete_result()` in Protocol + `MemoryRepositories` + `OrmRepositories`
+- Verwijder-knop (✕) in `JobList` met `window.confirm` + TanStack Query cache-invalidatie
+
+---
+
+## 2026-06-02 — Stap 4.5: Validatie-dashboard ✓
+
+- `floodopt_api/validation.py`: readonly SQLite-lezer voor `optimalise_ring_2011.sqlite`
+- `GET /validation/dijkringen`: 103 dijkringen met naam, norm, aantal trajecten
+- `GET /validation/trajectories?dijkring=`: 176 trajecten (klimaat_id=1, basisscenario)
+- `POST /validation/optimize/{dijkring}/{deel}/{traject}`: start FloodOpt-job met 3 standaard maatregelen (Δh 0.5/1.0/1.5 m, MIN_COST, brute_force)
+- `ValidationDashboard.tsx`: dropdown dijkringen, trajectentabel (P₀, α, η, norm), Optimaliseer-knop per rij → navigeert naar Results
+
+**Scope van de 2011-data:** uitsluitend testbed. Zie het plan hieronder voor de 2026-data.
+
+---
+
+## Plan: Data-actualisatie 2011 → 2026
+
+### Aanleiding
+
+De structuur en inhoud van de waterveiligheidsdatabase zijn in 2026 fundamenteel anders dan in 2011:
+
+- De dijkringen/dijkringdelen-hiërarchie is vervallen. Er zijn nu **normtrajecten** (ook: dijktrajecten), elk met een eigen wettelijke norm.
+- De normen zijn herzien in het kader van WBI2023.
+- Klimaatscenario's zijn gebaseerd op KNMI 2023 (W, W+, WH, WH+) i.p.v. KNMI 2006.
+- De discontovoet is gewijzigd (Rijksbegroting 2022: 2,25% reëel).
+- Het HWBP bevat actuele maatregelen met kosten en planningen.
+
+### Bron: NBPW WFS
+
+Normtrajecten inclusief geometrie, ID's en normen zijn beschikbaar via:
+
+```
+https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs?
+  version=1.1.0&request=GetCapabilities&Service=WFS
+```
+
+De WFS bevat de officiële NBPW-trajecten (Nationaal Basisprogramma Waterveiligheid).
+
+### Datavelden per normtraject (2026)
+
+| Veld | Bron | Eenheid | Toelichting |
+|---|---|---|---|
+| ID (trajectcode) | NBPW WFS | — | bijv. "15-1", "24-3" |
+| Geometrie (LineString) | NBPW WFS | WGS84 | dijkcruin-lijn |
+| Norm | NBPW WFS / wettelijk | 1/jaar | wettelijke overstromingskanseis |
+| P₀ | Beoordelingsresultaten (WSBD) | 1/jaar | huidige overstromingskans |
+| α | Hydraulische analyse (HYDRA-NL) | 1/m | schaalparameter faalkansmodel |
+| η | KNMI 2023 per scenario | m/jaar | zeespiegel-/grondwaterstijging |
+| Lengte | NBPW WFS / berekend | km | trajectlengte |
+
+### Stap D1 — Normtrajecten laden (NBPW WFS)
+
+**Wat:**
+- Python WFS-client (GeoPandas + owslib) om trajecten op te halen
+- Geometrie opslaan als GeoJSON in FloodOpt `trajectories.geometry`
+- Norm, ID en lengte uit WFS-attributen
+
+**Output:** `scripts/load_nbpw_trajectories.py` → laadt alle normtrajecten in FloodOpt DB
+
+**Afhankelijkheden:** GeoPandas, owslib, requests
+
+---
+
+### Stap D2 — Overstromingskansen kalibreren (P₀ en α)
+
+**Wat:**
+- P₀ per traject uit de beoordelingsresultaten (WBI2023 / WSBD)
+- α afleiden uit overstromingskansberekeningen (HYDRA-NL of vergelijkbare methode)
+- Alternatief voor α: gebruik OptimaliseRing 2011-waarden als startpunt, schaal op basis van nieuwe waterstandstatistiek
+
+**Bronnen:**
+- Beoordelingsresultaten waterkeringen (Rijkswaterstaat / waterboards)
+- Hydraulische belastingenmodel (WBI2023)
+
+**Output:** CSV of JSON met P₀ en α per trajectcode
+
+---
+
+### Stap D3 — Klimaatscenario's (η)
+
+**Wat:**
+- KNMI 2023: vier scenario's (W, W+, WH, WH+)
+- η = zeespiegelstijging of grondwaterstandstijging per scenario per regio
+- Grofweg: W ≈ 0.002 m/jr, W+ ≈ 0.003 m/jr, WH ≈ 0.005 m/jr, WH+ ≈ 0.008 m/jr (globaal, kust)
+
+**Output:** `Scenario`-objecten per KNMI-scenario, koppelbaar aan elk normtraject
+
+---
+
+### Stap D4 — Maatregelen en effecten (HWBP)
+
+**Wat:**
+- HWBP-projectenlijst (openbaar, Rijkswaterstaat)
+- Per project: trajectcode, maatregel-type, verwacht effect Δh [m], kostenraming, planningsjaar
+- Aanvullen met expert-schattingen voor trajecten buiten HWBP
+
+**Maatregel-types:**
+- Dijkversterking (dijkverzwaring, verbreding, geosystemen)
+- Ruimte voor Rivier (bypass, retentie, uiterwaardverlaging)
+- Overig (pompen, keringen, etc.)
+
+**Output:** kandidaatmaatregelen per normtraject als `Measure`-objecten
+
+---
+
+### Stap D5 — Economische parameters actualiseren
+
+| Parameter | 2011 (OptimaliseRing) | 2026 | Bron |
+|---|---|---|---|
+| Discontovoet δ | 5,5% nominaal | 2,25% reëel | Rijksbegroting 2022 |
+| Economische groei γ | 2% | 1,5–2% | CPB 2024 |
+| Basisschade V₀ | SSM1/VNK1 | SSM2 / WaterSchadeSchatter | Rijkswaterstaat |
+| Tijdshorizon T | 100 jaar | 100 jaar | ongewijzigd |
+
+**Output:** `RiskParams`-objecten per traject of regio
+
+---
+
+### Stap D6 — Validatie en verificatie 2026
+
+**Wat:**
+- Vergelijk FloodOpt 2026-resultaten met HWBP-prioritering
+- Vergelijk P(t)-grafieken met beschikbare beoordelingsresultaten
+- Spot-check op 5–10 trajecten met bekende beoordelingsuitkomsten
+
+**Criterium:** FloodOpt-optimum moet overeenkomen met de richting van HWBP-beslissingen (volgorde, kosten-effectiviteit).
+
+---
+
+### Volgorde
+
+```
+Nu:       Stap 4.5 ✓ — validatie met 2011-data (testbed)
+          Stap 4.6    — dijkring/normtraject-niveau (bouwt op 4.5)
+Daarna:   D1 — NBPW WFS: normtrajecten + geometrie laden
+          D2 — P₀ en α kalibreren (beoordelingsresultaten)
+          D3 — KNMI 2023 klimaatscenario's
+          D4 — HWBP maatregelen en effecten
+          D5 — Economische parameters actualiseren
+          D6 — Validatie en vergelijking HWBP
+```
+
+**Let op:** D1–D6 vereisen toegang tot datasets die deels achter portals zitten (WSBD, HWBP-projectenportal). Externe dataverzameling loopt parallel aan de softwareontwikkeling.

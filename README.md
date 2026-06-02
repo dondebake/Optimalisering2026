@@ -186,7 +186,8 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
 | 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | 🚧 In uitvoering | 4.1–4.4 ✅ · 4.x jobs verwijderen · 4.5 validatie · 4.6 dijkring-niveau |
+| 4 — Frontend | 🚧 In uitvoering | 4.1–4.5 ✅ · 4.6 dijkring-niveau |
+| D — Data-actualisatie 2026 | ⏳ Gepland | NBPW WFS, WBI2023, KNMI 2023, HWBP, SSM2 |
 
 ---
 
@@ -325,6 +326,38 @@ Laad de 176 trajecten uit `tests/validation/optimalise_ring_2011.sqlite`, run Fl
 - `ValidationDashboard` pagina — tabel van alle 176 trajecten (dijkring, norm, p0, α, lengte)
 - "Optimaliseer" knop per traject → POST /optimize → Results-pagina
 - Vergelijkingstabel: FloodOpt vs OptimaliseRing (afhankelijk van beschikbare referentieresultaten in SQLite)
+
+---
+
+### Fase D — Data-actualisatie 2011 → 2026
+
+De 2011-data (OptimaliseRing SQLite) is uitsluitend een testbed. Productiedata volgt via onderstaande stappen.
+
+**Terminologiewijziging:** dijkringen/dijkringdelen zijn vervallen. In 2026 zijn er **normtrajecten** (ook: dijktrajecten) — elk met eigen norm, geometrie en parameters. Dit vereenvoudigt het FloodOpt-datamodel.
+
+#### Stap D1 ⏳ — Normtrajecten laden (NBPW WFS)
+Geometrie, ID's en normen via WFS:
+```
+https://geo.rijkswaterstaat.nl/services/ogc/wvp/ows/wfs
+```
+Script: `scripts/load_nbpw_trajectories.py` (GeoPandas + owslib)
+
+#### Stap D2 ⏳ — P₀ en α kalibreren
+P₀ uit beoordelingsresultaten (WBI2023 / WSBD). α uit hydraulische analyse (HYDRA-NL) of afgeleid van 2011-waarden.
+
+#### Stap D3 ⏳ — KNMI 2023 klimaatscenario's (η)
+Vier scenario's (W / W+ / WH / WH+). Zeespiegelstijging per regio per scenario.
+
+#### Stap D4 ⏳ — Maatregelen (HWBP)
+HWBP-projectenlijst: maatregel-type, effect Δh [m], kostenraming, planningsjaar per normtraject.
+
+#### Stap D5 ⏳ — Economische parameters
+Discontovoet 2,25% reëel (Rijksbegroting 2022). Schade V₀ uit SSM2/WaterSchadeSchatter. Economische groei γ uit CPB 2024.
+
+#### Stap D6 ⏳ — Validatie 2026
+Vergelijk FloodOpt-resultaten met HWBP-prioritering en WBI2023-beoordelingsresultaten op 5–10 trajecten.
+
+---
 
 #### Stap 4.6 ⏳ — Dijkring-niveau
 
