@@ -144,6 +144,25 @@ Opent vier terminals automatisch:
 - **Installatie-arm** — SQLite + in-memory tests; geen Docker vereist voor development
 - **Stapsgewijze uitbreiding** — MVP eerst, complexiteit pas toevoegen als nodig
 
+## Documentatie
+
+Alle diagrammen worden gegenereerd met `python scripts/generate_docs.py`:
+
+| Diagram | Bestand |
+|---|---|
+| Volledige architectuur (rekenkernel + API + geo + frontend) | `docs/architecture.png` |
+| Celery + Redis taak-flow (visueel) | `docs/celery_flow.png` |
+| Physics Layer — $P(t)$ formule + curves | `docs/stap1.1_physics_formula.png` |
+| Risk Layer — NCW berekening | `docs/stap1.2_risk_ncw.png` |
+| Optimization Layer — BruteForce vs Pyomo | `docs/stap1.3_optimization.png` |
+| Smoke test — end-to-end verificatie | `docs/stap1.4_smoke_test.png` |
+| FastAPI service — endpoints + flow | `docs/stap2.1_api.png` |
+| Database — SQLite/PostgreSQL + repository-pattern | `docs/stap2.2_database.png` |
+| Async queue — Celery + Redis statustabel | `docs/stap2.3_worker.png` |
+| Geo-stack — GeoJSON in SQLite + Leaflet kleurcodering | `docs/geo_stack.png` |
+| Frontend stap 4.1–4.4 — componenten en features | `docs/stap4_frontend.png` |
+| Database mapping MDB → FloodOpt | `docs/database_mapping.png` |
+
 ## Validatiestrategie
 
 Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid van OptimaliseRing v2.3.2 (HKV, 2013), 103 dijkringen, 176 trajecten.

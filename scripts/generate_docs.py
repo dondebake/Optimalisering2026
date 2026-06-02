@@ -30,6 +30,7 @@ import warnings
 import matplotlib
 
 matplotlib.use("Agg")
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
@@ -1297,7 +1298,196 @@ def make_geo_stack() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 11. Frontend (stap 4.1-4.4)
+# 11. Celery + Redis flow diagram
+# ---------------------------------------------------------------------------
+
+
+def make_celery_flow() -> None:
+    """Visueel taak-flow diagram: FastAPI -> Celery -> Redis -> worker -> result."""
+    fig, ax = plt.subplots(figsize=(14, 3.8), facecolor=BG)
+    ax.set_xlim(0, 14)
+    ax.set_ylim(0, 3.8)
+    ax.axis("off")
+    ax.set_facecolor(BG)
+
+    fig.suptitle(
+        "Celery + Redis -- Task Queue Flow  (stap 2.3)",
+        fontsize=13,
+        fontweight="bold",
+        color=DARK,
+        y=0.99,
+    )
+
+    # ---- helpers ----
+    def _box(cx, cy, w, h, text, fc=WHITE, fs=8.5):
+        ax.add_patch(
+            mpatches.FancyBboxPatch(
+                (cx - w / 2, cy - h / 2),
+                w,
+                h,
+                boxstyle="round,pad=0.06",
+                facecolor=fc,
+                edgecolor=DARK,
+                linewidth=1.2,
+                zorder=2,
+            )
+        )
+        ax.text(
+            cx,
+            cy,
+            text,
+            ha="center",
+            va="center",
+            fontsize=fs,
+            color=DARK,
+            fontweight="bold",
+            multialignment="center",
+            linespacing=1.4,
+            zorder=3,
+        )
+
+    def _cylinder(cx, cy, w, h, text, fc="#d6eaf8"):
+        rx, ry = cx - w / 2, cy - h / 2
+        eh = h * 0.30
+        # body
+        ax.add_patch(
+            mpatches.Rectangle(
+                (rx, ry), w, h, facecolor=fc, edgecolor=fc, linewidth=0, zorder=2
+            )
+        )
+        ax.plot([rx, rx], [ry, ry + h], color=DARK, lw=1.2, zorder=3)
+        ax.plot([rx + w, rx + w], [ry, ry + h], color=DARK, lw=1.2, zorder=3)
+        # top ellipse
+        ax.add_patch(
+            mpatches.Ellipse(
+                (cx, ry + h),
+                w,
+                eh,
+                facecolor=fc,
+                edgecolor=DARK,
+                linewidth=1.2,
+                zorder=4,
+            )
+        )
+        # bottom arc
+        ax.add_patch(
+            mpatches.Arc(
+                (cx, ry),
+                w,
+                eh,
+                theta1=0,
+                theta2=180,
+                color=DARK,
+                linewidth=1.2,
+                zorder=3,
+            )
+        )
+        ax.text(
+            cx,
+            cy,
+            text,
+            ha="center",
+            va="center",
+            fontsize=8.5,
+            color=DARK,
+            fontweight="bold",
+            multialignment="center",
+            linespacing=1.4,
+            zorder=5,
+        )
+
+    def _arrow(x1, y1, x2, y2, label="", lx=None, ly=None, la="center"):
+        ax.annotate(
+            "",
+            xy=(x2, y2),
+            xytext=(x1, y1),
+            arrowprops=dict(arrowstyle="-|>", color=DARK, lw=1.1, mutation_scale=13),
+            zorder=1,
+        )
+        if label:
+            lx = lx if lx is not None else (x1 + x2) / 2
+            ly = ly if ly is not None else (y1 + y2) / 2 + 0.13
+            ax.text(
+                lx,
+                ly,
+                label,
+                ha=la,
+                va="bottom",
+                fontsize=7.5,
+                color=GREY,
+                style="italic",
+            )
+
+    # ---- layout ----
+    TOP = 2.65
+    BOT = 0.95
+    BH = 1.0
+    BW = 1.7
+    CW = 1.45
+    CH = 0.88
+
+    XA = 0.85  # FastAPI
+    XC = 3.1  # Celery client
+    XB = 5.35  # Redis broker
+    XW = 7.65  # Celery worker
+    XF = 10.85  # Python function / run_optimization
+    XR = 10.85  # Redis result backend
+
+    # elements
+    _box(
+        XA,
+        (TOP + BOT) / 2,
+        1.5,
+        2.6,
+        "FastAPI\nPOST /optimize\nGET /results",
+        fc="#fef9e7",
+    )
+    _box(XC, TOP, BW, BH, "Celery\nclient")
+    _cylinder(XB, TOP, CW, CH, "Redis\nbroker\n/ queue")
+    _box(XW, TOP, BW, BH, "Celery\nworker")
+    _box(XF, TOP, 2.4, BH, "run_optimization\n(optimizer\n+ p_series)", fc="#eafaf1")
+    _cylinder(XR, BOT, CW, CH, "Redis\nresult\nbackend")
+
+    # arrows -- top flow
+    _arrow(XA + 0.75, TOP, XC - BW / 2, TOP, "taak plaatsen")
+    _arrow(XC + BW / 2, TOP, XB - CW / 2, TOP, "message: taak + args")
+    _arrow(XB + CW / 2, TOP, XW - BW / 2, TOP, "pakt taak op")
+    _arrow(XW + BW / 2, TOP, XF - 1.2, TOP, "voert uit")
+
+    # Celery worker -> Redis result backend
+    _arrow(
+        XW + 0.3,
+        TOP - BH / 2,
+        XR - CW / 2,
+        BOT + CH / 2 + 0.12,
+        "status + resultaat",
+        lx=(XW + 0.3 + XR - CW / 2) / 2 + 0.25,
+        ly=(TOP - BH / 2 + BOT + CH / 2 + 0.12) / 2 + 0.04,
+        la="left",
+    )
+
+    # FastAPI -> Redis result backend (poll)
+    _arrow(
+        XA + 0.75, BOT + 0.18, XR - CW / 2, BOT + 0.18, "poll resultaat", ly=BOT + 0.32
+    )
+
+    # Redis result backend -> FastAPI (result)
+    _arrow(
+        XR - CW / 2,
+        BOT - 0.18,
+        XA + 0.75,
+        BOT - 0.18,
+        "ready / failed / result",
+        ly=BOT - 0.38,
+    )
+
+    fig.savefig(OUT / "celery_flow.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print("  celery_flow.png")
+
+
+# ---------------------------------------------------------------------------
+# 12. Frontend (stap 4.1-4.4)
 # ---------------------------------------------------------------------------
 
 
@@ -1412,6 +1602,7 @@ if __name__ == "__main__":
     make_api()
     make_database()
     make_worker()
+    make_celery_flow()
     make_geo_stack()
     make_frontend()
     print(f"\nKlaar -- alle PNG's opgeslagen in {OUT}/")
