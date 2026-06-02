@@ -713,6 +713,66 @@ Twee actieknoppen:
 
 ---
 
+---
+
+## Fase 3 — Uitbreidingen rekenkernel
+
+### Stap 3.1 — Continue optimalisatie (tijdstip + hoogte) ✓ (2026-06-02)
+
+#### Aanleiding
+
+OptimaliseRing optimaliseert **simultaan** het tijdstip T_i en de hoogte u_i van elke investering als continue variabelen. FloodOpt gebruikte alleen discrete kandidaatmaatregelen met vaste tijdstippen en hoogtes. Dit leidde tot twee concrete fouten:
+
+1. **W ontbrak in de kostenfunctie**
+   - Correcte formule: $IC(u_i, W_i) = (C + b \cdot u_i) \cdot e^{\lambda(u_i + W_i)}$
+   - Waarbij $W_i = \sum_{j < i} u_j$ de som van alle eerdere verhogingen is
+   - Elke volgende verhoging is duurder omdat de goedkope opties benut zijn
+   - FloodOpt rekende met $W = 0$ voor alle maatregelen
+
+2. **Timing was niet geoptimaliseerd**
+   - Tijdstippen waren hardcoded (2028, 2033, …) in `buildCandidates`
+   - OptimaliseRing vindt de optimale tijdstippen als onderdeel van de oplossing
+
+#### Wat OptimaliseRing produceert (zie resultatenvenster)
+
+Per dijkringdeel een **strategie van meerdere opeenvolgende investeringen**:
+
+| Kolom | Betekenis |
+|---|---|
+| Jaar voor 1e/2e verhoging | Optimaal tijdstip T_i |
+| Hoogte verhoging | Optimale u_i [cm] |
+| Absolute kosten | $IC(u_i, W_i)$ met W correct meegewogen |
+| Kosten t.g.v. **normen achterstand** (A) | Deel om huidige norm te halen |
+| Kosten t.g.v. **economie/klimaat** (B+C) | Deel voor toekomstige groei |
+| Contante waarde investeringen | Totaal NPV van de strategie |
+
+#### Implementatie: `ContinuousOptimizer`
+
+Nieuwe solver in `floodopt_core/optimization/continuous_optimizer.py`.
+
+**Beslissingsvariabelen:** $(T_1, u_1, T_2, u_2, \ldots, T_N, u_N)$ als continue grootheden.
+
+**Kostenfunctie:**
+$$IC(u_i, W_i) = \left(C + b \cdot u_i\right) \cdot e^{\lambda(u_i + W_i)} \cdot \left(1 + \frac{\Omega}{\delta_2}\right) \quad [\text{M EUR}]$$
+
+**Doelfunctie:**
+$$\min_{N, T_1 \ldots T_N, u_1 \ldots u_N} K = \sum_{s=0}^{T-1} P(s) V(s) e^{-\delta_1 s} + \sum_{i=1}^{N} IC_i \cdot e^{-\delta_2(T_i - t_0)}$$
+
+**Methode:** scipy.optimize.minimize (SLSQP) voor vaste N; itereer N = 1, 2, 3 en kies de N met de laagste K.
+
+**Input:** kostenfunctie-parameters C, b, λ, Ω per traject (uit `v_kostenfunctie_floodopt`).
+
+**Output per investering:** jaar, hoogte [m], absolute kosten, W, kostenopsplitsing A/(B+C).
+
+#### Verificatie
+
+- Meerdere investeringen per traject ✓
+- W correct meegewogen in kostenfunctie ✓
+- Timing geoptimaliseerd (niet hardcoded) ✓
+- API: `solver: "continuous"` als nieuwe optie ✓
+
+---
+
 ### Stap 4.9 — Normtraject-bundel (vroeger: dijkring-niveau) ⏳ (gepland)
 
 Een normtraject-bundel (vroeger: dijkring) = verzameling trajecten met gedeelde optimalisatie.

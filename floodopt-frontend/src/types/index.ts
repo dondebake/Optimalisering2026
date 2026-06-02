@@ -38,6 +38,22 @@ export interface RiskParams {
 
 export type ObjectiveType = 'min_cost' | 'min_ncw' | 'max_risk_reduction'
 
+export interface CostFunctionParams {
+  C: number        // vaste kosten [M EUR]
+  b: number        // variabele kosten [M EUR/m]
+  lam: number      // schaalparameter [1/m]
+  omega: number    // onderhoudsfractie
+}
+
+export interface InvestmentRow {
+  year: number
+  delta_h: number
+  W: number
+  cost_meur: number
+  cost_A_meur: number
+  cost_BC_meur: number
+}
+
 export interface OptimizeRequest {
   trajectory_id: string
   scenario_id: string
@@ -45,7 +61,8 @@ export interface OptimizeRequest {
   risk_params: RiskParams
   objective: ObjectiveType
   budget: number | null
-  solver: 'brute_force' | 'pyomo'
+  solver: 'brute_force' | 'pyomo' | 'continuous'
+  cost_function?: CostFunctionParams | null
 }
 
 export type JobStatus = 'pending' | 'running' | 'done' | 'failed'
@@ -111,6 +128,7 @@ export interface OptimizeResponse {
   investment_npv: number | null
   objective_value: number | null
   p_series: PSeriesPoint[] | null
+  investments: InvestmentRow[] | null
   input_payload: InputPayload | null
 }
 

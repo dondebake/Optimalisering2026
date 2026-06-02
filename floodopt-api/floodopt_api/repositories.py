@@ -190,6 +190,7 @@ class OrmRepositories:
             investment_npv=r.investment_npv,
             objective_value=r.objective_value,
             p_series=r.p_series,
+            investments=r.investments,
             input_payload=r.input_payload,
         )
         self._s.merge(orm)
@@ -225,6 +226,7 @@ class OrmRepositories:
             investment_npv=row.investment_npv,
             objective_value=row.objective_value,
             p_series=row.p_series,
+            investments=row.investments,
             input_payload=row.input_payload,
         )
 

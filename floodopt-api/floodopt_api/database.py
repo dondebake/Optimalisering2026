@@ -65,6 +65,7 @@ class OptimizationResultORM(Base):
     investment_npv: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     objective_value: MappedColumn[float | None] = mapped_column(Float, nullable=True)
     p_series: MappedColumn[list | None] = mapped_column(JSON, nullable=True)
+    investments: MappedColumn[list | None] = mapped_column(JSON, nullable=True)
     input_payload: MappedColumn[dict | None] = mapped_column(JSON, nullable=True)
 
 
@@ -89,6 +90,7 @@ def _migrate_geometry_column(engine) -> None:  # type: ignore[no-untyped-def]
     migrations = [
         ("trajectories", "geometry", "JSON"),
         ("optimization_results", "p_series", "JSON"),
+        ("optimization_results", "investments", "JSON"),
         ("optimization_results", "input_payload", "JSON"),
     ]
     with engine.connect() as conn:

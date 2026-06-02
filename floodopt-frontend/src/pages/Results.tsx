@@ -443,8 +443,43 @@ export default function Results() {
             </Section>
           )}
 
-          {/* Kandidaatmaatregelen */}
-          {inp && inp.candidates.length > 0 && (
+          {/* Continue optimizer — investeringsschema */}
+          {data.status === 'done' && data.investments && data.investments.length > 0 && (
+            <Section title={`Investeringsschema — ${data.investments.length} investering(en)`}>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-gray-400 uppercase tracking-wide border-b border-gray-100">
+                    <th className="text-left pb-1.5">#</th>
+                    <th className="text-right pb-1.5">Jaar</th>
+                    <th className="text-right pb-1.5">Δh [m]</th>
+                    <th className="text-right pb-1.5">W [m]</th>
+                    <th className="text-right pb-1.5">Kosten (A)</th>
+                    <th className="text-right pb-1.5">Kosten (B+C)</th>
+                    <th className="text-right pb-1.5 text-gray-600 font-semibold">Totaal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {data.investments.map((inv, i) => (
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="py-1.5 font-mono text-green-700 font-semibold">{i + 1}</td>
+                      <td className="py-1.5 text-right tabular-nums">{inv.year}</td>
+                      <td className="py-1.5 text-right tabular-nums">{inv.delta_h.toFixed(2)}</td>
+                      <td className="py-1.5 text-right tabular-nums text-gray-400">{inv.W.toFixed(2)}</td>
+                      <td className="py-1.5 text-right tabular-nums">{inv.cost_A_meur.toFixed(1)} M€</td>
+                      <td className="py-1.5 text-right tabular-nums">{inv.cost_BC_meur.toFixed(1)} M€</td>
+                      <td className="py-1.5 text-right tabular-nums font-medium">{inv.cost_meur.toFixed(1)} M€</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-2 text-xs text-gray-400">
+                A = kosten door normenachterstand · B+C = kosten door klimaat + economische groei · W = cumulatieve eerdere verhoging
+              </div>
+            </Section>
+          )}
+
+          {/* Kandidaatmaatregelen (discrete solvers) */}
+          {inp && inp.candidates.length > 0 && !data.investments && (
             <Section title={`Kandidaatmaatregelen (${inp.candidates.length})`}>
               <MeasureTable
                 measures={inp.candidates}

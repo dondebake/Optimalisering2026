@@ -15,20 +15,32 @@ from floodopt_core.optimization.protocols import ObjectiveType
 from floodopt_core.risk.protocols import RiskParams
 
 
+class CostFunctionParams(BaseModel):
+    """Parameters voor de exponentiële kostenfunctie (voor de continue optimizer)."""
+
+    C: float = Field(gt=0, description="Vaste kosten [M EUR]")
+    b: float = Field(ge=0, description="Variabele lineaire kosten [M EUR/m]")
+    lam: float = Field(ge=0, description="Exponentiële schaalparameter [1/m]")
+    omega: float = Field(default=0.002, ge=0, description="Jaarlijkse onderhoudsfractie")
+
+
 class OptimizeRequest(BaseModel):
     """Verzoek om een optimalisatie uit te voeren."""
 
     trajectory_id: str
     scenario_id: str
-    candidates: list[Measure] = Field(min_length=1, description="Kandidaatmaatregelen")
+    candidates: list[Measure] = Field(min_length=0, description="Kandidaatmaatregelen (leeg bij continuous solver)")
     risk_params: RiskParams
     objective: ObjectiveType = ObjectiveType.MIN_NCW
     budget: float | None = Field(
         default=None, description="Budget [€] voor MAX_RISK_REDUCTION"
     )
-    solver: Literal["brute_force", "pyomo"] = Field(
+    solver: Literal["brute_force", "pyomo", "continuous"] = Field(
         default="brute_force",
-        description="'brute_force' = exact referentie, 'pyomo' = HiGHS MILP",
+        description="'brute_force' = exact referentie, 'pyomo' = HiGHS MILP, 'continuous' = continue optimalisatie",
+    )
+    cost_function: CostFunctionParams | None = Field(
+        default=None, description="Kostenfunctie-parameters voor de continue optimizer"
     )
 
 
@@ -58,6 +70,10 @@ class OptimizeResponse(BaseModel):
     p_series: list[dict] | None = Field(
         default=None,
         description="P(t)-tijdreeks: [{year, p, p_mid}, …] voor elk jaar in de horizon",
+    )
+    investments: list[dict] | None = Field(
+        default=None,
+        description="Investeringsschema van de continue optimizer [{year, delta_h, W, cost_meur, ...}]",
     )
     input_payload: dict | None = Field(
         default=None,

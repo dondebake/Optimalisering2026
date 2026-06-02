@@ -70,7 +70,7 @@ export default function OptimizeForm() {
     ]
   )
   const [objective, setObjective] = useState<ObjectiveType>('min_cost')
-  const [solver, setSolver] = useState<'brute_force' | 'pyomo'>('brute_force')
+  const [solver, setSolver] = useState<'brute_force' | 'pyomo' | 'continuous'>('brute_force')
   const [budget, setBudget] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -277,9 +277,10 @@ export default function OptimizeForm() {
             </Field>
             <Field label="Solver">
               <select className={SELECT} value={solver}
-                onChange={(e) => setSolver(e.target.value as 'brute_force' | 'pyomo')}>
+                onChange={(e) => setSolver(e.target.value as 'brute_force' | 'pyomo' | 'continuous')}>
                 <option value="brute_force">BruteForce</option>
                 <option value="pyomo">Pyomo / HiGHS</option>
+                <option value="continuous">Continue optimizer (tijdstip + hoogte)</option>
               </select>
             </Field>
             {objective === 'max_risk_reduction' && (

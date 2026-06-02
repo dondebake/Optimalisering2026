@@ -49,32 +49,89 @@ def run_optimization(job_id: str, payload: dict) -> None:  # type: ignore[type-a
             "brute_force": BruteForceOptimizer(risk=risk_calc),
             "pyomo": PyomoOptimizer(risk=risk_calc),
         }
-        result = optimizers[solver_name].solve(
-            trajectory, scenario, candidates, risk_params, objective, budget
-        )
+        if solver_name == "continuous":
+            from floodopt_core.io.cost_function import CostFunction
+            from floodopt_core.optimization.continuous_optimizer import ContinuousOptimizer
 
-        selected_measures = [m for m in candidates if m.id in result.selected_ids]
-        p_series = compute_p_series(
-            trajectory, scenario, selected_measures, risk_params.time_horizon
-        )
+            cf_payload = payload.get("cost_function")
+            if cf_payload is None:
+                raise ValueError("cost_function is verplicht bij solver='continuous'")
+            cost_fn = CostFunction(**cf_payload)
+            cont_result = ContinuousOptimizer().solve(trajectory, scenario, cost_fn, risk_params)
 
-        repos.save_result(
-            OptimizeResponse(
-                job_id=job_id,
-                status="done",
-                trajectory_id=trajectory.id,
-                scenario_id=scenario.id,
-                objective=objective,
-                solver=solver_name,
-                selected_measure_ids=sorted(result.selected_ids),
-                total_ncw=result.total_ncw,
-                risk_ncw=result.risk_ncw,
-                investment_npv=result.investment_npv,
-                objective_value=result.objective_value,
-                p_series=p_series,
-                input_payload=payload,
+            # Bouw p_series op basis van de gevonden strategie
+            from floodopt_core.io.models import Measure as MeasureModel
+            synth_measures = [
+                MeasureModel(
+                    id=f"INV{i+1}",
+                    type="dike_reinforcement",
+                    cost=round(inv.cost_meur * 1e6),
+                    year=inv.year,
+                    effect=inv.delta_h,
+                    location=f"optimaal-{i+1}",
+                )
+                for i, inv in enumerate(cont_result.investments)
+            ]
+            p_series = compute_p_series(trajectory, scenario, synth_measures, risk_params.time_horizon)
+
+            investments_json = [
+                {
+                    "year": inv.year,
+                    "delta_h": inv.delta_h,
+                    "W": inv.W,
+                    "cost_meur": inv.cost_meur,
+                    "cost_A_meur": inv.cost_A_meur,
+                    "cost_BC_meur": inv.cost_BC_meur,
+                }
+                for inv in cont_result.investments
+            ]
+
+            repos.save_result(
+                OptimizeResponse(
+                    job_id=job_id,
+                    status="done",
+                    trajectory_id=trajectory.id,
+                    scenario_id=scenario.id,
+                    objective=objective,
+                    solver=solver_name,
+                    selected_measure_ids=[f"INV{i+1}" for i in range(len(cont_result.investments))],
+                    total_ncw=cont_result.total_ncw,
+                    risk_ncw=cont_result.risk_ncw,
+                    investment_npv=cont_result.investment_npv,
+                    objective_value=cont_result.objective_value,
+                    p_series=p_series,
+                    investments=investments_json,
+                    input_payload=payload,
+                )
             )
-        )
+        else:
+            result = optimizers[solver_name].solve(
+                trajectory, scenario, candidates, risk_params, objective, budget
+            )
+
+            selected_measures = [m for m in candidates if m.id in result.selected_ids]
+            p_series = compute_p_series(
+                trajectory, scenario, selected_measures, risk_params.time_horizon
+            )
+
+            repos.save_result(
+                OptimizeResponse(
+                    job_id=job_id,
+                    status="done",
+                    trajectory_id=trajectory.id,
+                    scenario_id=scenario.id,
+                    objective=objective,
+                    solver=solver_name,
+                    selected_measure_ids=sorted(result.selected_ids),
+                    total_ncw=result.total_ncw,
+                    risk_ncw=result.risk_ncw,
+                    investment_npv=result.investment_npv,
+                    objective_value=result.objective_value,
+                    p_series=p_series,
+                    investments=None,
+                    input_payload=payload,
+                )
+            )
     except Exception:
         repos.update_status(job_id, "failed")
         raise
