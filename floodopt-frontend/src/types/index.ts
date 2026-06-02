@@ -50,6 +50,24 @@ export interface OptimizeRequest {
 
 export type JobStatus = 'pending' | 'running' | 'done' | 'failed'
 
+export interface ValDijkring {
+  Dijkring: string
+  Naam: string
+  norm_per_jaar: number
+  n_trajecten: number
+}
+
+export interface ValTrajectory {
+  Dijkring: string
+  DijkringDeel: number
+  DijkringTraject: number
+  Naam: string
+  alpha_per_m: number
+  p0_per_jaar: number
+  eta_m_per_jaar: number
+  norm_per_jaar: number
+}
+
 export interface PSeriesPoint {
   year: number
   p: number

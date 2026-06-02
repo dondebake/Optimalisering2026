@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import OptimizeForm from './pages/OptimizeForm'
 import Results from './pages/Results'
+import ValidationDashboard from './pages/ValidationDashboard'
 
 function Nav() {
   const { pathname } = useLocation()
@@ -19,6 +20,7 @@ function Nav() {
         <Link to="/" className="font-bold text-gray-900 mr-4">FloodOpt</Link>
         {link('/', 'Dashboard')}
         {link('/optimize', 'Optimaliseren')}
+        {link('/validatie', 'Validatie')}
       </div>
     </nav>
   )
@@ -34,6 +36,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/optimize" element={<OptimizeForm />} />
             <Route path="/results/:jobId" element={<Results />} />
+            <Route path="/validatie" element={<ValidationDashboard />} />
           </Routes>
         </main>
       </div>

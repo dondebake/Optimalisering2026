@@ -1,4 +1,4 @@
-import type { Measure, OptimizeRequest, OptimizeResponse, Scenario, Trajectory } from '../types'
+import type { Measure, OptimizeRequest, OptimizeResponse, Scenario, Trajectory, ValDijkring, ValTrajectory } from '../types'
 
 const BASE = '/api'
 
@@ -44,6 +44,23 @@ export function getTrajectoriesGeoJSON(): Promise<GeoJSON.FeatureCollection> {
 
 export function getAllResults(): Promise<OptimizeResponse[]> {
   return request('/results')
+}
+
+export function deleteResult(jobId: string): Promise<void> {
+  return request(`/results/${jobId}`, { method: 'DELETE' })
+}
+
+export function getValDijkringen(): Promise<ValDijkring[]> {
+  return request('/validation/dijkringen')
+}
+
+export function getValTrajectories(dijkringId?: string): Promise<ValTrajectory[]> {
+  const qs = dijkringId ? `?dijkring=${encodeURIComponent(dijkringId)}` : ''
+  return request(`/validation/trajectories${qs}`)
+}
+
+export function valOptimize(dijkring: string, deel: number, traject: number): Promise<OptimizeResponse> {
+  return request(`/validation/optimize/${dijkring}/${deel}/${traject}`, { method: 'POST' })
 }
 
 export async function submitOptimization(

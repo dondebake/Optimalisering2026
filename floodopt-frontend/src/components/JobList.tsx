@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { getAllResults } from '../api/client'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getAllResults, deleteResult } from '../api/client'
 import { StatusBadge } from './StatusBadge'
 
 const OBJECTIVE_LABEL: Record<string, string> = {
@@ -15,6 +15,14 @@ function fmt(n: number | null) {
 }
 
 export default function JobList() {
+  const qc = useQueryClient()
+
+  async function handleDelete(jobId: string) {
+    if (!window.confirm('Job verwijderen?')) return
+    await deleteResult(jobId)
+    qc.invalidateQueries({ queryKey: ['all-results'] })
+  }
+
   const { data, isLoading } = useQuery({
     queryKey: ['all-results'],
     queryFn: getAllResults,
@@ -65,13 +73,20 @@ export default function JobList() {
               <td className="px-4 py-3">
                 <StatusBadge status={job.status} />
               </td>
-              <td className="px-4 py-3 text-right">
+              <td className="px-4 py-3 text-right flex items-center justify-end gap-3">
                 <Link
                   to={`/results/${job.job_id}`}
                   className="text-blue-600 hover:underline text-xs"
                 >
                   Bekijk →
                 </Link>
+                <button
+                  onClick={() => handleDelete(job.job_id)}
+                  className="text-red-400 hover:text-red-600 text-xs"
+                  title="Verwijder job"
+                >
+                  ✕
+                </button>
               </td>
             </tr>
           ))}

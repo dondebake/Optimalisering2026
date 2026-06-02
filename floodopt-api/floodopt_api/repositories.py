@@ -39,6 +39,7 @@ class Repositories(Protocol):
     def save_result(self, r: OptimizeResponse) -> None: ...
     def get_result(self, job_id: str) -> OptimizeResponse | None: ...
     def get_all_results(self) -> list[OptimizeResponse]: ...
+    def delete_result(self, job_id: str) -> bool: ...
     def update_status(self, job_id: str, status: str) -> None: ...
 
 
@@ -80,6 +81,12 @@ class MemoryRepositories:
 
     def get_all_results(self) -> list[OptimizeResponse]:
         return list(reversed(list(self._results.values())))
+
+    def delete_result(self, job_id: str) -> bool:
+        if job_id in self._results:
+            del self._results[job_id]
+            return True
+        return False
 
     def update_status(self, job_id: str, status: str) -> None:
         if job_id in self._results:
@@ -194,6 +201,14 @@ class OrmRepositories:
     def get_all_results(self) -> list[OptimizeResponse]:
         rows = self._s.execute(select(OptimizationResultORM)).scalars().all()
         return list(reversed([self._row_to_response(r) for r in rows]))
+
+    def delete_result(self, job_id: str) -> bool:
+        row = self._s.get(OptimizationResultORM, job_id)
+        if row is None:
+            return False
+        self._s.delete(row)
+        self._s.commit()
+        return True
 
     def _row_to_response(self, row: OptimizationResultORM) -> OptimizeResponse:
         return OptimizeResponse(

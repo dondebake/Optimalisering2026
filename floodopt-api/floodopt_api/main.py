@@ -238,3 +238,135 @@ def get_result(job_id: str, repos: Repos) -> OptimizeResponse:
     if result is None:
         raise HTTPException(404, detail=f"Resultaat '{job_id}' niet gevonden")
     return result
+
+
+@app.delete("/results/{job_id}", status_code=204)
+def delete_result(job_id: str, repos: Repos) -> None:
+    """Verwijder een optimalisatieresultaat."""
+    if not repos.delete_result(job_id):
+        raise HTTPException(404, detail=f"Resultaat '{job_id}' niet gevonden")
+
+
+# ---------------------------------------------------------------------------
+# GET /validation/*  — OptimaliseRing referentiedata (readonly)
+# ---------------------------------------------------------------------------
+
+
+@app.get("/validation/dijkringen")
+def validation_dijkringen() -> list[dict]:
+    """Lijst van 103 dijkringen uit de OptimaliseRing 2011 referentiedatabase."""
+    from floodopt_api.validation import get_dijkringen
+
+    return get_dijkringen()
+
+
+@app.get("/validation/trajectories")
+def validation_trajectories(dijkring: str | None = None) -> list[dict]:
+    """Trajecten (klimaat_id=1) uit de referentiedatabase, optioneel gefilterd op dijkring."""
+    from floodopt_api.validation import get_trajectories
+
+    return get_trajectories(dijkring)
+
+
+@app.post(
+    "/validation/optimize/{dijkring}/{deel}/{traject}",
+    status_code=202,
+    response_model=OptimizeResponse,
+)
+def validation_optimize(
+    dijkring: str,
+    deel: float,
+    traject: float,
+    repos: Repos,
+) -> OptimizeResponse:
+    """Start een FloodOpt-optimalisatie op een OptimaliseRing-referentietraject.
+
+    Gebruikt 3 standaard kandidaatmaatregelen (Dh = 0.5 / 1.0 / 1.5 m).
+    Risk-parameters zijn de FloodOpt-standaardwaarden.
+    """
+    from floodopt_api.validation import get_trajectory
+    from floodopt_core.io.models import Measure, Scenario, Trajectory
+    from floodopt_core.optimization.protocols import ObjectiveType
+    from floodopt_core.risk.protocols import RiskParams
+
+    ref = get_trajectory(dijkring, deel, traject)
+    if ref is None:
+        raise HTTPException(
+            404, detail=f"Traject {dijkring}-{deel}-{traject} niet gevonden"
+        )
+
+    traj_id = f"ref-{dijkring}-{int(deel)}-{int(traject)}"
+    scen_id = f"ref-scen-{dijkring}"
+
+    traj = Trajectory(
+        id=traj_id,
+        norm=ref["norm_per_jaar"],
+        length=10.0,
+        p0=ref["p0_per_jaar"],
+        alpha=ref["alpha_per_m"],
+        base_year=2023,
+    )
+    scen = Scenario(
+        id=scen_id,
+        climate="huidig",
+        q_design=1000.0,
+        h_design=5.0,
+        eta=ref["eta_m_per_jaar"],
+    )
+    repos.save_trajectory(traj)
+    repos.save_scenario(scen)
+
+    candidates = [
+        Measure(
+            id="V1",
+            type="dike_reinforcement",
+            cost=2_000_000,
+            year=2030,
+            effect=0.5,
+            location="vak-1",
+        ),
+        Measure(
+            id="V2",
+            type="dike_reinforcement",
+            cost=5_000_000,
+            year=2040,
+            effect=1.0,
+            location="vak-2",
+        ),
+        Measure(
+            id="V3",
+            type="dike_reinforcement",
+            cost=10_000_000,
+            year=2050,
+            effect=1.5,
+            location="vak-3",
+        ),
+    ]
+    risk_params = RiskParams(
+        base_damage=1e9, discount_rate=0.04, gamma=0.02, time_horizon=100
+    )
+
+    job_id = str(uuid.uuid4())
+    pending = OptimizeResponse(
+        job_id=job_id,
+        status="pending",
+        trajectory_id=traj_id,
+        scenario_id=scen_id,
+        objective=ObjectiveType.MIN_COST,
+        solver="brute_force",
+    )
+    repos.save_result(pending)
+
+    payload = {
+        "trajectory": traj.model_dump(),
+        "scenario": scen.model_dump(),
+        "candidates": [m.model_dump() for m in candidates],
+        "risk_params": risk_params.model_dump(),
+        "objective": ObjectiveType.MIN_COST.value,
+        "budget": None,
+        "solver": "brute_force",
+    }
+    celery_app.send_task(
+        "floodopt_worker.tasks.run_optimization", args=[job_id, payload]
+    )
+    return pending
