@@ -563,7 +563,68 @@ Zie: `docs/stap4_frontend.png`
 
 ---
 
-### Stap 4.7 — Dijkring-niveau ⏳ (gepland)
+### Stap 4.7 — Dashboard herontworpen + Runs pagina + OptimizeModal ✓ (2026-06-02)
+
+#### Dashboard
+
+- **Volledige kaartlayout**: kaart vult het volledige centrale gebied (`flex-1`, `h-full`)
+- **Links paneel** (256 px): kaartlegenda met 9 P₀-klassen conform OptimaliseRing
+- **Rechts paneel** (320 px, conditioneel bij klik): trajectdetails, gefilterde runs voor het geselecteerde dijkringdeel, knoppen om nieuwe berekeningen te starten
+- **Dijkringdelen op kaart**: `dijkringdelen.shp` (RD New → WGS84) gekleurd op P₀ via `GET /geo/dijkringdelen`; klik opent rechter paneel met alle beschikbare trajecten en historische runs
+
+#### Runs pagina (`/runs`)
+
+- Volledige tabel alle optimalisatieruns — nieuwste eerst
+- Kolommen: traject, doelfunctie, solver, resultaat [M EUR], status, job-id, verwijder
+- Vervangt de tabbladen-aanpak; "Optimaliseren" verdwenen als globale tab
+
+#### OptimizeModal
+
+Wanneer de gebruiker een traject kiest in het rechter paneel:
+1. Haalt referentiedata op: `GET /validation/reference/{dijkring}/{deel}`
+2. Toont scenario-keuzescherm: V₀ (Laag/Verwacht/Hoog) + γ (7 CPB-scenario's)
+3. Navigeert naar `OptimizeForm` met volledige prefill (traject, scenario, kandidaatmaatregelen, risicoparameters)
+
+#### V₀ en γ uit database ✓
+
+- `GET /validation/reference/{dijkring}/{deel}`: retourneert alle schade- en economische scenario's
+- `ScenarioVoorHoeveelheidSchadeData.Schade` [M EUR]: V₀ voor Laag/Verwacht/Hoog
+- `EconomischScenarioData.Gamma`: γ voor 7 CPB WLO-scenario's (RC, SE, TM, GE, ...)
+- Geen schattingen meer — alle waarden rechtstreeks uit de 2011-database
+
+---
+
+### Stap 4.8 — Results-pagina compleet + invoerparameters opgeslagen ✓ (2026-06-02)
+
+#### input_payload in database
+
+- `OptimizationResultORM.input_payload` (JSON-kolom, migratie idempotent)
+- `POST /optimize` slaat payload direct op bij pending-status
+- Worker slaat payload ook op bij done-status
+- Bevat: volledige trajectory, scenario, candidates, risk_params, objective, solver
+
+#### Results-pagina
+
+Twee kolommen + volle breedte:
+
+| Sectie | Inhoud |
+|---|---|
+| Links | Doelfunctie/solver, traject (P₀ α norm η basisjaar), klimaatscenario, risicoparameters (V₀ δ γ T) |
+| Rechts | Financieel resultaat (NCW, risico, investering), kandidaatmaatregelen-tabel (✓ = geselecteerd) |
+| Vol breedte | P(t)-zaagrandgrafiek (P, Pmidden, Pwet) |
+
+Twee actieknoppen:
+- **"Opnieuw ↺"** — zelfde instellingen, bijv. andere solver
+- **"Opnieuw met aanpassingen →"** — OptimizeForm met alle waarden pre-ingevuld
+
+#### Bugfixes
+
+- **Optimistic delete**: `useMutation` met `onMutate` verwijdert run direct uit TanStack Query-cache; geen zichtbare vertraging meer. Rollback bij API-fout.
+- **204 No Content**: `request()` in de fetch-client probeerde `res.json()` op een lege body (DELETE-response). Opgelost door te returnen op status 204.
+
+---
+
+### Stap 4.9 — Normtraject-bundel (vroeger: dijkring-niveau) ⏳ (gepland)
 
 Een normtraject-bundel (vroeger: dijkring) = verzameling trajecten met gedeelde optimalisatie.
 

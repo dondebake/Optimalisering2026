@@ -175,13 +175,13 @@ De OptimaliseRing 2011 SQLite is het testbed. Onderstaande tabel geeft aan wat a
 | P₀, α, η basisscenario (`v_trajecten_floodopt`, klimaat_id=1) | Physics, kaartkleur, formulier pre-fill |
 | Kostenfunctie λ, C, b (`v_kostenfunctie_floodopt`) | Kandidaatmaatregelen genereren bij pre-fill |
 | Dijkringdelen geometrie (`dijkringdelen.shp` → WGS84) | Kaart — gekleurde lijnen op P₀ |
+| V₀ (`ScenarioVoorHoeveelheidSchadeData.Schade` [M EUR]) | ScenarioPaneel: Laag/Verwacht/Hoog bij pre-fill |
+| γ (`EconomischScenarioData.Gamma`) | ScenarioPaneel: 7 CPB WLO-scenario's bij pre-fill |
 
 ### Niet geïmplementeerd
 
 | Prioriteit | Data | Impact |
 |---|---|---|
-| 🔴 | Schadeparameters Zeta/Nu/Psi (`v_schade_floodopt`) | V₀ hardcoded €1 mrd — **NCW incorrect** |
-| 🔴 | Economische groei γ (`EconomischScenarioData`) | γ hardcoded 2 % — **NCW incorrect** |
 | 🟡 | 18 klimaatscenario's (η per scenario) | Gebruiker voert η handmatig in |
 | 🟡 | Omega (onderhoudsfactor) in NCW | Jaarlijkse onderhoudskosten ontbreken |
 | 🟢 | BeginJaar 2015 vs hardcoded 2023 | Klein tijdsverschil |
@@ -214,7 +214,7 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
 | 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
-| 4 — Frontend | 🚧 In uitvoering | 4.1–4.6 ✅ · 4.7 dijkring-niveau |
+| 4 — Frontend | 🚧 In uitvoering | 4.1–4.8 ✅ · 4.9 normtraject-bundel |
 | 5 — Data-actualisatie 2026 | ⏳ Gepland | NBPW WFS, WBI2023, KNMI 2023, HWBP, SSM2 |
 
 ---
@@ -352,7 +352,22 @@ OptimaliseRing-klasse-indeling (< 1/113.000 t/m > 1/800).
 - `ValidationDashboard` — dropdown dijkringen, trajectentabel, "Optimaliseer →" per rij
 - Navigeert naar `OptimizeForm` met pre-fill; P₀ altijd bewerkbaar vóór berekening
 
-#### Stap 4.7 ⏳ — Normtraject-bundel (vroeger: dijkring-niveau)
+#### Stap 4.7 ✅ — Dashboard herontworpen + Runs pagina + OptimizeModal
+
+- Kaart vult volledig centrale gebied; linker legenda-paneel; rechter trajectory-paneel bij klik
+- Dijkringdelen 2011 op kaart gekleurde lijnen (P₀, geometrie uit shapefile)
+- `GET /validation/reference/{dijkring}/{deel}`: V₀ (Laag/Verwacht/Hoog) en γ (7 CPB-scenario's) uit DB
+- OptimizeModal over de kaart (niet als tab): kiest scenario's, pre-fill OptimizeForm
+- Runs als volledige pagina in nav (`/runs`); "Optimaliseren" niet meer als globaal tabblad
+
+#### Stap 4.8 ✅ — Results-pagina compleet + invoerparameters opgeslagen
+
+- `input_payload` JSON-kolom in `optimization_results` — sla alle invoer op per run
+- Results: twee kolommen (traject/scenario/risicoparam links, financieel/maatregelen rechts) + P(t)-grafiek
+- Knoppen: "Opnieuw ↺" (zelfde instellingen) en "Opnieuw met aanpassingen →"
+- Optimistic delete (direct visueel, rollback bij fout); fix 204 No Content JSON-parse
+
+#### Stap 4.9 ⏳ — Normtraject-bundel (vroeger: dijkring-niveau)
 
 - `DijkRing` model: id, name, `trajectory_ids: list[str]`
 - `POST /dijkringen`, `GET /dijkringen`, `POST /optimize-dijkring`

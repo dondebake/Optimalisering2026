@@ -194,7 +194,7 @@ def make_architecture() -> None:
     ax_txt.text(
         0.5,
         0.15,
-        "Fase 1+2+4 (stap 4.1-4.4) klaar -- 90/90 tests.  "
+        "Fase 1+2+4 (stap 4.1-4.8) klaar -- 90/90 tests.  "
         "start.bat: Redis + FastAPI + Celery + Vite (4 terminals).",
         ha="center",
         va="center",
@@ -890,13 +890,13 @@ def make_api() -> None:
     ax_r.set_title("API-endpoints", fontsize=11, fontweight="bold", color=DARK, pad=8)
 
     endpoint_rows = [
-        ["POST", "/scenarios", "201", "roundtrip OK"],
-        ["POST", "/trajectories", "201", "roundtrip OK"],
-        ["POST", "/optimize", "202", "async + job_id OK"],
-        ["GET", "/results", "200", "lijst jobs OK"],
-        ["GET", "/results/{job_id}", "200/404", "polling OK"],
-        ["DELETE", "/results/{job_id}", "204/404", "stap 4.x"],
-        ["GET", "/geo/trajectories", "200", "GeoJSON + p_year OK"],
+        ["POST", "/optimize", "202", "async + job_id + input_payload"],
+        ["GET", "/results", "200", "lijst alle runs"],
+        ["GET", "/results/{job_id}", "200/404", "polling + input_payload"],
+        ["DELETE", "/results/{job_id}", "204/404", "optimistic delete"],
+        ["GET", "/geo/trajectories", "200", "GeoJSON + p_year"],
+        ["GET", "/geo/dijkringdelen", "200", "2011 dijkringdelen + P0"],
+        ["GET", "/validation/reference/{dr}/{deel}", "200", "V0 + gamma scenarios"],
     ]
 
     tbl_r = ax_r.table(
@@ -1549,12 +1549,12 @@ def make_frontend() -> None:
 
     stap_rows = [
         ["4.1", "Scaffold", "Vite + React + Tailwind + TanStack Query + CORS"],
-        ["4.1", "OptimizeForm", "POST /optimize + Results-pagina met polling"],
-        ["4.2", "Kaart", "GeoJSON in SQLite, GET /geo/trajectories, Leaflet"],
-        ["4.2", "Geometrie", "Trajectory.geometry veld, Rijnmond-voorbeeld"],
-        ["4.3", "Job-overzicht", "GET /results lijst, JobList + auto-polling"],
+        ["4.2", "Kaart + geometrie", "GeoJSON SQLite, Leaflet, P-klasse kleurcodering"],
+        ["4.3–4.5", "Job-overzicht + delete", "GET /results, polling, optimistic delete"],
         ["4.4", "P(t)-grafiek", "compute_p_series: P + Pmidden per epoch"],
-        ["4.4", "Kleurkaart", "P(2050)-klasse conform OptimaliseRing"],
+        ["4.6", "Validatie + V0/gamma", "2011-DB: scenario-selectie V0 en gamma"],
+        ["4.7", "Dashboard + Runs", "Kaartlayout, TrajectoryPanel, RunsPage, OptimizeModal"],
+        ["4.8", "Results compleet", "input_payload opgeslagen, Opnieuw-knoppen"],
     ]
 
     tbl_r = ax_r.table(
@@ -1572,8 +1572,8 @@ def make_frontend() -> None:
     ax_foot.text(
         0.5,
         0.5,
-        "Tech: Vite 8 + React 19 + TypeScript + Tailwind v4 + "
-        "TanStack Query + react-leaflet + Recharts  |  Dev proxy: /api -> localhost:8000",
+        "Tech: Vite + React 19 + TypeScript + Tailwind v4 + TanStack Query + "
+        "react-leaflet + Recharts  |  Stap 4.1-4.8 klaar",
         ha="center",
         va="center",
         fontsize=9,
