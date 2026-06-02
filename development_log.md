@@ -203,6 +203,54 @@ Voor echte MKBA's moeten de Δh-waarden, kosten en planning uit de **HWBP-projec
 
 ---
 
+### Monetaire parameters — `OptimaliseRing.ini`
+
+De bedragen per slachtoffer/getroffene staan **niet in de database** maar in het configuratiebestand `OptimaliseRing.ini`. Ze zijn gebruikt bij het voorberekenen van `ScenarioVoorHoeveelheidSchadeData.Schade`.
+
+**Waarden uit `OptimaliseRing.ini` (2011-configuratie):**
+
+| Parameter | Ini-sleutel | Waarde | Eenheid | Toelichting |
+|---|---|---|---|---|
+| Bedrag per dodelijk slachtoffer | `BedragPerDodelijkSlachtoffer` | 6.700 | k€ | = €6,7 miljoen/slachtoffer (VSL 2011) |
+| Bedrag per getroffene | `BedragPerGetroffene` | 12 | k€ | = €12.000 per getroffen persoon |
+| Bedrag per inwoner | `BedragPerInwoner` | 0 | k€ | Niet gebruikt in 2011-configuratie |
+| Aversiefactor groepsrisico | `Aversiefactor` | 1,0 | — | γ in formule 2.13; geen aversie |
+| Beleidsfactor overstromingsschade | `BeleidsfactorOverstromingsschade` | 1,6 | — | μ in formule 2.13; beleidsopslag 60% |
+| Aanpassingsfactor schade | `AanpassingsfactorOverstromingsschade` | 1,0 | — | f_d standaard; dijkring-specifiek aanpasbaar |
+| Discontovoet schade | `DiscontovoetSchade` | 5,5 | % nominaal | δ₁ — nu vervangen door 2,25% reëel |
+| Discontovoet investering | `DiscontovoetInvesteringen` | 5,5 | % nominaal | δ₂ — idem |
+| Schadescenario | `ScenarioVoorHoeveelheidSchade` | 2 | — | = Verwacht (ID=2) |
+| Kostenfactor | `FactorKosten` | 1,11 | — | f_k voor gevoeligheidsanalyse |
+
+**V(0) = `ScenarioVoorHoeveelheidSchadeData.Schade` is het eindproduct** van formule 2.13 met al deze parameters verwerkt. Slachtoffers en getroffenen zijn niet los terug te rekenen zonder de originele parameters opnieuw te gebruiken.
+
+**Implicatie:** de V₀ die FloodOpt gebruikt (via het scenariopaneel) bevat al de monetaire waarde van slachtoffers én getroffenen conform de 2011-configuratie. Voor 2026 moeten deze kengetallen geactualiseerd worden (zie stap 5.5).
+
+---
+
+### Actualisatie schade en slachtoffers — ROR 2025 (LDO) ⏳
+
+De actuele overstromingsschades en slachtofferramingen voor 2026 zijn beschikbaar via:
+
+**LDO — Landelijk Draaiboek Overstromingen:**
+`https://ldo.overstromingsinformatie.nl/scenarios` *(login vereist)*
+
+Bevat ROR 2025-scenario's (Risicoanalyse Overstromingen) per normtraject:
+- Overstromingsschade [M EUR] per scenario
+- Slachtoffers per scenario (laag/midden/hoog)
+- Getroffenen per scenario
+
+**Te actualiseren ten opzichte van 2011:**
+
+| Parameter | 2011 (OptimaliseRing.ini) | Richting 2026 |
+|---|---|---|
+| VSL (bedrag/slachtoffer) | €6,7 miljoen | €2,6–8 miljoen (RWS-richtlijn 2021) |
+| Bedrag/getroffene | €12.000 | €20.000–50.000 (geactualiseerde MKBA-richtlijn) |
+| V₀ (totale schade) | SSM1/VNK1 (2011) | SSM2 / LDO-ROR 2025 |
+| Beleidsfactor | 1,6 | nader te bepalen (Deltaprogramma) |
+
+---
+
 ### 5. Schadeparameters — `v_schade_floodopt`
 
 **372 rijen** (103 dijkringen × ≤3 SchadeFunctieIds × DijkringDelen).
@@ -753,14 +801,17 @@ De 2011-database is het testbed. Productiedata vereist actualisatie op zes front
 
 ### Stap 5.5 — Economische parameters ⏳
 
-| Parameter | 2011 | 2026 | Bron |
+| Parameter | 2011 (OptimaliseRing.ini) | 2026 | Bron |
 |---|---|---|---|
 | Discontovoet δ | 5,5% nominaal | 2,25% reëel | Rijksbegroting 2022 |
-| Economische groei γ | 2% | 1,5–2% | CPB 2024 |
-| Basisschade V₀ | SSM1/VNK1 | SSM2 / WaterSchadeSchatter | Rijkswaterstaat |
+| Economische groei γ | 2% (EconomischScenario=3, TM) | 1,5–2% | CPB 2024 |
+| V₀ (basisschade) | SSM1/VNK1 + ini-kengetallen | ROR 2025 via LDO | `https://ldo.overstromingsinformatie.nl/scenarios` *(login)* |
+| VSL (bedrag/slachtoffer) | €6,7 miljoen (`BedragPerDodelijkSlachtoffer=6700`) | €2,6–8 miljoen | RWS MKBA-richtlijn 2021 |
+| Bedrag/getroffene | €12.000 (`BedragPerGetroffene=12`) | €20.000–50.000 | Geactualiseerde MKBA-richtlijn |
+| Beleidsfactor schade | 1,6 (`BeleidsfactorOverstromingsschade`) | nader te bepalen | Deltaprogramma |
 | Tijdshorizon T | 100 jaar | 100 jaar | ongewijzigd |
 
-**Output:** `RiskParams`-objecten per traject of regio
+**Output:** `RiskParams`-objecten per traject of regio, met geactualiseerde V₀ uit LDO-ROR 2025
 
 ---
 
