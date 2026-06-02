@@ -10,7 +10,8 @@
 | DB upgrade pad | PostgreSQL optioneel via `DATABASE_URL` | `init_schema()` werkt met beide |
 | Geometrie | GeoJSON als JSON-kolom in SQLite | Geen PostGIS/GeoPandas nodig voor MVP |
 | Frontend kaarten | **Leaflet** (React + Vite) | Leest GeoJSON direct van de API |
-| Optimizer | Pyomo + HiGHS (MILP) | Open-source, exact voor MIN_COST/MAX_RR |
+| Optimizer (continu) | scipy SLSQP — `ContinuousOptimizer` | Primair — tijdstip + hoogte simultaan, W correct (stap 3.1) |
+| Optimizer (discreet) | Pyomo + HiGHS (MILP) + BruteForce | Verificatie en toekomstige discrete HWBP-maatregelen |
 | Queue | Redis + Celery | Async optimalisaties zonder HTTP-timeout |
 | Grafiek | Recharts | P(t)-tijdreeks in de browser |
 

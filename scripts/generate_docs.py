@@ -144,7 +144,7 @@ def make_architecture() -> None:
             "GeoJSON in SQLite JSON-kolom  |  GET /geo/trajectories?year=2050",
             "Stap 4.2 (klaar)",
         ],
-        ["Optimization Layer", "BruteForce + Pyomo/HiGHS", "Stap 1.3 (klaar)"],
+        ["Optimization Layer", "ContinuousOptimizer (SLSQP) + BruteForce + Pyomo/HiGHS", "Stap 1.3 + 3.1 (klaar)"],
         ["Risk Layer", "NCW = Sum P(s)*V0*e^((gamma-delta)*s)", "Stap 1.2 (klaar)"],
         [
             "Physics Layer",
@@ -163,14 +163,14 @@ def make_architecture() -> None:
 
     # Row-specific background colors for layer identity
     row_colors = [
-        BLUE,  # Frontend
+        BLUE,    # Frontend
         ORANGE,  # FastAPI
-        RED,  # Async Queue
-        GREY,  # Database
-        GREY,  # GeoPandas
-        BLUE,  # Optimization
+        RED,     # Async Queue
+        GREY,    # Database
+        GREY,    # Geometrie
+        BLUE,    # Optimization
         PURPLE,  # Risk
-        GREEN,  # Physics
+        GREEN,   # Physics
     ]
     for data_row_idx, color in enumerate(row_colors):
         cell = tbl[(data_row_idx + 1, 0)]  # +1 because row 0 is header
@@ -194,7 +194,7 @@ def make_architecture() -> None:
     ax_txt.text(
         0.5,
         0.15,
-        "Fase 1+2+4 (stap 4.1-4.8) klaar -- 90/90 tests.  "
+        "Fase 1+2+3.1+4 (stap 4.1-4.8) klaar -- 90/90 tests.  "
         "start.bat: Redis + FastAPI + Celery + Vite (4 terminals).",
         ha="center",
         va="center",

@@ -57,7 +57,8 @@ Zie `docs/architecture.png` voor het volledige architectuurdiagram.
 | Component | Technologie | Reden |
 |---|---|---|
 | Rekenkernel | Python (`floodopt-core`) | Pure Python, geen framework-lock-in |
-| Optimizer | Pyomo 6 + HiGHS (MILP) | Open-source, schaalt naar grote N |
+| Optimizer (continu) | scipy SLSQP (`ContinuousOptimizer`) | Primair — tijdstip + hoogte simultaan, W correct |
+| Optimizer (discreet) | Pyomo 6 + HiGHS (MILP) + BruteForce | Verificatie en toekomstige discrete HWBP-maatregelen |
 | Backend API | FastAPI | Snel, automatische Swagger UI |
 | Database | **SQLite** (dev) → PostgreSQL optioneel (prod) | Nul installatie voor development |
 | Geometrie | GeoJSON in SQLite (JSON-kolom) | Geen PostGIS nodig voor MVP |
@@ -213,7 +214,7 @@ Referentiedataset: `tests/validation/optimalise_ring_2011.sqlite` — afgeleid v
 | 0 — Tooling | ✅ Klaar | Projectstructuur, packaging, pre-commit |
 | 1 — MVP rekenkernel | ✅ Klaar | Physics, Risk, Optimization, CLI smoke test |
 | 2 — Backend & API | ✅ Klaar | FastAPI, SQLite, Celery + Redis |
-| 3 — Uitbreidingen rekenkernel | ⏳ Gepland | FORM/Monte Carlo, lengte-effecten, rivierverruiming |
+| 3 — Uitbreidingen rekenkernel | 🚧 In uitvoering | 3.1 ✅ Continue optimizer · 3.2–3.3 gepland |
 | 4 — Frontend | 🚧 In uitvoering | 4.1–4.8 ✅ · 4.9 normtraject-bundel |
 | 5 — Data-actualisatie 2026 | ⏳ Gepland | NBPW WFS, WBI2023, KNMI 2023, HWBP, SSM2 |
 
@@ -299,15 +300,31 @@ start.bat   ← start Redis + API + Worker + Frontend
 
 ---
 
-### Fase 3 — Uitbreidingen rekenkernel ⏳
+### Fase 3 — Uitbreidingen rekenkernel 🚧
 
-| Stap | Inhoud | Wat blijft ongewijzigd |
+#### Stap 3.1 ✅ — Continue optimalisatie (tijdstip + hoogte)
+
+Conform de OptimaliseRing-aanpak: simultane optimalisatie van T_i (tijdstip) én u_i (hoogte) van opeenvolgende investeringen via `scipy.optimize` (SLSQP).
+
+**Kernverbeteringen ten opzichte van discrete MILP:**
+- W (cumulatieve eerdere verhogingen) correct meegewogen: $IC(u_i, W_i) = (C + b\,u_i)\,e^{\lambda(u_i+W_i)}$
+- Timing geoptimaliseerd (niet langer hardcoded)
+- Meerdere investeringen per traject (1–3), elk met kostenopsplitsing A/(B+C)
+- Solver-optie: `"continuous"` in API en frontend dropdown
+
+**Solveroverzicht na stap 3.1:**
+
+| Solver | Aanpak | Wanneer gebruiken |
 |---|---|---|
-| 3.1 | Probabilistische sterkte: FORM / Monte Carlo | Optimizer, Risk Layer |
-| 3.2 | Lengte-effecten & correlaties | Optimizer, Physics Layer |
-| 3.3 | Rivierverruiming & hydraulische interacties | Optimizer, Risk Layer |
+| `continuous` | Continue optimalisatie T + u via SLSQP | Primaire keuze (OR-equivalent) |
+| `brute_force` | Exact, discrete kandidaten | Verificatie, kleine N |
+| `pyomo` | MILP, discrete kandidaten | Toekomstige discrete HWBP-maatregelen |
 
-Nieuwe implementaties achter bestaande Protocols — optimizer hoeft niet aangepast te worden.
+**Vereiste invoer:** kostenfunctie-parameters C, b, λ, Ω per traject (uit 2011-database of HWBP).
+
+#### Stap 3.2 ⏳ — Lengte-effecten & correlaties
+
+#### Stap 3.3 ⏳ — Rivierverruiming & hydraulische interacties
 
 ---
 
