@@ -29,9 +29,9 @@ function Nav() {
 export default function App() {
   return (
     <HashRouter>
-      <div className="min-h-screen bg-gray-50">
+      <div className="flex flex-col h-screen bg-gray-50">
         <Nav />
-        <main className="py-8">
+        <main className="flex-1 min-h-0 overflow-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/optimize" element={<OptimizeForm />} />

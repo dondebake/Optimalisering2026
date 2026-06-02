@@ -42,6 +42,10 @@ export function getTrajectoriesGeoJSON(): Promise<GeoJSON.FeatureCollection> {
   return request('/geo/trajectories')
 }
 
+export function getDijkringdelenGeoJSON(): Promise<GeoJSON.FeatureCollection> {
+  return request('/geo/dijkringdelen')
+}
+
 export function getAllResults(): Promise<OptimizeResponse[]> {
   return request('/results')
 }

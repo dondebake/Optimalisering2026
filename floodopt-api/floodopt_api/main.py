@@ -19,8 +19,10 @@ De worker (floodopt_worker.tasks.run_optimization) voert de berekening uit.
 
 from __future__ import annotations
 
+import json
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated, Generator
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -173,6 +175,22 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
 # ---------------------------------------------------------------------------
 # GET /geo/trajectories
 # ---------------------------------------------------------------------------
+
+
+_DIJKRINGDELEN_GEOJSON = (
+    Path(__file__).parent.parent.parent / "tests" / "validation" / "dijkringdelen.geojson"
+).resolve()
+
+
+@app.get("/geo/dijkringdelen")
+def geo_dijkringdelen() -> dict:
+    """Dijkringdelen (2011) als GeoJSON met P₀-waarden — gegenereerd via convert_dijkringdelen.py."""
+    if not _DIJKRINGDELEN_GEOJSON.exists():
+        raise HTTPException(
+            503,
+            detail="dijkringdelen.geojson ontbreekt — draai eerst: python scripts/convert_dijkringdelen.py",
+        )
+    return json.loads(_DIJKRINGDELEN_GEOJSON.read_text(encoding="utf-8"))
 
 
 @app.get("/geo/trajectories")
