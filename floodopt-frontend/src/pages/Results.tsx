@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getResult, getTrajectory } from '../api/client'
 import { StatusBadge } from '../components/StatusBadge'
 import PSeriesChart from '../components/PSeriesChart'
-import type { InputPayload, Measure } from '../types'
+import type { InputPayload, Measure, OptimizeResponse } from '../types'
 
 const OBJECTIVE_LABEL: Record<string, string> = {
   min_cost: 'MIN_COST — minimale investering',
@@ -77,6 +77,134 @@ function MeasureTable({ measures, selectedIds }: { measures: Measure[]; selected
         })}
       </tbody>
     </table>
+  )
+}
+
+function NcwTable({ data, inp }: { data: OptimizeResponse; inp: InputPayload }) {
+  const { risk_params, trajectory } = inp
+  const { discount_rate: delta, gamma, base_damage: v0, time_horizon: T } = risk_params
+  const baseYear = trajectory.base_year
+
+  const selectedMeasures = inp.candidates.filter(m =>
+    data.selected_measure_ids.includes(m.id)
+  )
+
+  // NPV per maatregel: IC / (1 + delta)^(jaar - basisjaar)
+  const measureRows = selectedMeasures.map(m => {
+    const years = m.year - baseYear
+    const npv = m.cost / Math.pow(1 + delta, years)
+    return { ...m, years, npv }
+  })
+
+  const investTotal = measureRows.reduce((s, m) => s + m.npv, 0)
+
+  return (
+    <div className="space-y-5">
+
+      {/* Formules */}
+      <div className="bg-gray-50 rounded-lg p-4 text-xs text-gray-600 space-y-2">
+        <div className="font-semibold text-gray-700 mb-1">Formules</div>
+        <div>
+          <span className="font-mono">NCW<sub>risico</sub></span>
+          {' = '}
+          <span className="font-mono">∑ P(s) · V₀ · e<sup>(γ−δ)·s</sup></span>
+          {' voor s = 0 … T−1'}
+        </div>
+        <div>
+          <span className="font-mono">NPV<sub>i</sub></span>
+          {' = '}
+          <span className="font-mono">IC<sub>i</sub> / (1 + δ)<sup>t<sub>i</sub>−t₀</sup></span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+          {[
+            ['V₀', fmt(v0)],
+            ['δ', `${(delta * 100).toFixed(2)} %`],
+            ['γ', `${(gamma * 100).toFixed(1)} %`],
+            ['T', `${T} jr · t₀ = ${baseYear}`],
+          ].map(([k, v]) => (
+            <div key={k} className="bg-white rounded px-2 py-1 border border-gray-200">
+              <span className="font-mono font-semibold text-gray-800">{k}</span>
+              <span className="ml-2 text-gray-600">{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Investering per maatregel */}
+      {measureRows.length > 0 && (
+        <div>
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            Investering per geselecteerde maatregel
+          </div>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-gray-400 uppercase tracking-wide border-b border-gray-100">
+                <th className="text-left pb-1.5">Maatregel</th>
+                <th className="text-right pb-1.5">Δh [m]</th>
+                <th className="text-right pb-1.5">Bruto kosten</th>
+                <th className="text-right pb-1.5">Jaar</th>
+                <th className="text-right pb-1.5">Jaren na t₀</th>
+                <th className="text-right pb-1.5">Discontofactor</th>
+                <th className="text-right pb-1.5 font-semibold text-gray-600">NPV</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {measureRows.map(m => (
+                <tr key={m.id}>
+                  <td className="py-1.5 font-mono font-medium text-green-700">{m.id}</td>
+                  <td className="py-1.5 text-right tabular-nums">{m.effect.toFixed(2)}</td>
+                  <td className="py-1.5 text-right tabular-nums">{fmtM(m.cost)}</td>
+                  <td className="py-1.5 text-right tabular-nums">{m.year}</td>
+                  <td className="py-1.5 text-right tabular-nums text-gray-500">{m.years}</td>
+                  <td className="py-1.5 text-right tabular-nums text-gray-500">
+                    {(1 / Math.pow(1 + delta, m.years)).toFixed(3)}
+                  </td>
+                  <td className="py-1.5 text-right tabular-nums font-medium">{fmtM(m.npv)}</td>
+                </tr>
+              ))}
+              <tr className="border-t border-gray-200 font-semibold">
+                <td colSpan={6} className="pt-2 text-gray-600">Totaal investering (NPV)</td>
+                <td className="pt-2 text-right tabular-nums text-blue-700">{fmtM(investTotal)}</td>
+              </tr>
+            </tbody>
+          </table>
+          {Math.abs(investTotal - (data.investment_npv ?? 0)) > 1000 && (
+            <div className="text-xs text-amber-600 mt-1">
+              Let op: berekend totaal wijkt af van opgeslagen waarde ({fmtM(data.investment_npv)}) door afronding.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* NCW samenvatting */}
+      <div>
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+          NCW-opbouw
+        </div>
+        <table className="w-full text-sm">
+          <tbody>
+            <tr className="border-b border-gray-100">
+              <td className="py-2 text-gray-600">
+                NCW<sub>risico</sub> — verwachte toekomstige schade
+              </td>
+              <td className="py-2 text-right tabular-nums font-medium">{fmt(data.risk_ncw)}</td>
+            </tr>
+            <tr className="border-b border-gray-100">
+              <td className="py-2 text-gray-600">
+                NCW<sub>investering</sub> — verdisconteerde investeringen
+              </td>
+              <td className="py-2 text-right tabular-nums font-medium">{fmt(data.investment_npv)}</td>
+            </tr>
+            <tr className="bg-blue-50 rounded">
+              <td className="py-2.5 px-2 font-semibold text-gray-800">NCW totaal</td>
+              <td className="py-2.5 px-2 text-right tabular-nums font-bold text-blue-700 text-base">
+                {fmt(data.total_ncw)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
 }
 
@@ -245,6 +373,13 @@ export default function Results() {
           )}
         </div>
       </div>
+
+      {/* NCW-berekening — vol breedte */}
+      {data.status === 'done' && inp && (
+        <Section title="NCW-berekening">
+          <NcwTable data={data} inp={inp} />
+        </Section>
+      )}
 
       {/* P(t) grafiek — vol breedte */}
       {data.status === 'done' && data.p_series && data.p_series.length > 0 && trajectory && (
