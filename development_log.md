@@ -772,6 +772,13 @@ $$\min_{N, T_1 \ldots T_N, u_1 \ldots u_N} K = \sum_{s=0}^{T-1} P(s) V(s) e^{-\d
 - Timing geoptimaliseerd (niet hardcoded) ✓
 - API: `solver: "continuous"` als nieuwe optie ✓
 
+#### Bugfix — `cost_function` ontbrak in Celery-payload ✓ (2026-06-03)
+
+`POST /optimize` bouwde de payload voor de worker in `floodopt_api/main.py` zonder het `cost_function`-veld. De worker gooide daardoor altijd `ValueError: cost_function is verplicht bij solver='continuous'`, ook als de gebruiker de parameters correct had ingevuld.
+
+**Oorzaak:** `payload` in `optimize()` had wel `solver` maar niet `cost_function`.
+**Oplossing:** `"cost_function": request.cost_function.model_dump() if request.cost_function else None` toegevoegd aan de payload (regel 157, `floodopt_api/main.py`).
+
 ---
 
 ### Stap 4.9 — Normtraject-bundel (vroeger: dijkring-niveau) ⏳ (gepland)

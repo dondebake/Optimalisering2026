@@ -154,6 +154,9 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
         "objective": request.objective.value,
         "budget": request.budget,
         "solver": request.solver,
+        "cost_function": request.cost_function.model_dump()
+        if request.cost_function
+        else None,
     }
 
     pending = OptimizeResponse(
@@ -180,7 +183,10 @@ def optimize(request: OptimizeRequest, repos: Repos) -> OptimizeResponse:
 
 
 _DIJKRINGDELEN_GEOJSON = (
-    Path(__file__).parent.parent.parent / "tests" / "validation" / "dijkringdelen.geojson"
+    Path(__file__).parent.parent.parent
+    / "tests"
+    / "validation"
+    / "dijkringdelen.geojson"
 ).resolve()
 
 
